@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BonQuery — Humanitarian Data Insights | Toronto Shelter System Analysis</title>
+    <meta name="description" content="BonQuery uses publicly available data to investigate urgent humanitarian issues, starting with Toronto's shelter system capacity, demand, and flow analysis.">
+    <meta name="keywords" content="Toronto shelter data, homelessness analytics, shelter capacity Toronto, humanitarian data, shelter system analysis, Oracle SQL, Oracle APEX, données refuges Toronto, itinérance Toronto">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #FAFAF7;
+            --color-text: #1A1A1A;
+            --color-text-secondary: #1a1a1a;
+            --color-accent: #B8432F;
+            --color-accent-soft: #b3092e;
+            --color-rule: #D6D3CC;
+            --color-tag-bg: #EDEBE6;
+            --color-tag-text: #2a2c34;
+            --font-display: 'DM Serif Display', Georgia, serif;
+            --font-body: 'Source Sans 3', 'Georgia', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .page {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 80px 24px 100px;
+            position: relative;
+        }
+
+        /* ── Language Toggle ── */
+        .lang-toggle {
+            position: absolute;
+            top: 32px;
+            right: 24px;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            gap: 0;
+            border: 1px solid var(--color-rule);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .lang-toggle button {
+            background: transparent;
+            border: none;
+            padding: 6px 14px;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--color-tag-text);
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .lang-toggle button.active {
+            background: var(--color-text);
+            color: var(--color-bg);
+        }
+
+        .lang-toggle button:not(.active):hover {
+            background: var(--color-tag-bg);
+        }
+
+        /* ── Header ── */
+        .site-header {
+            margin-bottom: 64px;
+            animation: fadeUp 0.8s ease-out both;
+        }
+
+        .site-name {
+            font-family: var(--font-display);
+            font-size: clamp(42px, 8vw, 64px);
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            color: var(--color-text);
+            margin-bottom: 12px;
+        }
+
+        .tagline {
+            font-family: var(--font-body);
+            font-size: 19px;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--color-accent);
+            letter-spacing: 0.3px;
+        }
+
+        .intro {
+            margin-top: 28px;
+            font-size: 19px;
+            line-height: 1.75;
+            color: var(--color-text-secondary);
+        }
+
+        /* ── Divider ── */
+        .rule {
+            border: none;
+            height: 1px;
+            background: var(--color-rule);
+            margin: 48px 0;
+        }
+
+        /* ── Project Section ── */
+        .project {
+            animation: fadeUp 0.8s ease-out 0.15s both;
+        }
+
+        .section-label {
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--color-tag-text);
+            margin-bottom: 16px;
+        }
+
+        .project-name {
+            font-family: var(--font-display);
+            font-size: clamp(28px, 5vw, 38px);
+            line-height: 1.2;
+            color: var(--color-text);
+            margin-bottom: 8px;
+        }
+
+        .project-date {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--color-tag-text);
+            background: var(--color-tag-bg);
+            padding: 4px 12px;
+            border-radius: 3px;
+            margin-bottom: 32px;
+        }
+
+        .project p {
+            color: var(--color-text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .project p:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .questions {
+            font-weight: 400;
+            color: var(--color-text);
+            font-style: italic;
+        }
+
+        /* ── Under the Hood ── */
+        .tech {
+            animation: fadeUp 0.8s ease-out 0.3s both;
+        }
+
+        .tech p {
+            color: var(--color-text-secondary);
+        }
+
+        /* ── Join the Query ── */
+        .contact {
+            animation: fadeUp 0.8s ease-out 0.45s both;
+        }
+
+        .contact p {
+            color: var(--color-text-secondary);
+        }
+
+        .contact a {
+            color: var(--color-accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.25s ease;
+        }
+
+        .contact a:hover {
+            border-bottom-color: var(--color-accent-soft);
+        }
+
+        .section-heading {
+            font-family: var(--font-display);
+            font-size: 24px;
+            color: var(--color-text);
+            margin-bottom: 14px;
+        }
+
+        /* ── Footer ── */
+        .site-footer {
+            margin-top: 72px;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-rule);
+            font-size: 13px;
+            color: var(--color-tag-text);
+            letter-spacing: 0.2px;
+            animation: fadeUp 0.8s ease-out 0.6s both;
+        }
+
+        /* ── Animation ── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .page {
+                padding: 56px 20px 72px;
+            }
+            body {
+                font-size: 17px;
+            }
+            .rule {
+                margin: 36px 0;
+            }
+            .lang-toggle {
+                top: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+
+        <div class="lang-toggle">
+            <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+            <button id="btn-fr" onclick="setLang('fr')">FR</button>
+        </div>
+
+        <header class="site-header">
+            <h1 class="site-name">BonQuery</h1>
+            <p class="tagline" data-en="Data for the greater good." data-fr="Des données au service du bien commun."></p>
+            <p class="intro" data-en="I'll be using publicly available data to investigate urgent humanitarian issues — starting with Toronto's overburdened shelter system, which regularly runs at or near full capacity." data-fr="J'utiliserai des données publiques pour examiner des enjeux humanitaires urgents — en commençant par le réseau de refuges surchargé de Toronto, qui fonctionne régulièrement à pleine capacité ou presque."></p>
+        </header>
+
+        <hr class="rule">
+
+        <section class="project">
+            <p class="section-label" data-en="First Planned Project" data-fr="Premier projet prévu"></p>
+            <h2 class="project-name" data-en="Toronto Shelter Query" data-fr="Toronto Shelter Query"></h2>
+            <span class="project-date" data-en="Analysis expected summer 2026" data-fr="Analyse prévue pour l'été 2026"></span>
+
+            <p data-en='Toronto publishes data and charts on its shelter system, and the city&#39;s dashboards do a decent job showing the numbers. But numbers alone don&#39;t tell the story. This project aims to close that gap — turning raw data into a clear, accessible analysis that answers basic questions: <span class="questions">"How much pressure is the system actually under?" "Is it getting better or worse?" "Where are the biggest gaps — and for whom?"</span>' data-fr='Toronto publie des données et des graphiques sur son réseau de refuges, et les tableaux de bord de la ville font un travail correct pour présenter les chiffres. Mais les chiffres seuls ne racontent pas toute l&#39;histoire. Ce projet vise à combler cette lacune — en transformant les données brutes en une analyse claire et accessible qui répond à des questions fondamentales&nbsp;: <span class="questions">«&nbsp;Quelle pression le système subit-il réellement&nbsp;?&nbsp;» «&nbsp;Est-ce que la situation s&#39;améliore ou s&#39;aggrave&nbsp;?&nbsp;» «&nbsp;Où sont les lacunes les plus importantes — et pour qui&nbsp;?&nbsp;»</span>'></p>
+
+            <p data-en="Using publicly available data, you'll get headache-free graphs and explanations that track capacity, demand, and movement through the system over time — the kind of work that's easy to follow without oversimplifying. The goal is to make it accessible enough that even a kid working on a school project could understand what's going on, while still being useful to people who need the detail." data-fr="À partir de données publiques, vous aurez accès à des graphiques et des explications clairs qui suivent la capacité, la demande et les mouvements dans le réseau au fil du temps — le genre de travail facile à suivre sans tomber dans la simplification excessive. L'objectif est de rendre le tout assez accessible pour qu'un élève qui fait un projet scolaire puisse comprendre ce qui se passe, tout en restant utile pour ceux qui ont besoin du détail."></p>
+
+            <p data-en="The mission is to give journalists, researchers, advocates, policymakers — and anyone paying attention — clear takeaways: what the numbers and graphs mean, why they matter, and where things may be heading." data-fr="La mission est d'offrir aux journalistes, chercheurs, militants, décideurs — et à toute personne attentive — des constats clairs&nbsp;: ce que les chiffres et les graphiques veulent dire, pourquoi c'est important, et vers où les choses semblent se diriger."></p>
+        </section>
+
+        <hr class="rule">
+
+        <section class="tech">
+            <h3 class="section-heading" data-en="Under the Hood" data-fr="Sous le capot"></h3>
+            <p data-en="This will be built using Oracle SQL to organize the raw data and Oracle APEX to showcase results. The workflow will be designed to be reproducible and open so that others can build on it." data-fr="Le projet sera construit avec Oracle SQL pour organiser les données brutes et Oracle APEX pour présenter les résultats. Le processus sera conçu pour être reproductible et ouvert afin que d'autres puissent s'en servir comme base."></p>
+        </section>
+
+        <hr class="rule">
+
+        <section class="contact">
+            <h3 class="section-heading" data-en="Join the Query" data-fr="Joignez-vous à l'enquête"></h3>
+            <p data-en='If you work with Toronto&#39;s shelter data, have questions about this project, or want to collaborate, reach out at <a href="mailto:info@BonQuery.ca">info@BonQuery.ca</a>.' data-fr='Si vous travaillez avec les données sur les refuges de Toronto, avez des questions sur ce projet ou souhaitez collaborer, écrivez-nous à <a href="mailto:info@BonQuery.ca">info@BonQuery.ca</a>.'></p>
+        </section>
+
+        <footer class="site-footer">
+            &copy; 2026 BonQuery
+        </footer>
+
+    </div>
+
+    <script>
+        function setLang(lang) {
+            document.documentElement.lang = lang;
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+
+            document.querySelectorAll('[data-en]').forEach(function(el) {
+                el.innerHTML = el.getAttribute('data-' + lang);
+            });
+        }
+
+        // Initialize with English
+        setLang('en');
+    </script>
+</body>
+</html>
