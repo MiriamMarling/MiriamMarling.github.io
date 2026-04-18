@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BonQuery — Humanitarian Data Insights | Toronto Shelter System Analysis</title>
+    <title>BonQuery — Humanitarian Data Insights</title>
     <meta name="description" content="BonQuery uses publicly available data to investigate urgent humanitarian issues, starting with Toronto's shelter system capacity, demand, and flow analysis.">
     <meta name="keywords" content="Toronto shelter data, homelessness analytics, shelter capacity Toronto, humanitarian data, shelter system analysis, Oracle SQL, Oracle APEX, données refuges Toronto, itinérance Toronto">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -109,8 +109,22 @@
             letter-spacing: 0.3px;
         }
 
-        .intro {
+        .welcome {
             margin-top: 28px;
+            font-family: var(--font-display);
+            font-size: 24px;
+            color: var(--color-text);
+        }
+
+        .intro {
+            margin-top: 16px;
+            font-size: 19px;
+            line-height: 1.75;
+            color: var(--color-text-secondary);
+        }
+
+        .intro-secondary {
+            margin-top: 16px;
             font-size: 19px;
             line-height: 1.75;
             color: var(--color-text-secondary);
@@ -262,7 +276,9 @@
         <header class="site-header">
             <h1 class="site-name">BonQuery</h1>
             <p class="tagline" data-en="Data for the greater good." data-fr="Des données au service du bien commun."></p>
-            <p class="intro" data-en="I'll be using publicly available data to investigate urgent humanitarian issues — starting with Toronto's overburdened shelter system, which regularly runs at or near full capacity." data-fr="J'utiliserai des données publiques pour examiner des enjeux humanitaires urgents — en commençant par le réseau de refuges surchargé de Toronto, qui fonctionne régulièrement à pleine capacité ou presque."></p>
+            <p class="welcome" data-en="Welcome!" data-fr="Bienvenue!"></p>
+            <p class="intro" data-en="Our mission is to breathe life into humanitarian-related data and to deliver clear data-driven insights into the hands of people who want to make a difference in the lives of others." data-fr="Notre mission est de donner vie aux données humanitaires et de mettre des analyses claires et accessibles entre les mains de ceux qui veulent faire une différence dans la vie des autres."></p>
+            <p class="intro-secondary" data-en="We'll be using publicly available data to investigate urgent humanitarian issues — starting with Toronto's taxed shelter system." data-fr="Nous utiliserons des données publiques pour examiner des enjeux humanitaires urgents — en commençant par le réseau de refuges surchargé de Toronto."></p>
         </header>
 
         <hr class="rule">
@@ -272,18 +288,16 @@
             <h2 class="project-name" data-en="Toronto Shelter Query" data-fr="Toronto Shelter Query"></h2>
             <span class="project-date" data-en="Analysis expected summer 2026" data-fr="Analyse prévue pour l'été 2026"></span>
 
-            <p data-en='Toronto publishes data and charts on its shelter system, and the city&#39;s dashboards do a decent job showing the numbers. But numbers alone don&#39;t tell the story. This project aims to close that gap — turning raw data into a clear, accessible analysis that answers basic questions: <span class="questions">"How much pressure is the system actually under?" "Is it getting better or worse?" "Where are the biggest gaps — and for whom?"</span>' data-fr='Toronto publie des données et des graphiques sur son réseau de refuges, et les tableaux de bord de la ville font un travail correct pour présenter les chiffres. Mais les chiffres seuls ne racontent pas toute l&#39;histoire. Ce projet vise à combler cette lacune — en transformant les données brutes en une analyse claire et accessible qui répond à des questions fondamentales&nbsp;: <span class="questions">«&nbsp;Quelle pression le système subit-il réellement&nbsp;?&nbsp;» «&nbsp;Est-ce que la situation s&#39;améliore ou s&#39;aggrave&nbsp;?&nbsp;» «&nbsp;Où sont les lacunes les plus importantes — et pour qui&nbsp;?&nbsp;»</span>'></p>
+            <p data-en='Toronto publishes data and charts on its shelter system, and the city&#39;s dashboards do a decent job showing the numbers. But numbers alone don&#39;t tell the story. This project aims to close that gap — turning raw, publicly available data into a clear, accessible analysis that answers basic questions: <span class="questions">"How much pressure is the system actually under?" "Is it getting better or worse?" "Where are the biggest gaps?"</span>' data-fr='Toronto publie des données et des graphiques sur son réseau de refuges, et les tableaux de bord de la ville font un travail correct pour présenter les chiffres. Mais les chiffres seuls ne racontent pas toute l&#39;histoire. Ce projet vise à combler cette lacune — en transformant les données brutes et publiques en une analyse claire et accessible qui répond à des questions fondamentales&nbsp;: <span class="questions">«&nbsp;Quelle pression le système subit-il réellement&nbsp;?&nbsp;» «&nbsp;Est-ce que la situation s&#39;améliore ou s&#39;aggrave&nbsp;?&nbsp;» «&nbsp;Où sont les lacunes les plus importantes&nbsp;?&nbsp;»</span>'></p>
 
-            <p data-en="Using publicly available data, you'll get headache-free graphs and explanations that track capacity, demand, and movement through the system over time — the kind of work that's easy to follow without oversimplifying. The goal is to make it accessible enough that even a kid working on a school project could understand what's going on, while still being useful to people who need the detail." data-fr="À partir de données publiques, vous aurez accès à des graphiques et des explications clairs qui suivent la capacité, la demande et les mouvements dans le réseau au fil du temps — le genre de travail facile à suivre sans tomber dans la simplification excessive. L'objectif est de rendre le tout assez accessible pour qu'un élève qui fait un projet scolaire puisse comprendre ce qui se passe, tout en restant utile pour ceux qui ont besoin du détail."></p>
-
-            <p data-en="The mission is to give journalists, researchers, advocates, policymakers — and anyone paying attention — clear takeaways: what the numbers and graphs mean, why they matter, and where things may be heading." data-fr="La mission est d'offrir aux journalistes, chercheurs, militants, décideurs — et à toute personne attentive — des constats clairs&nbsp;: ce que les chiffres et les graphiques veulent dire, pourquoi c'est important, et vers où les choses semblent se diriger."></p>
+            <p data-en="My mission is to give journalists, researchers, advocates, policymakers — and anyone paying attention — headache-free takeaways: what the numbers and graphs mean, why they matter, and where things may be heading if changes aren't made. We'll also highlight the limitations of current datasets." data-fr="Ma mission est d'offrir aux journalistes, chercheurs, militants, décideurs — et à toute personne attentive — des constats clairs et sans prise de tête&nbsp;: ce que les chiffres et les graphiques veulent dire, pourquoi c'est important, et vers où les choses pourraient se diriger si rien ne change. Nous mettrons aussi en lumière les limites des données actuelles."></p>
         </section>
 
         <hr class="rule">
 
         <section class="tech">
             <h3 class="section-heading" data-en="Under the Hood" data-fr="Sous le capot"></h3>
-            <p data-en="This will be built using Oracle SQL to organize the raw data and Oracle APEX to showcase results. The workflow will be designed to be reproducible and open so that others can build on it." data-fr="Le projet sera construit avec Oracle SQL pour organiser les données brutes et Oracle APEX pour présenter les résultats. Le processus sera conçu pour être reproductible et ouvert afin que d'autres puissent s'en servir comme base."></p>
+            <p data-en="This will be initially built using Oracle SQL to organize the raw data and Oracle APEX to showcase results. Statistical analyses will be added as necessary. The workflow will be designed to be reproducible and openly documented so that others can build on it." data-fr="Le projet sera d'abord construit avec Oracle SQL pour organiser les données brutes et Oracle APEX pour présenter les résultats. Des analyses statistiques seront ajoutées au besoin. Le processus sera conçu pour être reproductible et documenté de façon ouverte afin que d'autres puissent s'en servir comme base."></p>
         </section>
 
         <hr class="rule">
