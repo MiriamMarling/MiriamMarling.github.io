@@ -1,4 +1,8 @@
-.DS_Store
-
+# Quarto build output
+/_site/
 /.quarto/
 **/*.quarto_ipynb
+*_files/
+
+# macOS
+.DS_Store
