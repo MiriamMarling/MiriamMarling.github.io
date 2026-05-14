@@ -1,0 +1,12 @@
+---
+title: "BonQuery"
+subtitle: "Data for the greater good"
+keywords: "Toronto shelter data, homelessness analytics, shelter capacity Toronto, humanitarian data, shelter system analysis, Oracle SQL, Oracle APEX, données refuges Toronto, itinérance Toronto"
+---
+
+Welcome. This site is in active development.
+
+BonQuery is a humanitarian data project focused on civic-tech analysis
+of public datasets — currently centered on Toronto's shelter system.
+
+More content coming soon.

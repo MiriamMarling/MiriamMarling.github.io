@@ -1,0 +1,23 @@
+project:
+  type: website
+  output-dir: _site   # built HTML goes here — not committed to main
+
+website:
+  title: "BonQuery"
+  description: "BonQuery uses publicly available data to investigate urgent humanitarian issues, starting with Toronto's shelter system capacity, demand, and flow analysis."
+  site-url: https://bonquery.ca
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+  page-footer:
+    left: "© 2026 Miriam Marling · BonQuery"
+    right: "Built with [Quarto](https://quarto.org)"
+
+format:
+  html:
+    theme: cosmo   # clean, readable — can be swapped in Stage 3
+    css: styles.css
+    toc: false
