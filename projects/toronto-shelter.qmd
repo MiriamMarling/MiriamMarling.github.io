@@ -66,7 +66,7 @@ need to have left and returned.
 Definitions are based on the [City of Toronto's Shelter System Flow
 Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/).
 
-[Read all data findings →](findings.qmd)
+[Read all data findings →](about-the-data.qmd)
 
 ## The dashboards
 

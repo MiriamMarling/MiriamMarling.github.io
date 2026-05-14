@@ -21,7 +21,7 @@ numbers alone don't tell the story. This project closes that gap
 with headache-free takeaways: what the numbers mean, why they
 matter, and what the data leaves out.
 
-[Explore the project →](projects/shelter-flow.qmd)
+[Explore the project →](projects/toronto-shelter.qmd)
 
 ---
 
