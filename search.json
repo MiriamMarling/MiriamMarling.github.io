@@ -4,13 +4,118 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "About this site"
+    "text": "I’m a Toronto-based data researcher with a Master’s in cognitive neuroscience, two peer-reviewed publications, and a public-service role at Statistics Canada.\nR is my native analytical language. Over the past several months I’ve been adding Oracle SQL, Python, and APEX to my toolkit so I can build BonQuery’s projects end-to-end — database, dashboard, analysis, and writing.\nI started BonQuery because so much of the publicly available data on humanitarian issues in Canada sits on government open-data pages where most people will never see it. The first project focuses on Toronto’s taxed shelter system. More will follow."
+  },
+  {
+    "objectID": "about.html#get-in-touch",
+    "href": "about.html#get-in-touch",
+    "title": "About",
+    "section": "Get in touch",
+    "text": "Get in touch\nIf you work with this data, have questions about the project, or want to collaborate:\n\nGet in touch with Miriam Marling at miriam@BonQuery.ca\nGeneral inquiries: info@BonQuery.ca\nLinkedIn"
+  },
+  {
+    "objectID": "projects/toronto-shelter.html",
+    "href": "projects/toronto-shelter.html",
+    "title": "Inside Toronto’s Shelter System",
+    "section": "",
+    "text": "Toronto publishes monthly data on its taxed shelter system, and the City’s own dashboards do a good job presenting the headline numbers. This page goes a step further: interactive filters on every chart, a clear note on what the data captures and what it leaves out, and findings that usually stay buried in technical documentation.\nThe data covers every month from January 2018 to the most recent published month, sourced directly from the City of Toronto’s Shelter System Flow dataset. New data loads automatically each month, usually around the 15th, after the City publishes the prior month’s figures."
+  },
+  {
+    "objectID": "projects/toronto-shelter.html#how-to-read-this-data",
+    "href": "projects/toronto-shelter.html#how-to-read-this-data",
+    "title": "Inside Toronto’s Shelter System",
+    "section": "How to read this data",
+    "text": "How to read this data\nThese numbers reflect the shelter system, not all homelessness. The data captures people who used a City-funded overnight service at least once in the past three months. It doesn’t include people sleeping outside, in shelters that aren’t City-funded, or staying temporarily with friends or family. The City estimates that roughly 18% of people experiencing absolute homelessness in Toronto aren’t reflected in these numbers. Trends here reflect changes in the shelter system specifically — not in total homelessness in the city."
+  },
+  {
+    "objectID": "projects/toronto-shelter.html#key-terms",
+    "href": "projects/toronto-shelter.html#key-terms",
+    "title": "Inside Toronto’s Shelter System",
+    "section": "Key terms",
+    "text": "Key terms\nThe dashboards use a few terms that have specific meanings worth knowing before you read the charts.\nActively homeless. A person who has used City-funded shelter services at least once in the past three months and hasn’t been recorded as moving to permanent housing. This is the headline number on every dashboard. Because it looks back three months, the count includes people who may not be in shelter on any given night.\nChronic homelessness. The federal definition: someone who has spent at least 180 nights in shelter over the past year, or at least 546 nights over the past three years. A person can meet this definition while still actively in the shelter system — they don’t need to have left and returned.\nInflow categories (people entering the shelter system this month):\n\nNewly Identified. People entering the shelter system for the first time. One exception for the “Chronic” group: in that row, this column counts people who became chronically homeless during the reporting month, regardless of how long they’d already been using the shelter system.\nReturned from Permanent Housing. People who previously moved to permanent housing and have come back to the shelter system.\nReturned to Shelter. People who were in the system, didn’t use it for at least three months, and have now returned.\n\nOutflow categories (people leaving the shelter system this month):\n\nMoved to Permanent Housing. People who left the shelter system for permanent housing.\nBecame Inactive. People who haven’t used shelter services in the past three months, including the reporting month.\n\nDefinitions are based on the City of Toronto’s Shelter System Flow Data page.\nRead all data findings →"
+  },
+  {
+    "objectID": "projects/toronto-shelter.html#the-dashboards",
+    "href": "projects/toronto-shelter.html#the-dashboards",
+    "title": "Inside Toronto’s Shelter System",
+    "section": "The dashboards",
+    "text": "The dashboards\nThe three tabs below show different views of the data, mirroring the City’s own dashboards but with full interactive filtering on every chart.\n\nMonthly SnapshotYear-to-Date ComparisonHistorical Trends\n\n\nA point-in-time view of the shelter system for any month from January 2018 forward. Use the date filter at the top of the dashboard to change months.\n\n\n\n\nCompares the current year’s cumulative figures against the same period the prior year. Useful for seeing whether the system is on track to exceed, match, or fall below last year.\n\n\n\n\nMulti-year time series for the headline metrics, with filters for population group, year range, and month. Useful for spotting long-term patterns or seasonal trends."
+  },
+  {
+    "objectID": "projects/toronto-shelter.html#data-source",
+    "href": "projects/toronto-shelter.html#data-source",
+    "title": "Inside Toronto’s Shelter System",
+    "section": "Data source",
+    "text": "Data source\nAll data comes from the City of Toronto’s Shelter System Flow dataset, published monthly on the City’s open data portal under the Open Government Licence — Toronto."
+  },
+  {
+    "objectID": "projects/about-the-data.html",
+    "href": "projects/about-the-data.html",
+    "title": "About the Data",
+    "section": "",
+    "text": "The numbers on the shelter system project page come from a single dataset published by the City of Toronto. Like any dataset, it captures some things well, leaves other things out, and has structural quirks worth knowing before drawing conclusions from it. This page covers what we’ve noticed.\nThe notes below are not findings about Toronto’s shelter system itself — those will come later, as statistical analyses are added to the site. These are notes about the data: what it represents, what it doesn’t, and where careful reading matters."
+  },
+  {
+    "objectID": "projects/about-the-data.html#the-18-undercount",
+    "href": "projects/about-the-data.html#the-18-undercount",
+    "title": "About the Data",
+    "section": "The 18% undercount",
+    "text": "The 18% undercount\nThe data counts people who used a City-funded overnight service in the past three months. People who slept outside, used a shelter that isn’t City-funded, or stayed temporarily with friends or family are not in this dataset.\nThe City estimates that roughly 18% of people experiencing absolute homelessness in Toronto aren’t reflected in these numbers. That estimate comes from the City’s Street Needs Assessment, a separate periodic count of unsheltered homelessness.\nWhat this means in practice: when this data shows the actively homeless count rising or falling, the change reflects the shelter system specifically. Whether total homelessness in Toronto is rising or falling at the same rate depends on what’s happening in the parts of the homeless population this data doesn’t capture — and that’s a question this dataset can’t answer on its own."
+  },
+  {
+    "objectID": "projects/about-the-data.html#three-different-homelessness-numbers",
+    "href": "projects/about-the-data.html#three-different-homelessness-numbers",
+    "title": "About the Data",
+    "section": "Three different “homelessness” numbers",
+    "text": "Three different “homelessness” numbers\nToronto publishes several different counts related to homelessness, and they measure different things. A reader comparing figures across sources can easily think two numbers contradict each other when they actually measure different populations.\nThe three most common counts:\n\nNightly occupancy. How many people are in a shelter bed on a given night. Comes from the City’s separate Daily Shelter and Overnight Service Usage dataset.\nActively homeless. How many people used the shelter system at least once in the past three months and haven’t moved to permanent housing. This is the headline number on every dashboard on the shelter system project page.\nAnnual unique individuals. How many different people used the shelter system at any point during a calendar year. Published by the City in occasional reports rather than in a regular dataset.\n\nAll three are valid measurements of related-but-different populations. The “actively homeless” count typically sits between nightly occupancy (which is smaller, since it only counts one night) and annual unique individuals (which is larger, since it counts everyone who passed through over a longer period). Any analysis that treats these as interchangeable is misreading them."
+  },
+  {
+    "objectID": "projects/about-the-data.html#the-data-is-a-monthly-snapshot-with-a-three-month-lookback",
+    "href": "projects/about-the-data.html#the-data-is-a-monthly-snapshot-with-a-three-month-lookback",
+    "title": "About the Data",
+    "section": "The data is a monthly snapshot with a three-month lookback",
+    "text": "The data is a monthly snapshot with a three-month lookback\nThe City generates this data on the last day of each month and publishes it around the 15th of the following month. Each month’s figures retroactively consider everyone who used shelter services in the past three months.\nTwo things follow from this:\nFirst, the “actively homeless” count for any given month includes people who used the shelter system once in that three-month window — not just people in shelter during that month. The same person can appear in three consecutive monthly counts even if they only used shelter once.\nSecond, month-over-month changes can be smaller than they appear. Because each count includes the previous two months of activity, adjacent months overlap heavily. A reader looking at January and February counts side by side is comparing two largely overlapping groups, not two distinct ones."
+  },
+  {
+    "objectID": "projects/about-the-data.html#some-categories-overlap-others-dont",
+    "href": "projects/about-the-data.html#some-categories-overlap-others-dont",
+    "title": "About the Data",
+    "section": "Some categories overlap; others don’t",
+    "text": "Some categories overlap; others don’t\nThe dataset breaks people down into population groups: All Population, Refugees, Non-refugees, Chronic, Families, Single Adult, Youth, and Indigenous. These groups don’t all relate to each other in the same way, which matters for any analysis that compares them.\nThe Refugees and Non-refugees groups together account for every person in the “All Population” group, with no overlap. If a chart shows the two groups stacked, the stack should equal the total. This holds in every month of the dataset.\nThe other groups — Chronic, Families, Single Adult, Youth, and Indigenous — overlap with each other and with the refugee groups. [content removed] There is no way to isolate people who fall into only one of these groups from this dataset alone.\nWhat this means in practice: summing or stacking the five overlapping groups produces a number larger than the actual population, because the same people are counted multiple times. The City’s own per-group percentages reflect this — they sum to well over 100% across the seven sub-population groups."
+  },
+  {
+    "objectID": "projects/about-the-data.html#the-newly-identified-column-means-something-different-for-the-chronic-group",
+    "href": "projects/about-the-data.html#the-newly-identified-column-means-something-different-for-the-chronic-group",
+    "title": "About the Data",
+    "section": "The “Newly Identified” column means something different for the Chronic group",
+    "text": "The “Newly Identified” column means something different for the Chronic group\nFor most population groups, “Newly Identified” counts people entering the shelter system for the first time. For the Chronic group, the same column counts people who became chronically homeless during the reporting month — regardless of how long they’d already been using the shelter system. Most of the people in that count were already in the system; they just newly met the federal definition of chronic homelessness.\nThis is explained on the project page and in the City’s own documentation, but it’s worth flagging again here because the column name is misleading. Any cross-group comparison of “Newly Identified” figures that includes the Chronic row is mixing two different measurements."
+  },
+  {
+    "objectID": "projects/about-the-data.html#a-useful-technical-detail-the-refugee-dimension-is-a-clean-split",
+    "href": "projects/about-the-data.html#a-useful-technical-detail-the-refugee-dimension-is-a-clean-split",
+    "title": "About the Data",
+    "section": "A useful technical detail: the refugee dimension is a clean split",
+    "text": "A useful technical detail: the refugee dimension is a clean split\nFor analysts and researchers working with this data more closely, one structural feature is worth knowing. The refugee dimension — the split between Refugees and Non-refugees — behaves as a clean mathematical partition of the dataset, not just for the headline “actively homeless” count but for every flow column in the dataset.\nIn every month from January 2018 to the present, the Refugees and Non-refugees counts sum exactly to the All Population count for every column we’ve checked: inflows, outflows, and the actively homeless stock. The same identity does not hold for any of the other population dimensions.\nWhat this means in practice: if you need to compare disjoint groups in an analysis — for stacked bar charts, percentage-of-total calculations, or anything that requires mutually exclusive categories — the refugee dimension is the one place in this dataset where that’s mathematically safe."
+  },
+  {
+    "objectID": "projects/about-the-data.html#sources",
+    "href": "projects/about-the-data.html#sources",
+    "title": "About the Data",
+    "section": "Sources",
+    "text": "Sources\nAll structural observations on this page were verified by querying the dataset directly. Definitions and the 18% undercount estimate come from the City of Toronto’s Shelter System Flow Data page. The dataset itself is published on the City’s Open Data portal."
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "BonQuery",
     "section": "",
-    "text": "Welcome. This site is in active development.\nBonQuery is a humanitarian data project focused on civic-tech analysis of public datasets — currently centered on Toronto’s shelter system.\nMore content coming soon."
+    "text": "BonQuery breathes life into humanitarian-related data — turning numbers that sit unread on government open-data pages into clear, useful analysis for the people who can do something about the issues behind them.\nWe use publicly available data to investigate urgent humanitarian issues. The work is open, reproducible, and built for journalists, researchers, advocates, policymakers, and anyone paying attention.\n\n\nToronto publishes monthly data on its taxed shelter system, but numbers alone don’t tell the story. This project closes that gap with headache-free takeaways: what the numbers mean, why they matter, and what the data leaves out.\nExplore the project →\n\nHave a humanitarian dataset you think should get this treatment? Reach out at info@BonQuery.ca."
+  },
+  {
+    "objectID": "index.html#first-project-inside-torontos-shelter-system",
+    "href": "index.html#first-project-inside-torontos-shelter-system",
+    "title": "BonQuery",
+    "section": "",
+    "text": "Toronto publishes monthly data on its taxed shelter system, but numbers alone don’t tell the story. This project closes that gap with headache-free takeaways: what the numbers mean, why they matter, and what the data leaves out.\nExplore the project →\n\nHave a humanitarian dataset you think should get this treatment? Reach out at info@BonQuery.ca."
   }
 ]

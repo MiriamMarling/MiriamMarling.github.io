@@ -2,10 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bonquery.ca/about.html</loc>
-    <lastmod>2026-05-14T19:09:41.600Z</lastmod>
+    <lastmod>2026-05-14T23:24:49.030Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bonquery.ca/projects/toronto-shelter.html</loc>
+    <lastmod>2026-05-14T23:13:19.033Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bonquery.ca/projects/about-the-data.html</loc>
+    <lastmod>2026-05-14T23:18:37.160Z</lastmod>
   </url>
   <url>
     <loc>https://bonquery.ca/index.html</loc>
-    <lastmod>2026-05-14T19:27:05.779Z</lastmod>
+    <lastmod>2026-05-14T22:37:20.990Z</lastmod>
   </url>
 </urlset>
