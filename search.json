@@ -56,6 +56,13 @@
     "text": "Toronto publishes monthly data on its taxed shelter system, and the City’s own dashboards do a good job presenting the headline numbers. This page goes a step further: interactive filters on every chart, a clear note on what the data captures and what it leaves out, and findings that usually stay buried in technical documentation.\nThe data covers every month from January 2018 to the most recent published month, sourced directly from the City of Toronto’s Shelter System Flow dataset. New data loads automatically each month, usually around the 15th, after the City publishes the prior month’s figures."
   },
   {
+    "objectID": "projects/toronto-shelter.html#the-dashboards",
+    "href": "projects/toronto-shelter.html#the-dashboards",
+    "title": "Inside Toronto’s Shelter System",
+    "section": "The dashboards",
+    "text": "The dashboards\n\nOpen each dashboard directly in your browser — they’re built for interactive use and work best full-screen on a phone.\n\nMonthly Snapshot →\nYear-to-Date Comparison →\nHistorical Trends →\n\n\n\nThe three tabs below show different views of the data, with interactive filters on every chart.\n\nMonthly SnapshotYear-to-Date ComparisonHistorical Trends\n\n\nA point-in-time view of the shelter system for any month from January 2018 forward. Use the date filter at the top to change months.\nOpen in a new tab →\n\n\n\n\nCompares the current year’s cumulative figures against the same period the prior year. Useful for seeing whether the system is on track to exceed, match, or fall below last year.\nOpen in a new tab →\n\n\n\n\nMulti-year time series for the headline metrics, with filters for population group, year, and month. Useful for spotting long-term patterns or seasonal trends.\nOpen in a new tab →"
+  },
+  {
     "objectID": "projects/toronto-shelter.html#how-to-read-this-data",
     "href": "projects/toronto-shelter.html#how-to-read-this-data",
     "title": "Inside Toronto’s Shelter System",
@@ -68,13 +75,6 @@
     "title": "Inside Toronto’s Shelter System",
     "section": "Key terms",
     "text": "Key terms\nThe dashboards use a few terms that have specific meanings worth knowing before you read the charts.\nActively homeless. A person who has used City-funded shelter services at least once in the past three months and hasn’t been recorded as moving to permanent housing. This is the headline number on every dashboard. Because it looks back three months, the count includes people who may not be in shelter on any given night.\nChronic homelessness. The federal definition: someone who has spent at least 180 nights in shelter over the past year, or at least 546 nights over the past three years. A person can meet this definition while still actively in the shelter system — they don’t need to have left and returned.\nInflow categories (people entering the shelter system this month):\n\nNewly Identified. People entering the shelter system for the first time. One exception for the “Chronic” group: in that row, this column counts people who became chronically homeless during the reporting month, regardless of how long they’d already been using the shelter system.\nReturned from Permanent Housing. People who previously moved to permanent housing and have come back to the shelter system.\nReturned to Shelter. People who were in the system, didn’t use it for at least three months, and have now returned.\n\nOutflow categories (people leaving the shelter system this month):\n\nMoved to Permanent Housing. People who left the shelter system for permanent housing.\nBecame Inactive. People who haven’t used shelter services in the past three months, including the reporting month.\n\nDefinitions are based on the City of Toronto’s Shelter System Flow Data page.\nRead all data findings →"
-  },
-  {
-    "objectID": "projects/toronto-shelter.html#the-dashboards",
-    "href": "projects/toronto-shelter.html#the-dashboards",
-    "title": "Inside Toronto’s Shelter System",
-    "section": "The dashboards",
-    "text": "The dashboards\nThe three tabs below show different views of the data, with interactive filters on every chart.\n\nMonthly SnapshotYear-to-Date ComparisonHistorical Trends\n\n\nA point-in-time view of the shelter system for any month from January 2018 forward. Use the date filter at the top to change months.\nOpen in a new tab →\n\n\n\n\nCompares the current year’s cumulative figures against the same period the prior year. Useful for seeing whether the system is on track to exceed, match, or fall below last year.\nOpen in a new tab →\n\n\n\n\nMulti-year time series for the headline metrics, with filters for population group, year, and month. Useful for spotting long-term patterns or seasonal trends.\nOpen in a new tab →"
   },
   {
     "objectID": "projects/toronto-shelter.html#data-source",

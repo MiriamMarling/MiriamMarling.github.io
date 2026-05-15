@@ -144,9 +144,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#how-to-read-this-data" id="toc-how-to-read-this-data" class="nav-link active" data-scroll-target="#how-to-read-this-data">How to read this data</a></li>
+  <li><a href="#the-dashboards" id="toc-the-dashboards" class="nav-link active" data-scroll-target="#the-dashboards">The dashboards</a></li>
+  <li><a href="#how-to-read-this-data" id="toc-how-to-read-this-data" class="nav-link" data-scroll-target="#how-to-read-this-data">How to read this data</a></li>
   <li><a href="#key-terms" id="toc-key-terms" class="nav-link" data-scroll-target="#key-terms">Key terms</a></li>
-  <li><a href="#the-dashboards" id="toc-the-dashboards" class="nav-link" data-scroll-target="#the-dashboards">The dashboards</a></li>
   <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source">Data source</a></li>
   </ul>
 </nav>
@@ -176,31 +176,17 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Toronto publishes monthly data on its taxed shelter system, and the City’s own dashboards do a good job presenting the headline numbers. This page goes a step further: interactive filters on every chart, a clear note on what the data captures and what it leaves out, and findings that usually stay buried in technical documentation.</p>
 <p>The data covers every month from January 2018 to the most recent published month, sourced directly from the <a href="https://open.toronto.ca/dataset/toronto-shelter-system-flow/">City of Toronto’s Shelter System Flow dataset</a>. New data loads automatically each month, usually around the 15th, after the City publishes the prior month’s figures.</p>
-<section id="how-to-read-this-data" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-read-this-data">How to read this data</h2>
-<p>These numbers reflect the shelter <em>system</em>, not all homelessness. The data captures people who used a City-funded overnight service at least once in the past three months. It doesn’t include people sleeping outside, in shelters that aren’t City-funded, or staying temporarily with friends or family. The City <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/">estimates</a> that roughly 18% of people experiencing absolute homelessness in Toronto aren’t reflected in these numbers. Trends here reflect changes in the shelter system specifically — not in total homelessness in the city.</p>
-</section>
-<section id="key-terms" class="level2">
-<h2 class="anchored" data-anchor-id="key-terms">Key terms</h2>
-<p>The dashboards use a few terms that have specific meanings worth knowing before you read the charts.</p>
-<p><strong>Actively homeless.</strong> A person who has used City-funded shelter services at least once in the past three months and hasn’t been recorded as moving to permanent housing. This is the headline number on every dashboard. Because it looks back three months, the count includes people who may not be in shelter on any given night.</p>
-<p><strong>Chronic homelessness.</strong> The federal definition: someone who has spent at least 180 nights in shelter over the past year, or at least 546 nights over the past three years. A person can meet this definition while still actively in the shelter system — they don’t need to have left and returned.</p>
-<p><strong>Inflow categories</strong> (people entering the shelter system this month):</p>
-<ul>
-<li><strong>Newly Identified.</strong> People entering the shelter system for the first time. One exception for the “Chronic” group: in that row, this column counts people who became chronically homeless during the reporting month, regardless of how long they’d already been using the shelter system.</li>
-<li><strong>Returned from Permanent Housing.</strong> People who previously moved to permanent housing and have come back to the shelter system.</li>
-<li><strong>Returned to Shelter.</strong> People who were in the system, didn’t use it for at least three months, and have now returned.</li>
-</ul>
-<p><strong>Outflow categories</strong> (people leaving the shelter system this month):</p>
-<ul>
-<li><strong>Moved to Permanent Housing.</strong> People who left the shelter system for permanent housing.</li>
-<li><strong>Became Inactive.</strong> People who haven’t used shelter services in the past three months, including the reporting month.</li>
-</ul>
-<p>Definitions are based on the <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/">City of Toronto’s Shelter System Flow Data page</a>.</p>
-<p><a href="../projects/about-the-data.html">Read all data findings →</a></p>
-</section>
 <section id="the-dashboards" class="level2">
 <h2 class="anchored" data-anchor-id="the-dashboards">The dashboards</h2>
+<div class="mobile-dashboard-links">
+<p>Open each dashboard directly in your browser — they’re built for interactive use and work best full-screen on a phone.</p>
+<ul>
+<li><a href="monthly-snapshot.html">Monthly Snapshot →</a></li>
+<li><a href="ytd-comparison.html">Year-to-Date Comparison →</a></li>
+<li><a href="historical-trends.html">Historical Trends →</a></li>
+</ul>
+</div>
+<div class="desktop-dashboard-tabs">
 <p>The three tabs below show different views of the data, with interactive filters on every chart.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Monthly Snapshot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Year-to-Date Comparison</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Historical Trends</a></li></ul>
@@ -225,6 +211,42 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
+</div>
+<style>
+/* Desktop: show tabs, hide plain links */
+@media (min-width: 769px) {
+  .mobile-dashboard-links { display: none !important; }
+  .desktop-dashboard-tabs { display: block; }
+}
+/* Mobile: hide iframe tabs, show plain links */
+@media (max-width: 768px) {
+  .mobile-dashboard-links { display: block; }
+  .desktop-dashboard-tabs { display: none !important; }
+}
+</style>
+</section>
+<section id="how-to-read-this-data" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-read-this-data">How to read this data</h2>
+<p>These numbers reflect the shelter <em>system</em>, not all homelessness. The data captures people who used a City-funded overnight service at least once in the past three months. It doesn’t include people sleeping outside, in shelters that aren’t City-funded, or staying temporarily with friends or family. The City <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/">estimates</a> that roughly 18% of people experiencing absolute homelessness in Toronto aren’t reflected in these numbers. Trends here reflect changes in the shelter system specifically — not in total homelessness in the city.</p>
+</section>
+<section id="key-terms" class="level2">
+<h2 class="anchored" data-anchor-id="key-terms">Key terms</h2>
+<p>The dashboards use a few terms that have specific meanings worth knowing before you read the charts.</p>
+<p><strong>Actively homeless.</strong> A person who has used City-funded shelter services at least once in the past three months and hasn’t been recorded as moving to permanent housing. This is the headline number on every dashboard. Because it looks back three months, the count includes people who may not be in shelter on any given night.</p>
+<p><strong>Chronic homelessness.</strong> The federal definition: someone who has spent at least 180 nights in shelter over the past year, or at least 546 nights over the past three years. A person can meet this definition while still actively in the shelter system — they don’t need to have left and returned.</p>
+<p><strong>Inflow categories</strong> (people entering the shelter system this month):</p>
+<ul>
+<li><strong>Newly Identified.</strong> People entering the shelter system for the first time. One exception for the “Chronic” group: in that row, this column counts people who became chronically homeless during the reporting month, regardless of how long they’d already been using the shelter system.</li>
+<li><strong>Returned from Permanent Housing.</strong> People who previously moved to permanent housing and have come back to the shelter system.</li>
+<li><strong>Returned to Shelter.</strong> People who were in the system, didn’t use it for at least three months, and have now returned.</li>
+</ul>
+<p><strong>Outflow categories</strong> (people leaving the shelter system this month):</p>
+<ul>
+<li><strong>Moved to Permanent Housing.</strong> People who left the shelter system for permanent housing.</li>
+<li><strong>Became Inactive.</strong> People who haven’t used shelter services in the past three months, including the reporting month.</li>
+</ul>
+<p>Definitions are based on the <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/">City of Toronto’s Shelter System Flow Data page</a>.</p>
+<p><a href="../projects/about-the-data.html">Read all data findings →</a></p>
 </section>
 <section id="data-source" class="level2">
 <h2 class="anchored" data-anchor-id="data-source">Data source</h2>
