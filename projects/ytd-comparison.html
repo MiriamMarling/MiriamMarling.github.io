@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>YTD Comparison – BonQuery</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="../site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="../site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+<style>
+.quarto-container, .container-fluid, .container { max-width: none !important; }
+.cell-output-display { max-width: none !important; overflow: visible !important; }
+.cell-output-display svg .tick text { font-size: 13px; }
+</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">BonQuery</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li>
+    <a class="dropdown-item" href="../projects/toronto-shelter.html">
+ <span class="dropdown-text">Inside Toronto’s Shelter System</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/about-the-data.html">
+ <span class="dropdown-text">About the Data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">YTD Comparison</h1>
+<p class="subtitle lead">Toronto Shelter System — year-to-date cumulative trends</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb1" data-startfrom="18" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 17;"><span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"../data/shelter_flow.json"</span>)<span class="op">.</span><span class="fu">json</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb2" data-startfrom="24" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 23;"><span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>MON <span class="op">=</span> [<span class="st">"Jan"</span><span class="op">,</span><span class="st">"Feb"</span><span class="op">,</span><span class="st">"Mar"</span><span class="op">,</span><span class="st">"Apr"</span><span class="op">,</span><span class="st">"May"</span><span class="op">,</span><span class="st">"Jun"</span><span class="op">,</span><span class="st">"Jul"</span><span class="op">,</span><span class="st">"Aug"</span><span class="op">,</span><span class="st">"Sep"</span><span class="op">,</span><span class="st">"Oct"</span><span class="op">,</span><span class="st">"Nov"</span><span class="op">,</span><span class="st">"Dec"</span>]</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>fmtN <span class="op">=</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="fu">toLocaleString</span>()</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">// Month dropdown: display "March 2026", return "2026-03-01", default = most recent.</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>reportingMonthOptions <span class="op">=</span> data</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">population_group</span> <span class="op">===</span> <span class="st">"All Population"</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">sort</span>((a<span class="op">,</span> b) <span class="kw">=&gt;</span> b<span class="op">.</span><span class="at">flow_date</span><span class="op">.</span><span class="fu">localeCompare</span>(a<span class="op">.</span><span class="at">flow_date</span>))</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> {</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> [y<span class="op">,</span> m] <span class="op">=</span> d<span class="op">.</span><span class="at">flow_date</span><span class="op">.</span><span class="fu">split</span>(<span class="st">"-"</span>)<span class="op">.</span><span class="fu">map</span>(<span class="bu">Number</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>      <span class="dt">label</span><span class="op">:</span> <span class="kw">new</span> <span class="bu">Date</span>(y<span class="op">,</span> m <span class="op">-</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">15</span>)<span class="op">.</span><span class="fu">toLocaleString</span>(<span class="st">"default"</span><span class="op">,</span> {<span class="dt">month</span><span class="op">:</span> <span class="st">"long"</span><span class="op">,</span> <span class="dt">year</span><span class="op">:</span> <span class="st">"numeric"</span>})<span class="op">,</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>      <span class="dt">value</span><span class="op">:</span> d<span class="op">.</span><span class="at">flow_date</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  })</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb3" data-startfrom="41" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 40;"><span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>viewof reportingDate <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">select</span>(reportingMonthOptions<span class="op">,</span> {</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  <span class="dt">label</span><span class="op">:</span> <span class="st">"Reporting Month"</span><span class="op">,</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>  <span class="dt">format</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">label</span><span class="op">,</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>  <span class="dt">value</span><span class="op">:</span> reportingMonthOptions[<span class="dv">0</span>]</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb4" data-startfrom="51" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 50;"><span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>reportingYear  <span class="op">=</span> <span class="op">+</span>reportingDate<span class="op">.</span><span class="at">value</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">4</span>)</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>reportingMonth <span class="op">=</span> <span class="op">+</span>reportingDate<span class="op">.</span><span class="at">value</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span> <span class="dv">7</span>)</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co">// YTD cumulative sums for current year and prior year through selected month.</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>ytdComputed <span class="op">=</span> {</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> rows <span class="op">=</span> data</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">population_group</span> <span class="op">===</span> <span class="st">"All Population"</span>)</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> {</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> y <span class="op">=</span> <span class="op">+</span>d<span class="op">.</span><span class="at">flow_date</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">4</span>)</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> m <span class="op">=</span> <span class="op">+</span>d<span class="op">.</span><span class="at">flow_date</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span> <span class="dv">7</span>)</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> (y <span class="op">===</span> reportingYear <span class="op">||</span> y <span class="op">===</span> reportingYear <span class="op">-</span> <span class="dv">1</span>) <span class="op">&amp;&amp;</span> m <span class="op">&lt;=</span> reportingMonth</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">sort</span>((a<span class="op">,</span> b) <span class="kw">=&gt;</span> a<span class="op">.</span><span class="at">flow_date</span><span class="op">.</span><span class="fu">localeCompare</span>(b<span class="op">.</span><span class="at">flow_date</span>))</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> accNI <span class="op">=</span> {}<span class="op">,</span> accMH <span class="op">=</span> {}</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> {</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> y <span class="op">=</span> <span class="op">+</span>d<span class="op">.</span><span class="at">flow_date</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">4</span>)</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> m <span class="op">=</span> <span class="op">+</span>d<span class="op">.</span><span class="at">flow_date</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span> <span class="dv">7</span>)</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>    accNI[y] <span class="op">=</span> (accNI[y] <span class="op">||</span> <span class="dv">0</span>) <span class="op">+</span> d<span class="op">.</span><span class="at">newly_identified</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>    accMH[y] <span class="op">=</span> (accMH[y] <span class="op">||</span> <span class="dv">0</span>) <span class="op">+</span> d<span class="op">.</span><span class="at">moved_to_housing</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>      <span class="dt">year</span><span class="op">:</span> y<span class="op">,</span> <span class="dt">month</span><span class="op">:</span> m<span class="op">,</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>      <span class="dt">monthLabel</span><span class="op">:</span> MON[m <span class="op">-</span> <span class="dv">1</span>]<span class="op">,</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>      <span class="dt">yearLabel</span><span class="op">:</span> <span class="bu">String</span>(y)<span class="op">,</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>      <span class="dt">isCurrentYear</span><span class="op">:</span> y <span class="op">===</span> reportingYear<span class="op">,</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>      <span class="dt">ytd_ni</span><span class="op">:</span> accNI[y]<span class="op">,</span></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>      <span class="dt">ytd_mh</span><span class="op">:</span> accMH[y]</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="co">// Sort: by month, prior year first within each month — creates visual bar grouping</span></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>ytdSorted <span class="op">=</span> ytdComputed</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">sort</span>((a<span class="op">,</span> b) <span class="kw">=&gt;</span> a<span class="op">.</span><span class="at">month</span> <span class="op">-</span> b<span class="op">.</span><span class="at">month</span> <span class="op">||</span> a<span class="op">.</span><span class="at">year</span> <span class="op">-</span> b<span class="op">.</span><span class="at">year</span>)</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> ({<span class="op">...</span>d<span class="op">,</span> <span class="dt">barLabel</span><span class="op">:</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">monthLabel</span><span class="sc">}</span><span class="vs"> </span><span class="sc">${</span>d<span class="op">.</span><span class="at">yearLabel</span><span class="sc">}</span><span class="vs">`</span>}))</span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>ytdDomain <span class="op">=</span> ytdSorted<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">barLabel</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-4-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-4-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-4-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-4-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-4-5" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<hr>
+<section id="cumulative-ytd-comparison-newly-identified" class="level3">
+<h3 class="anchored" data-anchor-id="cumulative-ytd-comparison-newly-identified">Cumulative YTD comparison: Newly Identified</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb5" data-startfrom="95" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 94;"><span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span></span>
+<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a>  <span class="dt">height</span><span class="op">:</span> <span class="dv">60</span> <span class="op">+</span> ytdSorted<span class="op">.</span><span class="at">length</span> <span class="op">*</span> <span class="dv">22</span><span class="op">,</span></span>
+<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">100</span><span class="op">,</span></span>
+<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marginRight</span><span class="op">:</span> <span class="dv">80</span><span class="op">,</span></span>
+<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Cumulative newly identified (YTD)"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
+<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="kw">null</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> ytdDomain}<span class="op">,</span></span>
+<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {</span>
+<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a>    <span class="dt">domain</span><span class="op">:</span> [<span class="bu">String</span>(reportingYear <span class="op">-</span> <span class="dv">1</span>)<span class="op">,</span> <span class="bu">String</span>(reportingYear)]<span class="op">,</span></span>
+<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a>    <span class="dt">range</span><span class="op">:</span> [<span class="st">"#FFB3C1"</span><span class="op">,</span> <span class="st">"#FF2D55"</span>]<span class="op">,</span></span>
+<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a>    <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">barX</span>(ytdSorted<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"ytd_ni"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"barLabel"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"yearLabel"</span><span class="op">,</span> <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a>                          <span class="dt">insetTop</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">insetBottom</span><span class="op">:</span> <span class="dv">1</span>})<span class="op">,</span></span>
+<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">text</span>(ytdSorted<span class="op">,</span> {</span>
+<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"ytd_ni"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"barLabel"</span><span class="op">,</span></span>
+<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>      <span class="dt">text</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">ytd_ni</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="op">,</span></span>
+<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a>      <span class="dt">textAnchor</span><span class="op">:</span> <span class="st">"start"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">11</span></span>
+<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="cumulative-ytd-comparison-moved-to-permanent-housing" class="level3">
+<h3 class="anchored" data-anchor-id="cumulative-ytd-comparison-moved-to-permanent-housing">Cumulative YTD comparison: Moved to Permanent Housing</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb6" data-startfrom="126" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 125;"><span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span></span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a>  <span class="dt">height</span><span class="op">:</span> <span class="dv">60</span> <span class="op">+</span> ytdSorted<span class="op">.</span><span class="at">length</span> <span class="op">*</span> <span class="dv">22</span><span class="op">,</span></span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">100</span><span class="op">,</span></span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marginRight</span><span class="op">:</span> <span class="dv">80</span><span class="op">,</span></span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Cumulative moved to permanent housing (YTD)"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="kw">null</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> ytdDomain}<span class="op">,</span></span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {</span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a>    <span class="dt">domain</span><span class="op">:</span> [<span class="bu">String</span>(reportingYear <span class="op">-</span> <span class="dv">1</span>)<span class="op">,</span> <span class="bu">String</span>(reportingYear)]<span class="op">,</span></span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a>    <span class="dt">range</span><span class="op">:</span> [<span class="st">"#AED5AE"</span><span class="op">,</span> <span class="st">"#5BA75B"</span>]<span class="op">,</span></span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a>    <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">barX</span>(ytdSorted<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"ytd_mh"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"barLabel"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"yearLabel"</span><span class="op">,</span> <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a>                          <span class="dt">insetTop</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">insetBottom</span><span class="op">:</span> <span class="dv">1</span>})<span class="op">,</span></span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">text</span>(ytdSorted<span class="op">,</span> {</span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"ytd_mh"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"barLabel"</span><span class="op">,</span></span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a>      <span class="dt">text</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">ytd_mh</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="op">,</span></span>
+<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a>      <span class="dt">textAnchor</span><span class="op">:</span> <span class="st">"start"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">11</span></span>
+<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<hr>
+<p><em>This dashboard is also available as an <a href="https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/ytd-comparison" target="_blank">Oracle APEX dashboard</a> built on the same database — useful if you want to see how the same data renders in Oracle’s native low-code platform, or if you’re curious about the SQL and APEX configuration behind it.</em></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImRhdGEgPSBGaWxlQXR0YWNobWVudChcIi4uL2RhdGEvc2hlbHRlcl9mbG93Lmpzb25cIikuanNvbigpXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJNT04gPSBbXCJKYW5cIixcIkZlYlwiLFwiTWFyXCIsXCJBcHJcIixcIk1heVwiLFwiSnVuXCIsXCJKdWxcIixcIkF1Z1wiLFwiU2VwXCIsXCJPY3RcIixcIk5vdlwiLFwiRGVjXCJdXG5mbXROID0gZCA9PiBkLnRvTG9jYWxlU3RyaW5nKClcblxuLy8gTW9udGggZHJvcGRvd246IGRpc3BsYXkgXCJNYXJjaCAyMDI2XCIsIHJldHVybiBcIjIwMjYtMDMtMDFcIiwgZGVmYXVsdCA9IG1vc3QgcmVjZW50LlxucmVwb3J0aW5nTW9udGhPcHRpb25zID0gZGF0YVxuICAuZmlsdGVyKGQgPT4gZC5wb3B1bGF0aW9uX2dyb3VwID09PSBcIkFsbCBQb3B1bGF0aW9uXCIpXG4gIC5zb3J0KChhLCBiKSA9PiBiLmZsb3dfZGF0ZS5sb2NhbGVDb21wYXJlKGEuZmxvd19kYXRlKSlcbiAgLm1hcChkID0+IHtcbiAgICBjb25zdCBbeSwgbV0gPSBkLmZsb3dfZGF0ZS5zcGxpdChcIi1cIikubWFwKE51bWJlcilcbiAgICByZXR1cm4ge1xuICAgICAgbGFiZWw6IG5ldyBEYXRlKHksIG0gLSAxLCAxNSkudG9Mb2NhbGVTdHJpbmcoXCJkZWZhdWx0XCIsIHttb250aDogXCJsb25nXCIsIHllYXI6IFwibnVtZXJpY1wifSksXG4gICAgICB2YWx1ZTogZC5mbG93X2RhdGVcbiAgICB9XG4gIH0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2YgcmVwb3J0aW5nRGF0ZSA9IElucHV0cy5zZWxlY3QocmVwb3J0aW5nTW9udGhPcHRpb25zLCB7XG4gIGxhYmVsOiBcIlJlcG9ydGluZyBNb250aFwiLFxuICBmb3JtYXQ6IGQgPT4gZC5sYWJlbCxcbiAgdmFsdWU6IHJlcG9ydGluZ01vbnRoT3B0aW9uc1swXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InJlcG9ydGluZ1llYXIgID0gK3JlcG9ydGluZ0RhdGUudmFsdWUuc2xpY2UoMCwgNClcbnJlcG9ydGluZ01vbnRoID0gK3JlcG9ydGluZ0RhdGUudmFsdWUuc2xpY2UoNSwgNylcblxuLy8gWVREIGN1bXVsYXRpdmUgc3VtcyBmb3IgY3VycmVudCB5ZWFyIGFuZCBwcmlvciB5ZWFyIHRocm91Z2ggc2VsZWN0ZWQgbW9udGguXG55dGRDb21wdXRlZCA9IHtcbiAgY29uc3Qgcm93cyA9IGRhdGFcbiAgICAuZmlsdGVyKGQgPT4gZC5wb3B1bGF0aW9uX2dyb3VwID09PSBcIkFsbCBQb3B1bGF0aW9uXCIpXG4gICAgLmZpbHRlcihkID0+IHtcbiAgICAgIGNvbnN0IHkgPSArZC5mbG93X2RhdGUuc2xpY2UoMCwgNClcbiAgICAgIGNvbnN0IG0gPSArZC5mbG93X2RhdGUuc2xpY2UoNSwgNylcbiAgICAgIHJldHVybiAoeSA9PT0gcmVwb3J0aW5nWWVhciB8fCB5ID09PSByZXBvcnRpbmdZZWFyIC0gMSkgJiYgbSA8PSByZXBvcnRpbmdNb250aFxuICAgIH0pXG4gICAgLnNvcnQoKGEsIGIpID0+IGEuZmxvd19kYXRlLmxvY2FsZUNvbXBhcmUoYi5mbG93X2RhdGUpKVxuXG4gIGNvbnN0IGFjY05JID0ge30sIGFjY01IID0ge31cbiAgcmV0dXJuIHJvd3MubWFwKGQgPT4ge1xuICAgIGNvbnN0IHkgPSArZC5mbG93X2RhdGUuc2xpY2UoMCwgNClcbiAgICBjb25zdCBtID0gK2QuZmxvd19kYXRlLnNsaWNlKDUsIDcpXG4gICAgYWNjTklbeV0gPSAoYWNjTklbeV0gfHwgMCkgKyBkLm5ld2x5X2lkZW50aWZpZWRcbiAgICBhY2NNSFt5XSA9IChhY2NNSFt5XSB8fCAwKSArIGQubW92ZWRfdG9faG91c2luZ1xuICAgIHJldHVybiB7XG4gICAgICB5ZWFyOiB5LCBtb250aDogbSxcbiAgICAgIG1vbnRoTGFiZWw6IE1PTlttIC0gMV0sXG4gICAgICB5ZWFyTGFiZWw6IFN0cmluZyh5KSxcbiAgICAgIGlzQ3VycmVudFllYXI6IHkgPT09IHJlcG9ydGluZ1llYXIsXG4gICAgICB5dGRfbmk6IGFjY05JW3ldLFxuICAgICAgeXRkX21oOiBhY2NNSFt5XVxuICAgIH1cbiAgfSlcbn1cblxuLy8gU29ydDogYnkgbW9udGgsIHByaW9yIHllYXIgZmlyc3Qgd2l0aGluIGVhY2ggbW9udGgg4oCUIGNyZWF0ZXMgdmlzdWFsIGJhciBncm91cGluZ1xueXRkU29ydGVkID0geXRkQ29tcHV0ZWRcbiAgLnNvcnQoKGEsIGIpID0+IGEubW9udGggLSBiLm1vbnRoIHx8IGEueWVhciAtIGIueWVhcilcbiAgLm1hcChkID0+ICh7Li4uZCwgYmFyTGFiZWw6IGAke2QubW9udGhMYWJlbH0gJHtkLnllYXJMYWJlbH1gfSkpXG5cbnl0ZERvbWFpbiA9IHl0ZFNvcnRlZC5tYXAoZCA9PiBkLmJhckxhYmVsKVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC01IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGgsXG4gIGhlaWdodDogNjAgKyB5dGRTb3J0ZWQubGVuZ3RoICogMjIsXG4gIG1hcmdpbkxlZnQ6IDEwMCxcbiAgbWFyZ2luUmlnaHQ6IDgwLFxuICB4OiB7bGFiZWw6IFwiQ3VtdWxhdGl2ZSBuZXdseSBpZGVudGlmaWVkIChZVEQpXCIsIGdyaWQ6IHRydWUsIHRpY2tGb3JtYXQ6IGZtdE59LFxuICB5OiB7bGFiZWw6IG51bGwsIGRvbWFpbjogeXRkRG9tYWlufSxcbiAgY29sb3I6IHtcbiAgICBkb21haW46IFtTdHJpbmcocmVwb3J0aW5nWWVhciAtIDEpLCBTdHJpbmcocmVwb3J0aW5nWWVhcildLFxuICAgIHJhbmdlOiBbXCIjRkZCM0MxXCIsIFwiI0ZGMkQ1NVwiXSxcbiAgICBsZWdlbmQ6IHRydWVcbiAgfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LnJ1bGVYKFswXSksXG4gICAgUGxvdC5iYXJYKHl0ZFNvcnRlZCwge3g6IFwieXRkX25pXCIsIHk6IFwiYmFyTGFiZWxcIiwgZmlsbDogXCJ5ZWFyTGFiZWxcIiwgdGlwOiB0cnVlLFxuICAgICAgICAgICAgICAgICAgICAgICAgICBpbnNldFRvcDogMSwgaW5zZXRCb3R0b206IDF9KSxcbiAgICBQbG90LnRleHQoeXRkU29ydGVkLCB7XG4gICAgICB4OiBcInl0ZF9uaVwiLCB5OiBcImJhckxhYmVsXCIsXG4gICAgICB0ZXh0OiBkID0+IGQueXRkX25pLnRvTG9jYWxlU3RyaW5nKCksXG4gICAgICB0ZXh0QW5jaG9yOiBcInN0YXJ0XCIsIGR4OiA1LCBmb250U2l6ZTogMTFcbiAgICB9KVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGgsXG4gIGhlaWdodDogNjAgKyB5dGRTb3J0ZWQubGVuZ3RoICogMjIsXG4gIG1hcmdpbkxlZnQ6IDEwMCxcbiAgbWFyZ2luUmlnaHQ6IDgwLFxuICB4OiB7bGFiZWw6IFwiQ3VtdWxhdGl2ZSBtb3ZlZCB0byBwZXJtYW5lbnQgaG91c2luZyAoWVREKVwiLCBncmlkOiB0cnVlLCB0aWNrRm9ybWF0OiBmbXROfSxcbiAgeToge2xhYmVsOiBudWxsLCBkb21haW46IHl0ZERvbWFpbn0sXG4gIGNvbG9yOiB7XG4gICAgZG9tYWluOiBbU3RyaW5nKHJlcG9ydGluZ1llYXIgLSAxKSwgU3RyaW5nKHJlcG9ydGluZ1llYXIpXSxcbiAgICByYW5nZTogW1wiI0FFRDVBRVwiLCBcIiM1QkE3NUJcIl0sXG4gICAgbGVnZW5kOiB0cnVlXG4gIH0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5ydWxlWChbMF0pLFxuICAgIFBsb3QuYmFyWCh5dGRTb3J0ZWQsIHt4OiBcInl0ZF9taFwiLCB5OiBcImJhckxhYmVsXCIsIGZpbGw6IFwieWVhckxhYmVsXCIsIHRpcDogdHJ1ZSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgaW5zZXRUb3A6IDEsIGluc2V0Qm90dG9tOiAxfSksXG4gICAgUGxvdC50ZXh0KHl0ZFNvcnRlZCwge1xuICAgICAgeDogXCJ5dGRfbWhcIiwgeTogXCJiYXJMYWJlbFwiLFxuICAgICAgdGV4dDogZCA9PiBkLnl0ZF9taC50b0xvY2FsZVN0cmluZygpLFxuICAgICAgdGV4dEFuY2hvcjogXCJzdGFydFwiLCBkeDogNSwgZm9udFNpemU6IDExXG4gICAgfSlcbiAgXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoic2hpbnlJbnB1dCgncmVwb3J0aW5nRGF0ZScpIn1dfQ==
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../../projects";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "..";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/bonquery\.ca");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Miriam Marling · BonQuery</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
