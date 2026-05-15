@@ -11,6 +11,12 @@ format:
         .quarto-container, .container-fluid, .container { max-width: none !important; }
         .cell-output-display { max-width: none !important; overflow: visible !important; }
         .cell-output-display svg .tick text { font-size: 13px; }
+        @media (min-width: 769px) { .mobile-page-nav { display: none !important; } }
+        @media (max-width: 768px) {
+          .mobile-page-nav { display: block; padding: 1rem 0; margin-top: 1.5rem;
+            border-top: 1px solid #dee2e6; }
+          .mobile-page-nav p { font-weight: 600; margin-bottom: 0.5rem; }
+        }
         </style>
 ---
 
@@ -148,6 +154,13 @@ Plot.plot({
   ]
 })
 ```
+
+::: {.mobile-page-nav}
+**Explore other dashboards:**
+
+- [Historical Trends](historical-trends.html)
+- [Monthly Snapshot](monthly-snapshot.html)
+:::
 
 ---
 

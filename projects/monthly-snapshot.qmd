@@ -20,6 +20,12 @@ format:
         .kpi-card { flex: 1; min-width: 180px; border-radius: 0.5rem; padding: 1.25rem 1.5rem; text-align: center; }
         .kpi-card .kpi-label { font-size: 0.85rem; font-weight: 500; color: #555; margin-bottom: 0.4rem; }
         .kpi-card .kpi-value { font-size: 1.8rem; font-weight: 700; }
+        @media (min-width: 769px) { .mobile-page-nav { display: none !important; } }
+        @media (max-width: 768px) {
+          .mobile-page-nav { display: block; padding: 1rem 0; margin-top: 1.5rem;
+            border-top: 1px solid #dee2e6; }
+          .mobile-page-nav p { font-weight: 600; margin-bottom: 0.5rem; }
+        }
         </style>
 ---
 
@@ -400,6 +406,13 @@ Plot.plot({
   ]
 })
 ```
+
+::: {.mobile-page-nav}
+**Explore other dashboards:**
+
+- [Historical Trends](historical-trends.html)
+- [YTD Comparison](ytd-comparison.html)
+:::
 
 ---
 
