@@ -72,7 +72,13 @@ Data page](https://www.toronto.ca/city-government/data-research-maps/research-re
 
 The three tabs below show different views of the data, mirroring the
 City's own dashboards but with full interactive filtering on every
-chart.
+chart. 
+
+::: {.callout-warning appearance="simple"}
+The embedded charts don't work in Safari due to a privacy
+restriction on third-party content — Safari users should use the
+"Open in a new tab" link inside each tab below.
+:::
 
 ::: {.panel-tabset}
 
@@ -81,6 +87,8 @@ chart.
 A point-in-time view of the shelter system for any month from January
 2018 forward. Use the date filter at the top of the dashboard to
 change months.
+
+[Open this dashboard in a new tab →](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/monthly-snapshot){target="_blank"}
 
 <iframe
   src="https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/monthly-snapshot"
@@ -96,6 +104,8 @@ Compares the current year's cumulative figures against the same period
 the prior year. Useful for seeing whether the system is on track to
 exceed, match, or fall below last year.
 
+[Open this dashboard in a new tab →](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/ytd-comparison){target="_blank"}
+
 <iframe
   src="https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/ytd-comparison"
   width="100%"
@@ -109,6 +119,8 @@ exceed, match, or fall below last year.
 Multi-year time series for the headline metrics, with filters for
 population group, year range, and month. Useful for spotting long-term
 patterns or seasonal trends.
+
+[Open this dashboard in a new tab →](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/historical-trends){target="_blank"}
 
 <iframe
   src="https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/historical-trends"
