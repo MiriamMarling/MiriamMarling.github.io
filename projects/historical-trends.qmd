@@ -1,0 +1,358 @@
+---
+title: "Historical Trends"
+subtitle: "Toronto Shelter System — multi-year time series"
+format:
+  html:
+    page-layout: full
+    toc: false
+    include-in-header:
+      text: |
+        <style>
+        /* Remove Bootstrap/Cosmo max-width so the OJS width reactive returns
+           the full content column width and Plot's SVG coordinate system
+           matches its visual size — fixing tooltip offset at all zoom levels. */
+        .quarto-container, .container-fluid, .container { max-width: none !important; }
+        .cell-output-display { max-width: none !important; overflow: visible !important; }
+        /* Increase Observable Plot tick-label font size for legibility */
+        .cell-output-display svg .tick text { font-size: 13px; }
+        </style>
+---
+
+```{ojs}
+//| echo: false
+data = FileAttachment("../data/shelter_flow.json").json()
+```
+
+```{ojs}
+//| echo: false
+populationGroups = [
+  "All Population",
+  ...Array.from(new Set(data.map(d => d.population_group)))
+    .filter(g => g !== "All Population")
+    .sort()
+]
+
+availableYears = [
+  "All",
+  ...Array.from(new Set(data.map(d => d.flow_date.slice(0, 4)))).sort()
+]
+
+monthOptions = [
+  {label: "All", value: "All"},
+  ...Array.from({length: 12}, (_, i) => ({
+    label: new Date(2000, i).toLocaleString("default", {month: "long"}),
+    value: String(i + 1)
+  }))
+]
+```
+
+```{ojs}
+//| echo: false
+viewof selectedGroup = Inputs.select(populationGroups, {
+  label: "Population group", value: "All Population", width: 220
+})
+```
+```{ojs}
+//| echo: false
+viewof selectedYear = Inputs.select(availableYears, {
+  label: "Year", value: "All", width: 120
+})
+```
+```{ojs}
+//| echo: false
+viewof selectedMonth = Inputs.select(monthOptions, {
+  label: "Month", format: d => d.label, value: monthOptions[0], width: 160
+})
+```
+
+```{ojs}
+//| echo: false
+filtered = data
+  .filter(d => {
+    const groupMatch = d.population_group === selectedGroup
+    const yearMatch  = selectedYear === "All" || d.flow_date.slice(0, 4) === selectedYear
+    const monthMatch = selectedMonth.value === "All" ||
+                       parseInt(d.flow_date.slice(5, 7)) === parseInt(selectedMonth.value)
+    return groupMatch && yearMatch && monthMatch
+  })
+  .map(d => {
+    const [y, m, day] = d.flow_date.split("-").map(Number)
+    return {...d, date: new Date(y, m - 1, day), month: d.flow_date.slice(0, 7)}
+  })
+  .sort((a, b) => a.date - b.date)
+
+// Short month names used in tick labels.
+MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+
+// Actual time span in months between first and last filtered row.
+// This governs tick density — NOT the data point count, which is misleading
+// when one specific month is selected across many years (few points, huge span).
+spanMonths = filtered.length < 2 ? 1 :
+  Math.round((filtered[filtered.length-1].date - filtered[0].date)
+             / (30.44 * 24 * 3600 * 1000))
+
+// Three axis display modes for LINE charts:
+//   dense  — many years, all months (filtered.length > 20, spanMonths > 18)
+//            → yearly ticks, year-only label ("2019")
+//   sparse — specific month across all years (filtered.length ≤ 20, spanMonths > 18)
+//            → yearly ticks, "Mon-YYYY" label ("Jan-2018")
+//   single — one year selected (spanMonths ≤ 18)
+//            → monthly ticks, "Mon" with year on January ("Jan-2018", "Feb", …)
+xLineDense  = spanMonths > 18 && filtered.length > 20
+xLineSingle = spanMonths <= 18
+
+xLine = ({
+  type: "time",
+  label: null,
+  ticks: xLineSingle ? d3.utcMonth.every(1) : 8,
+  tickFormat: d => {
+    const m = d.getMonth(), y = d.getFullYear()
+    if (xLineSingle)  return m === 0 ? `${MON[m]}-${y}` : MON[m]
+    if (xLineDense)   return m === 0 ? String(y) : m === 6 ? `Jul ${y}` : ""
+    // sparse: specific month across all years
+    return m === 0 ? `Jan-${y}` : m === 6 ? `Jul-${y}` : `${MON[m]}-${y}`
+  }
+})
+
+// Helper: first and last day of a month as Date objects (local time).
+// Used by rectY bar charts to draw bars spanning exactly one calendar month.
+monthStart = d => new Date(d.date.getFullYear(), d.date.getMonth(), 1)
+monthEnd   = d => new Date(d.date.getFullYear(), d.date.getMonth() + 1, 1)
+// Mid-month date used to anchor pointerX tooltip snapping.
+monthMid   = d => new Date(d.date.getFullYear(), d.date.getMonth(), 15)
+
+// Shared y formatter — no scientific notation.
+fmtN = d => d.toLocaleString()
+fmtPct = d => (d * 100).toFixed(0) + "%"
+```
+
+---
+
+### People actively homeless in the last 3 months
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width, height: 380, marginLeft: 70,
+  x: xLine,
+  y: {label: "People actively homeless", grid: true, tickFormat: fmtN},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.line(filtered, {x: "date", y: "actively_homeless", stroke: "#FF2D55", strokeWidth: 2}),
+    Plot.dot(filtered,  {x: "date", y: "actively_homeless", fill:   "#FF2D55", r: 2}),
+    Plot.tip(filtered, Plot.pointerX({
+      x: "date", y: "actively_homeless",
+      title: d => `${d.month}\n${d.actively_homeless.toLocaleString()} people`
+    }))
+  ]
+})
+```
+
+---
+
+### Net Change (Inflow minus Outflow) each month
+
+```{ojs}
+//| echo: false
+netData = filtered.map(d => ({
+  date: d.date, month: d.month,
+  net_change: d.newly_identified + d.returned_from_housing + d.returned_to_shelter
+              - d.moved_to_housing - d.became_inactive
+}))
+
+Plot.plot({
+  width, height: 380, marginLeft: 70,
+  x: xLine,
+  y: {label: "Net change (people)", grid: true, tickFormat: fmtN},
+  marks: [
+    Plot.ruleY([0], {stroke: "#555", strokeWidth: 1.5}),
+    Plot.line(netData, {x: "date", y: "net_change", stroke: "#5856D6", strokeWidth: 2}),
+    Plot.dot(netData,  {x: "date", y: "net_change", fill:   "#5856D6", r: 2}),
+    Plot.tip(netData, Plot.pointerX({
+      x: "date", y: "net_change",
+      title: d => {
+        const sign = d.net_change >= 0 ? "+" : ""
+        return `${d.month}\n${sign}${d.net_change.toLocaleString()} people`
+      }
+    }))
+  ]
+})
+```
+
+---
+
+### Total Inflow and Outflow each month
+
+```{ojs}
+//| echo: false
+// rectY on a temporal x scale — eliminates the band-scale "too many values"
+// warning and gives pixel-accurate tooltip snapping at all browser zoom levels.
+totalRectData = filtered.map(d => {
+  const inflow  = d.newly_identified + d.returned_from_housing + d.returned_to_shelter
+  const outflow = d.moved_to_housing + d.became_inactive
+  const lbl     = `${MON[parseInt(d.month.slice(5,7))-1]}-${d.month.slice(0,4)}`
+  return {
+    x1: monthStart(d), x2: monthEnd(d), xMid: monthMid(d),
+    inflow, outflow,
+    tipTitle: `${lbl}\nInflow:  +${inflow.toLocaleString()}\nOutflow: −${outflow.toLocaleString()}\nNet:      ${(inflow-outflow)>=0?"+":""}${(inflow-outflow).toLocaleString()}`
+  }
+})
+
+Plot.plot({
+  width, height: 380, marginLeft: 70,
+  x: xLine,
+  y: {label: "People", grid: true, tickFormat: fmtN},
+  color: {domain: ["Inflow","Outflow"], range: ["#E63946","#66CC66"], legend: true},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.rectY(totalRectData, {x1: "x1", x2: "x2", y1: 0, y2: "inflow",          fill: "#E63946", insetLeft: 0.5, insetRight: 0.5}),
+    Plot.rectY(totalRectData, {x1: "x1", x2: "x2", y1: d => -d.outflow, y2: 0,  fill: "#66CC66", insetLeft: 0.5, insetRight: 0.5}),
+    Plot.tip(totalRectData, Plot.pointerX({x: "xMid", title: d => d.tipTitle}))
+  ]
+})
+```
+
+---
+
+### Detailed Inflow and Outflow each month
+
+```{ojs}
+//| echo: false
+detailedFlowTypes = [
+  "Inflow - Newly Identified",
+  "Inflow - Returned from Permanent Housing",
+  "Inflow - Returned to Shelter",
+  "Outflow - Became Inactive",
+  "Outflow - Moved to Permanent Housing"
+]
+
+detailedColors = ["#E63946","#FFD600","#FB8C00","#512DA8","#66CC66"]
+
+// Pre-compute stacked y1/y2 for each series manually — avoids stackY on rectY
+// (which doesn't support x1/x2 channels) and eliminates the band-scale warning.
+detailRectData = filtered.flatMap(d => {
+  const x1 = monthStart(d), x2 = monthEnd(d), xMid = monthMid(d)
+  const ni = d.newly_identified, rfh = d.returned_from_housing,
+        rts = d.returned_to_shelter, bi = d.became_inactive, mh = d.moved_to_housing
+  return [
+    {x1, x2, xMid, type: "Inflow - Newly Identified",                y1: 0,       y2: ni},
+    {x1, x2, xMid, type: "Inflow - Returned from Permanent Housing",  y1: ni,      y2: ni+rfh},
+    {x1, x2, xMid, type: "Inflow - Returned to Shelter",              y1: ni+rfh,  y2: ni+rfh+rts},
+    {x1, x2, xMid, type: "Outflow - Became Inactive",                 y1: 0,       y2: -bi},
+    {x1, x2, xMid, type: "Outflow - Moved to Permanent Housing",      y1: -bi,     y2: -(bi+mh)}
+  ]
+})
+
+detailTipData = filtered.map(d => {
+  const lbl = `${MON[parseInt(d.month.slice(5,7))-1]}-${d.month.slice(0,4)}`
+  return {
+    xMid: monthMid(d),
+    tipTitle: [
+      lbl,
+      `Newly Identified:       +${d.newly_identified.toLocaleString()}`,
+      `Returned from Housing:  +${d.returned_from_housing.toLocaleString()}`,
+      `Returned to Shelter:    +${d.returned_to_shelter.toLocaleString()}`,
+      `Became Inactive:        −${d.became_inactive.toLocaleString()}`,
+      `Moved to Housing:       −${d.moved_to_housing.toLocaleString()}`
+    ].join("\n")
+  }
+})
+
+Plot.plot({
+  width, height: 420, marginLeft: 70,
+  x: xLine,
+  y: {label: "People", grid: true, tickFormat: fmtN},
+  color: {domain: detailedFlowTypes, range: detailedColors, legend: true},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.rectY(detailRectData, {x1: "x1", x2: "x2", y1: "y1", y2: "y2", fill: "type", insetLeft: 0.5, insetRight: 0.5}),
+    Plot.tip(detailTipData, Plot.pointerX({x: "xMid", title: d => d.tipTitle}))
+  ]
+})
+```
+
+---
+
+### Age of people actively homeless in the last 3 months
+
+```{ojs}
+//| echo: false
+ageBandDefs = [
+  {key: "age_under_16", label: "Under 16"},
+  {key: "age_16_24",    label: "16–24"},
+  {key: "age_25_34",    label: "25–34"},
+  {key: "age_35_44",    label: "35–44"},
+  {key: "age_45_54",    label: "45–54"},
+  {key: "age_55_64",    label: "55–64"},
+  {key: "age_65_over",  label: "65+"}
+]
+
+ageData = filtered.flatMap(d => {
+  const total = ageBandDefs.reduce((s, b) => s + (d[b.key] || 0), 0)
+  return ageBandDefs.map(b => ({
+    date: d.date, month: d.month, band: b.label,
+    pct: total > 0 ? d[b.key] / total : null
+  }))
+})
+
+Plot.plot({
+  width, height: 400, marginLeft: 60,
+  x: xLine,
+  y: {label: "Share of age-banded total", grid: true, tickFormat: fmtPct},
+  color: {legend: true},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.line(ageData, {x: "date", y: "pct", stroke: "band", strokeWidth: 1.8}),
+    Plot.tip(ageData, Plot.pointerX({
+      x: "date", y: "pct", stroke: "band",
+      title: d => {
+        const lbl = `${MON[parseInt(d.month.slice(5,7))-1]} ${d.month.slice(0,4)}`
+        return `${d.band} — ${lbl}\n${(d.pct * 100).toFixed(1)}%`
+      }
+    }))
+  ]
+})
+```
+
+---
+
+### Gender of people actively homeless in the last 3 months
+
+```{ojs}
+//| echo: false
+genderDefs = [
+  {key: "gender_male",                label: "Men"},
+  {key: "gender_female",              label: "Women"},
+  {key: "gender_trans_nb_two_spirit", label: "Transgender, Non-Binary, or Two-Spirit"}
+]
+
+genderData = filtered.flatMap(d => {
+  const total = genderDefs.reduce((s, g) => s + (d[g.key] || 0), 0)
+  return genderDefs.map(g => ({
+    date: d.date, month: d.month, gender: g.label,
+    pct: total > 0 ? d[g.key] / total : null
+  }))
+})
+
+Plot.plot({
+  width, height: 400, marginLeft: 60,
+  x: xLine,
+  y: {label: "Share of gender total", grid: true, tickFormat: fmtPct},
+  color: {legend: true},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.line(genderData, {x: "date", y: "pct", stroke: "gender", strokeWidth: 1.8}),
+    Plot.tip(genderData, Plot.pointerX({
+      x: "date", y: "pct", stroke: "gender",
+      title: d => {
+        const lbl = `${MON[parseInt(d.month.slice(5,7))-1]} ${d.month.slice(0,4)}`
+        return `${d.gender} — ${lbl}\n${(d.pct * 100).toFixed(1)}%`
+      }
+    }))
+  ]
+})
+```
+
+---
+
+*This dashboard is also available as an [Oracle APEX dashboard](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/historical-trends){target="_blank"} built on the same database — useful if you want to see how the same data renders in Oracle's native low-code platform, or if you're curious about the SQL and APEX configuration behind it.*

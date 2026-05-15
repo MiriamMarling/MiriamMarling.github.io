@@ -4,5 +4,8 @@
 **/*.quarto_ipynb
 *_files/
 
+# Generated data — produced by scripts/generate_data.py; not committed
+/data/
+
 # macOS
 .DS_Store

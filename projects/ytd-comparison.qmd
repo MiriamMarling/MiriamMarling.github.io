@@ -1,0 +1,154 @@
+---
+title: "YTD Comparison"
+subtitle: "Toronto Shelter System — year-to-date cumulative trends"
+format:
+  html:
+    page-layout: full
+    toc: false
+    include-in-header:
+      text: |
+        <style>
+        .quarto-container, .container-fluid, .container { max-width: none !important; }
+        .cell-output-display { max-width: none !important; overflow: visible !important; }
+        .cell-output-display svg .tick text { font-size: 13px; }
+        </style>
+---
+
+```{ojs}
+//| echo: false
+data = FileAttachment("../data/shelter_flow.json").json()
+```
+
+```{ojs}
+//| echo: false
+MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+fmtN = d => d.toLocaleString()
+
+// Month dropdown: display "March 2026", return "2026-03-01", default = most recent.
+reportingMonthOptions = data
+  .filter(d => d.population_group === "All Population")
+  .sort((a, b) => b.flow_date.localeCompare(a.flow_date))
+  .map(d => {
+    const [y, m] = d.flow_date.split("-").map(Number)
+    return {
+      label: new Date(y, m - 1, 15).toLocaleString("default", {month: "long", year: "numeric"}),
+      value: d.flow_date
+    }
+  })
+```
+
+```{ojs}
+//| echo: false
+viewof reportingDate = Inputs.select(reportingMonthOptions, {
+  label: "Reporting Month",
+  format: d => d.label,
+  value: reportingMonthOptions[0]
+})
+```
+
+```{ojs}
+//| echo: false
+reportingYear  = +reportingDate.value.slice(0, 4)
+reportingMonth = +reportingDate.value.slice(5, 7)
+
+// YTD cumulative sums for current year and prior year through selected month.
+ytdComputed = {
+  const rows = data
+    .filter(d => d.population_group === "All Population")
+    .filter(d => {
+      const y = +d.flow_date.slice(0, 4)
+      const m = +d.flow_date.slice(5, 7)
+      return (y === reportingYear || y === reportingYear - 1) && m <= reportingMonth
+    })
+    .sort((a, b) => a.flow_date.localeCompare(b.flow_date))
+
+  const accNI = {}, accMH = {}
+  return rows.map(d => {
+    const y = +d.flow_date.slice(0, 4)
+    const m = +d.flow_date.slice(5, 7)
+    accNI[y] = (accNI[y] || 0) + d.newly_identified
+    accMH[y] = (accMH[y] || 0) + d.moved_to_housing
+    return {
+      year: y, month: m,
+      monthLabel: MON[m - 1],
+      yearLabel: String(y),
+      isCurrentYear: y === reportingYear,
+      ytd_ni: accNI[y],
+      ytd_mh: accMH[y]
+    }
+  })
+}
+
+// Sort: by month, prior year first within each month — creates visual bar grouping
+ytdSorted = ytdComputed
+  .sort((a, b) => a.month - b.month || a.year - b.year)
+  .map(d => ({...d, barLabel: `${d.monthLabel} ${d.yearLabel}`}))
+
+ytdDomain = ytdSorted.map(d => d.barLabel)
+```
+
+---
+
+### Cumulative YTD comparison: Newly Identified
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width,
+  height: 60 + ytdSorted.length * 22,
+  marginLeft: 100,
+  marginRight: 80,
+  x: {label: "Cumulative newly identified (YTD)", grid: true, tickFormat: fmtN},
+  y: {label: null, domain: ytdDomain},
+  color: {
+    domain: [String(reportingYear - 1), String(reportingYear)],
+    range: ["#FFB3C1", "#FF2D55"],
+    legend: true
+  },
+  marks: [
+    Plot.ruleX([0]),
+    Plot.barX(ytdSorted, {x: "ytd_ni", y: "barLabel", fill: "yearLabel", tip: true,
+                          insetTop: 1, insetBottom: 1}),
+    Plot.text(ytdSorted, {
+      x: "ytd_ni", y: "barLabel",
+      text: d => d.ytd_ni.toLocaleString(),
+      textAnchor: "start", dx: 5, fontSize: 11
+    })
+  ]
+})
+```
+
+---
+
+### Cumulative YTD comparison: Moved to Permanent Housing
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width,
+  height: 60 + ytdSorted.length * 22,
+  marginLeft: 100,
+  marginRight: 80,
+  x: {label: "Cumulative moved to permanent housing (YTD)", grid: true, tickFormat: fmtN},
+  y: {label: null, domain: ytdDomain},
+  color: {
+    domain: [String(reportingYear - 1), String(reportingYear)],
+    range: ["#AED5AE", "#5BA75B"],
+    legend: true
+  },
+  marks: [
+    Plot.ruleX([0]),
+    Plot.barX(ytdSorted, {x: "ytd_mh", y: "barLabel", fill: "yearLabel", tip: true,
+                          insetTop: 1, insetBottom: 1}),
+    Plot.text(ytdSorted, {
+      x: "ytd_mh", y: "barLabel",
+      text: d => d.ytd_mh.toLocaleString(),
+      textAnchor: "start", dx: 5, fontSize: 11
+    })
+  ]
+})
+```
+
+---
+
+*This dashboard is also available as an [Oracle APEX dashboard](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/ytd-comparison){target="_blank"} built on the same database — useful if you want to see how the same data renders in Oracle's native low-code platform, or if you're curious about the SQL and APEX configuration behind it.*

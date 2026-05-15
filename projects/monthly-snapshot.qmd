@@ -1,0 +1,406 @@
+---
+title: "Monthly Snapshot"
+subtitle: "Toronto Shelter System — current month at a glance"
+format:
+  html:
+    page-layout: full
+    toc: false
+    include-in-header:
+      text: |
+        <style>
+        .quarto-container, .container-fluid, .container { max-width: none !important; }
+        .cell-output-display { max-width: none !important; overflow: visible !important; }
+        .cell-output-display svg .tick text { font-size: 13px; }
+        /* KPI card layout */
+        .kpi-hero { text-align: center; padding: 1.5rem 0 1rem; }
+        .kpi-hero .kpi-label { font-size: 0.9rem; font-weight: 500; color: #666; margin-bottom: 0.5rem; }
+        .kpi-hero .kpi-value { display: inline-block; font-size: 2.5rem; font-weight: 700;
+          color: #333; background: #E8E8E8; padding: 1rem 2.5rem; border-radius: 0.5rem; }
+        .kpi-row { display: flex; gap: 1.5rem; margin: 0.5rem 0 1.5rem; flex-wrap: wrap; }
+        .kpi-card { flex: 1; min-width: 180px; border-radius: 0.5rem; padding: 1.25rem 1.5rem; text-align: center; }
+        .kpi-card .kpi-label { font-size: 0.85rem; font-weight: 500; color: #555; margin-bottom: 0.4rem; }
+        .kpi-card .kpi-value { font-size: 1.8rem; font-weight: 700; }
+        </style>
+---
+
+```{ojs}
+//| echo: false
+data = FileAttachment("../data/shelter_flow.json").json()
+```
+
+```{ojs}
+//| echo: false
+MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+fmtN = d => d.toLocaleString()
+
+// Build month dropdown in descending order (most recent first).
+// Display: "March 2026"  Return value: "2026-03-01" (the YYYY-MM-DD from DB)
+reportingMonthOptions = data
+  .filter(d => d.population_group === "All Population")
+  .sort((a, b) => b.flow_date.localeCompare(a.flow_date))
+  .map(d => {
+    const [y, m] = d.flow_date.split("-").map(Number)
+    return {
+      label: new Date(y, m - 1, 15).toLocaleString("default", {month: "long", year: "numeric"}),
+      value: d.flow_date
+    }
+  })
+```
+
+```{ojs}
+//| echo: false
+viewof reportingDate = Inputs.select(reportingMonthOptions, {
+  label: "Reporting Month",
+  format: d => d.label,
+  value: reportingMonthOptions[0]
+})
+```
+
+```{ojs}
+//| echo: false
+// Rows for the selected month
+snapshot  = data.find(d => d.flow_date === reportingDate.value && d.population_group === "All Population")
+chronicRow = data.find(d => d.flow_date === reportingDate.value && d.population_group === "Chronic")
+
+// KPI values
+activelyHomeless = snapshot ? snapshot.actively_homeless : 0
+inflowTotal  = snapshot ? snapshot.newly_identified + snapshot.returned_from_housing + snapshot.returned_to_shelter : 0
+outflowTotal = snapshot ? snapshot.moved_to_housing + snapshot.became_inactive : 0
+netChange    = inflowTotal - outflowTotal
+
+// For YTD charts
+reportingYear  = +reportingDate.value.slice(0, 4)
+reportingMonth = +reportingDate.value.slice(5, 7)
+```
+
+---
+
+```{ojs}
+//| echo: false
+html`<div class="kpi-hero">
+  <div class="kpi-label">People Actively Homeless</div>
+  <div class="kpi-value">${activelyHomeless.toLocaleString()}</div>
+</div>`
+```
+
+```{ojs}
+//| echo: false
+html`<div class="kpi-row">
+  <div class="kpi-card" style="background:#FBE4EB;">
+    <div class="kpi-label">Shelter System Inflow</div>
+    <div class="kpi-value" style="color:#C2185B;">+${inflowTotal.toLocaleString()}</div>
+  </div>
+  <div class="kpi-card" style="background:${netChange > 0 ? '#FFEBEE' : netChange < 0 ? '#E8F5E9' : '#E8E8E8'};">
+    <div class="kpi-label">Change (Inflow − Outflow)</div>
+    <div class="kpi-value" style="color:${netChange > 0 ? '#C62828' : netChange < 0 ? '#2E7D32' : '#333333'};">
+      ${netChange >= 0 ? '+' : ''}${netChange.toLocaleString()}
+    </div>
+  </div>
+  <div class="kpi-card" style="background:#E8F5E9;">
+    <div class="kpi-label">Shelter System Outflow</div>
+    <div class="kpi-value" style="color:#2E7D32;">−${outflowTotal.toLocaleString()}</div>
+  </div>
+</div>`
+```
+
+---
+
+### Chronic Homelessness
+
+*Note: Oracle APEX renders this as a donut chart. Observable Plot does not support pie/donut natively — shown here as a percentage bar with the same data and colors.*
+
+```{ojs}
+//| echo: false
+chronicPct    = chronicRow ? chronicRow.population_group_pct / 100 : 0
+chronicData   = [
+  {label: "Chronic",     pct: chronicPct,       fill: "#5856D6"},
+  {label: "Non-Chronic", pct: 1 - chronicPct,   fill: "#CCCCCC"}
+]
+
+Plot.plot({
+  width,
+  height: 90,
+  marginLeft: 10,
+  marginRight: 10,
+  x: {domain: [0, 1], axis: null},
+  y: {axis: null},
+  color: {domain: ["Chronic","Non-Chronic"], range: ["#5856D6","#CCCCCC"], legend: true},
+  marks: [
+    Plot.barX(chronicData, Plot.stackX({x: "pct", y: () => "", fill: "label", inset: 0})),
+    Plot.text(chronicData, Plot.stackX({
+      x: "pct",
+      y: () => "",
+      text: d => d.pct >= 0.04 ? `${d.label}\n${(d.pct * 100).toFixed(1)}%` : "",
+      fill: d => d.label === "Chronic" ? "white" : "#333",
+      textAnchor: "middle",
+      lineWidth: 8,
+      fontSize: 13,
+      fontWeight: "600"
+    }))
+  ]
+})
+```
+
+---
+
+### Cumulative YTD comparison: Newly Identified
+
+```{ojs}
+//| echo: false
+// Cumulative YTD sums for current year and prior year through selected month.
+ytdComputed = {
+  const rows = data
+    .filter(d => d.population_group === "All Population")
+    .filter(d => {
+      const y = +d.flow_date.slice(0, 4)
+      const m = +d.flow_date.slice(5, 7)
+      return (y === reportingYear || y === reportingYear - 1) && m <= reportingMonth
+    })
+    .sort((a, b) => a.flow_date.localeCompare(b.flow_date))
+
+  const accNI = {}, accMH = {}
+  return rows.map(d => {
+    const y = +d.flow_date.slice(0, 4)
+    const m = +d.flow_date.slice(5, 7)
+    accNI[y] = (accNI[y] || 0) + d.newly_identified
+    accMH[y] = (accMH[y] || 0) + d.moved_to_housing
+    return {
+      year: y, month: m,
+      monthLabel: MON[m - 1],
+      yearLabel: String(y),
+      isCurrentYear: y === reportingYear,
+      ytd_ni: accNI[y],
+      ytd_mh: accMH[y]
+    }
+  })
+}
+
+// Sort: by month, then prior year first (so bars appear: prior ↑ current ↓ within each month)
+ytdNI = ytdComputed
+  .sort((a, b) => a.month - b.month || a.year - b.year)
+  .map(d => ({...d, barLabel: `${d.monthLabel} ${d.yearLabel}`}))
+
+ytdNIDomain = ytdNI.map(d => d.barLabel)
+
+Plot.plot({
+  width,
+  height: 60 + ytdNI.length * 22,
+  marginLeft: 100,
+  marginRight: 80,
+  x: {label: "Cumulative newly identified (YTD)", grid: true, tickFormat: fmtN},
+  y: {label: null, domain: ytdNIDomain},
+  color: {
+    domain: [String(reportingYear - 1), String(reportingYear)],
+    range: ["#FFB3C1", "#FF2D55"],
+    legend: true
+  },
+  marks: [
+    Plot.ruleX([0]),
+    Plot.barX(ytdNI, {x: "ytd_ni", y: "barLabel", fill: "yearLabel", tip: true,
+                      insetTop: 1, insetBottom: 1}),
+    Plot.text(ytdNI, {
+      x: "ytd_ni", y: "barLabel",
+      text: d => d.ytd_ni.toLocaleString(),
+      textAnchor: "start", dx: 5, fontSize: 11
+    })
+  ]
+})
+```
+
+---
+
+### Cumulative YTD comparison: Moved to Permanent Housing
+
+```{ojs}
+//| echo: false
+ytdMH = ytdComputed
+  .sort((a, b) => a.month - b.month || a.year - b.year)
+  .map(d => ({...d, barLabel: `${d.monthLabel} ${d.yearLabel}`}))
+
+Plot.plot({
+  width,
+  height: 60 + ytdMH.length * 22,
+  marginLeft: 100,
+  marginRight: 80,
+  x: {label: "Cumulative moved to permanent housing (YTD)", grid: true, tickFormat: fmtN},
+  y: {label: null, domain: ytdMH.map(d => d.barLabel)},
+  color: {
+    domain: [String(reportingYear - 1), String(reportingYear)],
+    range: ["#AED5AE", "#5BA75B"],
+    legend: true
+  },
+  marks: [
+    Plot.ruleX([0]),
+    Plot.barX(ytdMH, {x: "ytd_mh", y: "barLabel", fill: "yearLabel", tip: true,
+                      insetTop: 1, insetBottom: 1}),
+    Plot.text(ytdMH, {
+      x: "ytd_mh", y: "barLabel",
+      text: d => d.ytd_mh.toLocaleString(),
+      textAnchor: "start", dx: 5, fontSize: 11
+    })
+  ]
+})
+```
+
+---
+
+### Inflow breakdown
+
+```{ojs}
+//| echo: false
+inflowBreakdown = snapshot ? [
+  {label: "Newly Identified",              value: snapshot.newly_identified,      fill: "#E63946"},
+  {label: "Returned from Permanent Housing", value: snapshot.returned_from_housing, fill: "#FFD600"},
+  {label: "Returned to Shelter",           value: snapshot.returned_to_shelter,   fill: "#FB8C00"}
+].sort((a, b) => b.value - a.value) : []
+
+inflowMax = d3.max(inflowBreakdown, d => d.value) || 1
+
+Plot.plot({
+  width,
+  height: 130,
+  marginLeft: 240,
+  marginRight: 80,
+  x: {label: "People", grid: true, tickFormat: fmtN, domain: [0, inflowMax * 1.15]},
+  y: {label: null, domain: inflowBreakdown.map(d => d.label)},
+  marks: [
+    Plot.ruleX([0]),
+    Plot.barX(inflowBreakdown, {x: "value", y: "label", fill: "fill",
+                                insetTop: 3, insetBottom: 3}),
+    Plot.text(inflowBreakdown, {
+      x: "value", y: "label",
+      text: d => d.value.toLocaleString(),
+      textAnchor: "start", dx: 6, fontSize: 12
+    })
+  ]
+})
+```
+
+---
+
+### Outflow breakdown
+
+```{ojs}
+//| echo: false
+outflowBreakdown = snapshot ? [
+  {label: "Moved to Permanent Housing", value: snapshot.moved_to_housing, fill: "#66CC66"},
+  {label: "Became Inactive",            value: snapshot.became_inactive,  fill: "#512DA8"}
+].sort((a, b) => b.value - a.value) : []
+
+outflowMax = d3.max(outflowBreakdown, d => d.value) || 1
+
+Plot.plot({
+  width,
+  height: 100,
+  marginLeft: 220,
+  marginRight: 80,
+  x: {label: "People", grid: true, tickFormat: fmtN, domain: [0, outflowMax * 1.15]},
+  y: {label: null, domain: outflowBreakdown.map(d => d.label)},
+  marks: [
+    Plot.ruleX([0]),
+    Plot.barX(outflowBreakdown, {x: "value", y: "label", fill: "fill",
+                                  insetTop: 3, insetBottom: 3}),
+    Plot.text(outflowBreakdown, {
+      x: "value", y: "label",
+      text: d => d.value.toLocaleString(),
+      textAnchor: "start", dx: 6, fontSize: 12
+    })
+  ]
+})
+```
+
+---
+
+### Age of people actively homeless in the last 3 months
+
+```{ojs}
+//| echo: false
+ageBandDefs2 = [
+  {key: "age_under_16", label: "Under 16"},
+  {key: "age_16_24",    label: "16–24"},
+  {key: "age_25_34",    label: "25–34"},
+  {key: "age_35_44",    label: "35–44"},
+  {key: "age_45_54",    label: "45–54"},
+  {key: "age_55_64",    label: "55–64"},
+  {key: "age_65_over",  label: "65+"}
+]
+
+ageSnapshotData = (() => {
+  if (!snapshot) return []
+  const total = ageBandDefs2.reduce((s, b) => s + snapshot[b.key], 0)
+  return ageBandDefs2.map(b => ({
+    band: b.label,
+    pct: total > 0 ? snapshot[b.key] / total : 0
+  }))
+})()
+
+ageSnapMax = d3.max(ageSnapshotData, d => d.pct) || 0.4
+
+Plot.plot({
+  width,
+  height: 340,
+  marginLeft: 60,
+  marginTop: 30,
+  x: {label: null, domain: ageBandDefs2.map(b => b.label)},
+  y: {label: null, axis: null, domain: [0, ageSnapMax * 1.4]},
+  color: {domain: ageBandDefs2.map(b => b.label), legend: true},
+  marks: [
+    Plot.barY(ageSnapshotData, {x: "band", y: "pct", fill: "band"}),
+    Plot.text(ageSnapshotData, {
+      x: "band", y: "pct",
+      text: d => (d.pct * 100).toFixed(1) + "%",
+      dy: -10, fontSize: 13, fontWeight: "600", textAnchor: "middle"
+    }),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+---
+
+### Gender of people actively homeless in the last 3 months
+
+```{ojs}
+//| echo: false
+genderDefs2 = [
+  {key: "gender_male",                label: "Men"},
+  {key: "gender_female",              label: "Women"},
+  {key: "gender_trans_nb_two_spirit", label: "Transgender, Non-Binary, or Two-Spirit"}
+]
+
+genderSnapshotData = (() => {
+  if (!snapshot) return []
+  const total = genderDefs2.reduce((s, g) => s + snapshot[g.key], 0)
+  return genderDefs2
+    .map(g => ({gender: g.label, pct: total > 0 ? snapshot[g.key] / total : 0}))
+    .sort((a, b) => b.pct - a.pct)
+})()
+
+genderSnapMax = d3.max(genderSnapshotData, d => d.pct) || 1
+
+Plot.plot({
+  width,
+  height: 130,
+  marginLeft: 260,
+  marginRight: 80,
+  x: {label: "Share of gender total", grid: true,
+      tickFormat: d => (d * 100).toFixed(0) + "%",
+      domain: [0, genderSnapMax * 1.15]},
+  y: {label: null, domain: genderSnapshotData.map(d => d.gender)},
+  color: {legend: true},
+  marks: [
+    Plot.ruleX([0]),
+    Plot.barX(genderSnapshotData, {x: "pct", y: "gender", fill: "gender",
+                                   insetTop: 3, insetBottom: 3}),
+    Plot.text(genderSnapshotData, {
+      x: "pct", y: "gender",
+      text: d => (d.pct * 100).toFixed(1) + "%",
+      textAnchor: "start", dx: 6, fontSize: 12
+    })
+  ]
+})
+```
+
+---
+
+*This dashboard is also available as an [Oracle APEX dashboard](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/monthly-snapshot){target="_blank"} built on the same database — useful if you want to see how the same data renders in Oracle's native low-code platform, or if you're curious about the SQL and APEX configuration behind it.*

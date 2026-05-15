@@ -77,7 +77,7 @@ chart.
 ::: {.callout-warning appearance="simple"}
 The embedded charts don't work in Safari due to a privacy
 restriction on third-party content — Safari users should use the
-"Open in a new tab" link inside each tab below.
+**"Open in a new tab"** link inside each tab below.
 :::
 
 ::: {.panel-tabset}
