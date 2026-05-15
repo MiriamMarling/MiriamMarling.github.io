@@ -1,0 +1,68 @@
+# Refresh shelter_flow.json from OCI and republish the Quarto site.
+# Runs on the 15th of every month at 16:00 UTC (noon EDT / 11am EST)
+# — two hours after toronto-shelter-db refreshes OCI from CKAN.
+# Can also be triggered manually via the Actions tab.
+#
+# Author: Miriam Marling <miriam@BonQuery.ca>
+# Date: 2026
+
+name: Refresh site data and publish
+
+on:
+  schedule:
+    # 16:00 UTC on the 15th of every month
+    - cron: '0 16 15 * *'
+  workflow_dispatch:                              # Allow manual triggering
+
+permissions:
+  contents: write                                 # Needed to push to gh-pages
+
+jobs:
+  refresh-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Pull the repo so we can run scripts and publish from it
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install Python 3.13, matching the local dev environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      # Install the same packages used locally for generate_data.py
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install oracledb
+
+      # Pull fresh data from OCI into data/shelter_flow.json
+      # Secrets are injected as environment variables to match the
+      # naming in generate_data.py
+      - name: Generate fresh data file
+        env:
+          OCI_DSN: ${{ secrets.OCI_DSN }}
+          OCI_DB_USER: ${{ secrets.OCI_DB_USER }}
+          OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
+        run: python scripts/generate_data.py
+
+      # Confirm the file actually got written and isn't empty
+      - name: Verify data file
+        run: |
+          ls -lh data/shelter_flow.json
+          echo "Row count check:"
+          python -c "import json; print(len(json.load(open('data/shelter_flow.json'))), 'rows')"
+
+      # Install Quarto so we can build and publish the site
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      # Publish to gh-pages branch. GITHUB_TOKEN auth is automatic.
+      - name: Render and publish to GitHub Pages
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
