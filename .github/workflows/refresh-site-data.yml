@@ -10,8 +10,12 @@ name: Refresh site data and publish
 
 on:
   schedule:
-    # 16:00 UTC on the 15th of every month
+    # 16:00 UTC on the 15th, 16th, and 17th of every month.
+    # Mirrors the shelter-db refresh schedule — two hours after each
+    # CKAN pull so fresh OCI data is ready before the site rebuilds.
     - cron: '0 16 15 * *'
+    - cron: '0 16 16 * *'
+    - cron: '0 16 17 * *'
   workflow_dispatch:                              # Allow manual triggering
 
 permissions:
