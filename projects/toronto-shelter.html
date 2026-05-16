@@ -216,6 +216,17 @@ ul.task-list li input[type="checkbox"] {
 /* Always show tabs; hide the plain-link fallback on all screen sizes */
 .mobile-dashboard-links { display: none !important; }
 .desktop-dashboard-tabs { display: block; }
+
+/* On mobile, break iframes out of the container padding so they span
+   edge-to-edge, and drop the border so there's only one clean line */
+@media (max-width: 768px) {
+  .desktop-dashboard-tabs iframe {
+    width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+}
 </style>
 </section>
 <section id="how-to-read-this-data" class="level2">
