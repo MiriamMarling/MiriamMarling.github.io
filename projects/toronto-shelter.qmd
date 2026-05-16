@@ -160,5 +160,6 @@ Data page](https://www.toronto.ca/city-government/data-research-maps/research-re
 
 All data comes from the City of Toronto's [Shelter System Flow
 dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/),
-published monthly on the City's open data portal under the
-[Open Government Licence — Toronto](https://open.toronto.ca/open-data-license/).
+published monthly on the City's open data portal.
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
