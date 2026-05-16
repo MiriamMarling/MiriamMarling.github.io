@@ -262,24 +262,38 @@ inflowBreakdown = snapshot ? [
 
 inflowMax = d3.max(inflowBreakdown, d => d.value) || 1
 
-Plot.plot({
-  width,
-  height: 130,
-  marginLeft: 240,
-  marginRight: 80,
-  x: {label: "People", grid: true, tickFormat: fmtN, domain: [0, inflowMax * 1.15]},
-  y: {label: null, domain: inflowBreakdown.map(d => d.label)},
-  marks: [
-    Plot.ruleX([0]),
-    Plot.barX(inflowBreakdown, {x: "value", y: "label", fill: "fill",
-                                insetTop: 3, insetBottom: 3}),
-    Plot.text(inflowBreakdown, {
-      x: "value", y: "label",
-      text: d => d.value.toLocaleString(),
-      textAnchor: "start", dx: 6, fontSize: 12
-    })
-  ]
-})
+{
+  const isMobile = width < 650
+  const colorOpts = isMobile ? {
+    color: {
+      domain: inflowBreakdown.map(d => d.label),
+      range:  inflowBreakdown.map(d => d.fill),
+      legend: true
+    }
+  } : {}
+  return Plot.plot({
+    width,
+    height: isMobile ? 190 : 130,
+    marginLeft: isMobile ? 10 : 240,
+    marginRight: 80,
+    x: {label: "People", grid: true, tickFormat: fmtN, domain: [0, inflowMax * 1.15]},
+    y: {label: null, domain: inflowBreakdown.map(d => d.label), axis: isMobile ? null : "left"},
+    ...colorOpts,
+    marks: [
+      Plot.ruleX([0]),
+      Plot.barX(inflowBreakdown, {
+        x: "value", y: "label",
+        fill: isMobile ? "label" : "fill",
+        insetTop: 3, insetBottom: 3
+      }),
+      Plot.text(inflowBreakdown, {
+        x: "value", y: "label",
+        text: d => d.value.toLocaleString(),
+        textAnchor: "start", dx: 6, fontSize: 12
+      })
+    ]
+  })
+}
 ```
 
 ---
@@ -295,24 +309,38 @@ outflowBreakdown = snapshot ? [
 
 outflowMax = d3.max(outflowBreakdown, d => d.value) || 1
 
-Plot.plot({
-  width,
-  height: 100,
-  marginLeft: 220,
-  marginRight: 80,
-  x: {label: "People", grid: true, tickFormat: fmtN, domain: [0, outflowMax * 1.15]},
-  y: {label: null, domain: outflowBreakdown.map(d => d.label)},
-  marks: [
-    Plot.ruleX([0]),
-    Plot.barX(outflowBreakdown, {x: "value", y: "label", fill: "fill",
-                                  insetTop: 3, insetBottom: 3}),
-    Plot.text(outflowBreakdown, {
-      x: "value", y: "label",
-      text: d => d.value.toLocaleString(),
-      textAnchor: "start", dx: 6, fontSize: 12
-    })
-  ]
-})
+{
+  const isMobile = width < 650
+  const colorOpts = isMobile ? {
+    color: {
+      domain: outflowBreakdown.map(d => d.label),
+      range:  outflowBreakdown.map(d => d.fill),
+      legend: true
+    }
+  } : {}
+  return Plot.plot({
+    width,
+    height: isMobile ? 160 : 100,
+    marginLeft: isMobile ? 10 : 220,
+    marginRight: 80,
+    x: {label: "People", grid: true, tickFormat: fmtN, domain: [0, outflowMax * 1.15]},
+    y: {label: null, domain: outflowBreakdown.map(d => d.label), axis: isMobile ? null : "left"},
+    ...colorOpts,
+    marks: [
+      Plot.ruleX([0]),
+      Plot.barX(outflowBreakdown, {
+        x: "value", y: "label",
+        fill: isMobile ? "label" : "fill",
+        insetTop: 3, insetBottom: 3
+      }),
+      Plot.text(outflowBreakdown, {
+        x: "value", y: "label",
+        text: d => d.value.toLocaleString(),
+        textAnchor: "start", dx: 6, fontSize: 12
+      })
+    ]
+  })
+}
 ```
 
 ---
@@ -384,27 +412,30 @@ genderSnapshotData = (() => {
 
 genderSnapMax = d3.max(genderSnapshotData, d => d.pct) || 1
 
-Plot.plot({
-  width,
-  height: 130,
-  marginLeft: 260,
-  marginRight: 80,
-  x: {label: "Share of gender total", grid: true,
-      tickFormat: d => (d * 100).toFixed(0) + "%",
-      domain: [0, genderSnapMax * 1.15]},
-  y: {label: null, domain: genderSnapshotData.map(d => d.gender)},
-  color: {legend: true},
-  marks: [
-    Plot.ruleX([0]),
-    Plot.barX(genderSnapshotData, {x: "pct", y: "gender", fill: "gender",
-                                   insetTop: 3, insetBottom: 3}),
-    Plot.text(genderSnapshotData, {
-      x: "pct", y: "gender",
-      text: d => (d.pct * 100).toFixed(1) + "%",
-      textAnchor: "start", dx: 6, fontSize: 12
-    })
-  ]
-})
+{
+  const isMobile = width < 650
+  return Plot.plot({
+    width,
+    height: isMobile ? 160 : 130,
+    marginLeft: isMobile ? 10 : 260,
+    marginRight: 80,
+    x: {label: "Share of gender total", grid: true,
+        tickFormat: d => (d * 100).toFixed(0) + "%",
+        domain: [0, genderSnapMax * 1.15]},
+    y: {label: null, domain: genderSnapshotData.map(d => d.gender), axis: isMobile ? null : "left"},
+    color: {legend: true},
+    marks: [
+      Plot.ruleX([0]),
+      Plot.barX(genderSnapshotData, {x: "pct", y: "gender", fill: "gender",
+                                     insetTop: 3, insetBottom: 3}),
+      Plot.text(genderSnapshotData, {
+        x: "pct", y: "gender",
+        text: d => (d.pct * 100).toFixed(1) + "%",
+        textAnchor: "start", dx: 6, fontSize: 12
+      })
+    ]
+  })
+}
 ```
 
 ::: {.mobile-page-nav}

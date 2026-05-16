@@ -86,16 +86,9 @@ patterns or seasonal trends.
 
 ```{=html}
 <style>
-/* Desktop: show tabs, hide plain links */
-@media (min-width: 769px) {
-  .mobile-dashboard-links { display: none !important; }
-  .desktop-dashboard-tabs { display: block; }
-}
-/* Mobile: hide iframe tabs, show plain links */
-@media (max-width: 768px) {
-  .mobile-dashboard-links { display: block; }
-  .desktop-dashboard-tabs { display: none !important; }
-}
+/* Always show tabs; hide the plain-link fallback on all screen sizes */
+.mobile-dashboard-links { display: none !important; }
+.desktop-dashboard-tabs { display: block; }
 </style>
 ```
 
