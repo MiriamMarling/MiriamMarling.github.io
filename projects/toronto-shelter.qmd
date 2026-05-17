@@ -184,7 +184,7 @@ Contains information licensed under the [Open Government Licence – Toronto](ht
 
 ---
 
-::: {.callout-note collapse="true"}
+::: {.callout-note collapse="true" title="Daily Occupancy & Capacity"}
 
 ```{ojs}
 //| echo: false
