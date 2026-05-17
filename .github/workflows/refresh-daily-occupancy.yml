@@ -39,7 +39,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install oracledb
+          pip install oracledb requests beautifulsoup4
 
       # shelter_flow.json — monthly shelter flow data from OCI.
       # Required by monthly-snapshot.qmd, ytd-comparison.qmd, historical-trends.qmd.
@@ -56,15 +56,20 @@ jobs:
       - name: Pull daily occupancy data from CKAN
         run: python scripts/generate_daily_occupancy.py
 
+      - name: Validate against City of Toronto shelter census page
+        run: python scripts/validate_city_page.py
+
       - name: Verify output
         run: |
-          ls -lh data/shelter_flow.json data/daily_occupancy.json data/city_reference_2026-05-14.json
+          ls -lh data/shelter_flow.json data/daily_occupancy.json data/city_validation.json
           python -c "
           import json
           rows = json.load(open('data/daily_occupancy.json'))
           dates = sorted({r['date'] for r in rows}, reverse=True)
           print(f'daily_occupancy: {len(rows):,} rows, most recent {dates[0]}')
           print(f'shelter_flow: {len(json.load(open(\"data/shelter_flow.json\"))):,} rows')
+          v = json.load(open('data/city_validation.json'))
+          print(f'city_validation: city_date={v[\"city_date\"]}, passed={v[\"passed\"]}')
           "
 
       - name: Set up Quarto
