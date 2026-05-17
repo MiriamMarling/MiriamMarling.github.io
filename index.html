@@ -25,6 +25,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -72,6 +107,8 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="styles.css">
@@ -197,6 +234,14 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb1" data-startfrom="17" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 16;"><span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>daily_occ <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"data/daily_occupancy.json"</span>)<span class="op">.</span><span class="fu">json</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
 <section id="welcome" class="level1">
 <h1>Welcome</h1>
 <p>BonQuery breathes life into humanitarian-related data — turning numbers that sit unread on government open-data pages into clear, useful analysis for the people who can do something about the issues behind them.</p>
@@ -205,14 +250,475 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="first-project-inside-torontos-shelter-system">First project — Inside Toronto’s Shelter System</h2>
 <p>Toronto publishes monthly data on its taxed shelter system, but numbers alone don’t tell the story. This project closes that gap with headache-free takeaways: what the numbers mean, why they matter, and what the data leaves out.</p>
 <p><a href="./projects/toronto-shelter.html">Explore the project →</a></p>
+<!-- SYNC: both callout boxes below must be kept in sync with projects/toronto-shelter.qmd.
+     Paths here are adjusted for root-level rendering (projects/ prefix added). -->
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Monthly Shelter System Flow
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Toronto publishes monthly data on its taxed shelter system, and the City’s own dashboards do a good job presenting the headline numbers. This section goes a step further: interactive filters on every chart, a clear note on what the data captures and what it leaves out, and findings that usually stay buried in technical documentation.</p>
+<p>The data covers every month from January 2018 to the most recent published month, sourced directly from the <a href="https://open.toronto.ca/dataset/toronto-shelter-system-flow/">City of Toronto’s Shelter System Flow dataset</a>. New data loads automatically each month, usually around the 15th, after the City publishes the prior month’s figures.</p>
+<section id="the-dashboards" class="level3">
+<h3 class="anchored" data-anchor-id="the-dashboards">The dashboards</h3>
+<div class="mobile-dashboard-links">
+<p>Open each dashboard directly in your browser — they’re built for interactive use and work best full-screen on a phone.</p>
+<ul>
+<li><a href="projects/monthly-snapshot.html">Monthly Snapshot →</a></li>
+<li><a href="projects/ytd-comparison.html">Year-to-Date Comparison →</a></li>
+<li><a href="projects/historical-trends.html">Historical Trends →</a></li>
+</ul>
+</div>
+<div class="desktop-dashboard-tabs">
+<p>The three tabs below show different views of the data, with interactive filters on every chart.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Monthly Snapshot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Year-to-Date Comparison</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Historical Trends</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>A point-in-time view of the shelter system for any month from January 2018 forward. Use the date filter at the top to change months.</p>
+<p><a href="projects/monthly-snapshot.html" target="_blank">Open in a new tab →</a></p>
+<iframe src="projects/monthly-snapshot.html" width="100%" height="2800" style="border: 1px solid #ddd; border-radius: 4px;" loading="lazy">
+</iframe>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>Compares the current year’s cumulative figures against the same period the prior year. Useful for seeing whether the system is on track to exceed, match, or fall below last year.</p>
+<p><a href="projects/ytd-comparison.html" target="_blank">Open in a new tab →</a></p>
+<iframe src="projects/ytd-comparison.html" width="100%" height="900" style="border: 1px solid #ddd; border-radius: 4px;" loading="lazy">
+</iframe>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p>Multi-year time series for the headline metrics, with filters for population group, year, and month. Useful for spotting long-term patterns or seasonal trends.</p>
+<p><a href="projects/historical-trends.html" target="_blank">Open in a new tab →</a></p>
+<iframe src="projects/historical-trends.html" width="100%" height="3800" style="border: 1px solid #ddd; border-radius: 4px;" loading="lazy">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<style>
+.mobile-dashboard-links { display: none !important; }
+.desktop-dashboard-tabs { display: block; }
+@media (max-width: 768px) {
+  .desktop-dashboard-tabs iframe {
+    width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+}
+</style>
+</section>
+<section id="how-to-read-this-data" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-read-this-data">How to read this data</h3>
+<p>These numbers reflect the shelter <em>system</em>, not all homelessness. The data captures people who used a City-funded overnight service at least once in the past three months. It doesn’t include people sleeping outside, in shelters that aren’t City-funded, or staying temporarily with friends or family. The City <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/">estimates</a> that roughly 18% of people experiencing absolute homelessness in Toronto aren’t reflected in these numbers. Trends here reflect changes in the shelter system specifically — not in total homelessness in the city.</p>
+</section>
+<section id="key-terms" class="level3">
+<h3 class="anchored" data-anchor-id="key-terms">Key terms</h3>
+<p>The dashboards use a few terms that have specific meanings worth knowing before you read the charts.</p>
+<p><strong>Actively homeless.</strong> A person who has used City-funded shelter services at least once in the past three months and hasn’t been recorded as moving to permanent housing. This is the headline number on every dashboard. Because it looks back three months, the count includes people who may not be in shelter on any given night.</p>
+<p><strong>Chronic homelessness.</strong> The federal definition: someone who has spent at least 180 nights in shelter over the past year, or at least 546 nights over the past three years. A person can meet this definition while still actively in the shelter system — they don’t need to have left and returned.</p>
+<p><strong>Inflow categories</strong> (people entering the shelter system this month):</p>
+<ul>
+<li><strong>Newly Identified.</strong> People entering the shelter system for the first time. One exception for the “Chronic” group: in that row, this column counts people who became chronically homeless during the reporting month, regardless of how long they’d already been using the shelter system.</li>
+<li><strong>Returned from Permanent Housing.</strong> People who previously moved to permanent housing and have come back to the shelter system.</li>
+<li><strong>Returned to Shelter.</strong> People who were in the system, didn’t use it for at least three months, and have now returned.</li>
+</ul>
+<p><strong>Outflow categories</strong> (people leaving the shelter system this month):</p>
+<ul>
+<li><strong>Moved to Permanent Housing.</strong> People who left the shelter system for permanent housing.</li>
+<li><strong>Became Inactive.</strong> People who haven’t used shelter services in the past three months, including the reporting month.</li>
+</ul>
+<p>Definitions are based on the <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/">City of Toronto’s Shelter System Flow Data page</a>.</p>
+<p><a href="projects/about-the-data.html">Read all data findings →</a></p>
+</section>
+<section id="data-source" class="level3">
+<h3 class="anchored" data-anchor-id="data-source">Data source</h3>
+<p>All data comes from the City of Toronto’s <a href="https://open.toronto.ca/dataset/toronto-shelter-system-flow/">Shelter System Flow dataset</a>, published monthly on the City’s open data portal.</p>
+<p>Contains information licensed under the <a href="https://open.toronto.ca/open-data-licence/">Open Government Licence – Toronto</a>.</p>
+</section>
+</div>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled" title="Daily Occupancy &amp; Capacity">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Daily Occupancy &amp; Capacity
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb2" data-startfrom="213" data-source-offset="-78"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 212;"><span id="cb2-213"><a href="#cb2-213" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">fmtDate</span>(s) {</span>
+<span id="cb2-214"><a href="#cb2-214" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> [y<span class="op">,</span> m<span class="op">,</span> d] <span class="op">=</span> s<span class="op">.</span><span class="fu">split</span>(<span class="st">"-"</span>)<span class="op">.</span><span class="fu">map</span>(<span class="bu">Number</span>)</span>
+<span id="cb2-215"><a href="#cb2-215" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">new</span> <span class="bu">Date</span>(y<span class="op">,</span> m <span class="op">-</span> <span class="dv">1</span><span class="op">,</span> d)<span class="op">.</span><span class="fu">toLocaleDateString</span>(<span class="st">"en-US"</span><span class="op">,</span> {</span>
+<span id="cb2-216"><a href="#cb2-216" aria-hidden="true" tabindex="-1"></a>    <span class="dt">year</span><span class="op">:</span> <span class="st">"numeric"</span><span class="op">,</span> <span class="dt">month</span><span class="op">:</span> <span class="st">"long"</span><span class="op">,</span> <span class="dt">day</span><span class="op">:</span> <span class="st">"numeric"</span></span>
+<span id="cb2-217"><a href="#cb2-217" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb2-218"><a href="#cb2-218" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-219"><a href="#cb2-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-220"><a href="#cb2-220" aria-hidden="true" tabindex="-1"></a>allDates <span class="op">=</span> [<span class="op">...</span><span class="kw">new</span> <span class="bu">Set</span>(daily_occ<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">date</span>))]<span class="op">.</span><span class="fu">sort</span>()<span class="op">.</span><span class="fu">reverse</span>()</span>
+<span id="cb2-221"><a href="#cb2-221" aria-hidden="true" tabindex="-1"></a>latestDate <span class="op">=</span> allDates[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<section id="daily-occupancy-capacity-for-fmtdateselecteddate" class="level2">
+<h2 class="anchored" data-anchor-id="daily-occupancy-capacity-for-fmtdateselecteddate">Daily Occupancy &amp; Capacity for <span><span id="ojs-element-id-1"></span></span></h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb3" data-startfrom="232" data-source-offset="-216"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 231;"><span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a>latestRows <span class="op">=</span> daily_occ<span class="op">.</span><span class="fu">filter</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">date</span> <span class="op">===</span> latestDate)</span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">getVal</span>(rows<span class="op">,</span> key) {</span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> row <span class="op">=</span> rows<span class="op">.</span><span class="fu">find</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">key</span> <span class="op">===</span> key)</span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> row <span class="op">?</span> row<span class="op">.</span><span class="at">ind</span> <span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a>validationChecks <span class="op">=</span> {</span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> rows <span class="op">=</span> latestRows</span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> checks <span class="op">=</span> []</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Check 1: all expected keys present</span></span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> expectedKeys <span class="op">=</span> [</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all_shelter"</span><span class="op">,</span><span class="st">"room_based"</span><span class="op">,</span><span class="st">"singles_sector"</span><span class="op">,</span><span class="st">"singles_shelter"</span><span class="op">,</span><span class="st">"allied_summ"</span><span class="op">,</span></span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>    <span class="st">"temp_summ"</span><span class="op">,</span><span class="st">"iso_summ"</span><span class="op">,</span><span class="st">"fam_total"</span><span class="op">,</span><span class="st">"fam_emerg"</span><span class="op">,</span><span class="st">"fam_trans_r"</span><span class="op">,</span><span class="st">"fam_hotel"</span><span class="op">,</span></span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sng_hotel"</span><span class="op">,</span><span class="st">"singles_total"</span><span class="op">,</span><span class="st">"emerg_total"</span><span class="op">,</span><span class="st">"mix_emerg"</span><span class="op">,</span><span class="st">"men_emerg"</span><span class="op">,</span><span class="st">"wom_emerg"</span><span class="op">,</span></span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>    <span class="st">"yth_emerg"</span><span class="op">,</span><span class="st">"trans_total"</span><span class="op">,</span><span class="st">"mix_trans"</span><span class="op">,</span><span class="st">"fam_trans_b"</span><span class="op">,</span><span class="st">"men_trans"</span><span class="op">,</span><span class="st">"wom_trans"</span><span class="op">,</span></span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>    <span class="st">"yth_trans"</span><span class="op">,</span><span class="st">"allied_total"</span><span class="op">,</span><span class="st">"respites"</span><span class="op">,</span><span class="st">"dropin"</span><span class="op">,</span><span class="st">"temp_resp"</span><span class="op">,</span><span class="st">"hotels"</span><span class="op">,</span><span class="st">"iso"</span></span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> presentKeys <span class="op">=</span> <span class="kw">new</span> <span class="bu">Set</span>(rows<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">key</span>))</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> missingKeys <span class="op">=</span> expectedKeys<span class="op">.</span><span class="fu">filter</span>(k <span class="kw">=&gt;</span> <span class="op">!</span>presentKeys<span class="op">.</span><span class="fu">has</span>(k))</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>  checks<span class="op">.</span><span class="fu">push</span>({</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>    <span class="dt">name</span><span class="op">:</span> <span class="st">"All expected rows present"</span><span class="op">,</span></span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pass</span><span class="op">:</span> missingKeys<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span><span class="op">,</span></span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>    <span class="dt">detail</span><span class="op">:</span> missingKeys<span class="op">.</span><span class="at">length</span> <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> <span class="vs">`Missing: </span><span class="sc">${</span>missingKeys<span class="op">.</span><span class="fu">join</span>(<span class="st">", "</span>)<span class="sc">}</span><span class="vs">`</span> <span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Check 2: All Shelter Programs total = sum of components</span></span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> allShelter <span class="op">=</span> <span class="fu">getVal</span>(rows<span class="op">,</span> <span class="st">"all_shelter"</span>)</span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> compSum <span class="op">=</span> [<span class="st">"fam_total"</span><span class="op">,</span><span class="st">"sng_hotel"</span><span class="op">,</span><span class="st">"singles_total"</span><span class="op">,</span><span class="st">"allied_total"</span><span class="op">,</span><span class="st">"temp_resp"</span><span class="op">,</span><span class="st">"hotels"</span><span class="op">,</span><span class="st">"iso"</span>]</span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">reduce</span>((s<span class="op">,</span> k) <span class="kw">=&gt;</span> s <span class="op">+</span> (<span class="fu">getVal</span>(rows<span class="op">,</span> k) <span class="op">??</span> <span class="dv">0</span>)<span class="op">,</span> <span class="dv">0</span>)</span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a>  checks<span class="op">.</span><span class="fu">push</span>({</span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a>    <span class="dt">name</span><span class="op">:</span> <span class="st">"All Shelter Programs rollup matches components"</span><span class="op">,</span></span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pass</span><span class="op">:</span> allShelter <span class="op">===</span> compSum<span class="op">,</span></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a>    <span class="dt">detail</span><span class="op">:</span> allShelter <span class="op">!==</span> compSum</span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a>      <span class="op">?</span> <span class="vs">`all_shelter.ind=</span><span class="sc">${</span>allShelter<span class="sc">}</span><span class="vs">, component sum=</span><span class="sc">${</span>compSum<span class="sc">}</span><span class="vs">, diff=</span><span class="sc">${</span>allShelter <span class="op">-</span> compSum<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Check 3: Singles sectors total = emergency + transitional</span></span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> singlesTotal <span class="op">=</span> <span class="fu">getVal</span>(rows<span class="op">,</span> <span class="st">"singles_total"</span>)</span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> emergTotal <span class="op">=</span> <span class="fu">getVal</span>(rows<span class="op">,</span> <span class="st">"emerg_total"</span>)</span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> transTotal <span class="op">=</span> <span class="fu">getVal</span>(rows<span class="op">,</span> <span class="st">"trans_total"</span>)</span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>  checks<span class="op">.</span><span class="fu">push</span>({</span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>    <span class="dt">name</span><span class="op">:</span> <span class="st">"Singles sectors rollup: emergency + transitional = singles total"</span><span class="op">,</span></span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pass</span><span class="op">:</span> singlesTotal <span class="op">===</span> (emergTotal <span class="op">+</span> transTotal)<span class="op">,</span></span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a>    <span class="dt">detail</span><span class="op">:</span> singlesTotal <span class="op">!==</span> (emergTotal <span class="op">+</span> transTotal)</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a>      <span class="op">?</span> <span class="vs">`singles=</span><span class="sc">${</span>singlesTotal<span class="sc">}</span><span class="vs">, emerg+trans=</span><span class="sc">${</span>emergTotal <span class="op">+</span> transTotal<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Check 4: For every row with non-null cap, occ + unocc = cap (within 1, for rounding)</span></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> capRows <span class="op">=</span> rows<span class="op">.</span><span class="fu">filter</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">cap</span> <span class="op">!==</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> r<span class="op">.</span><span class="at">cap</span> <span class="op">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> arithFails <span class="op">=</span> capRows<span class="op">.</span><span class="fu">filter</span>(r <span class="kw">=&gt;</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(r<span class="op">.</span><span class="at">occ</span> <span class="op">+</span> r<span class="op">.</span><span class="at">unocc</span> <span class="op">-</span> r<span class="op">.</span><span class="at">cap</span>) <span class="op">&gt;</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>  checks<span class="op">.</span><span class="fu">push</span>({</span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a>    <span class="dt">name</span><span class="op">:</span> <span class="st">"Internal arithmetic: occupied + unoccupied = actual capacity"</span><span class="op">,</span></span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pass</span><span class="op">:</span> arithFails<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span><span class="op">,</span></span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a>    <span class="dt">detail</span><span class="op">:</span> arithFails<span class="op">.</span><span class="at">length</span> <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a>      <span class="op">?</span> arithFails<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>r<span class="op">.</span><span class="at">key</span><span class="sc">}</span><span class="vs">: </span><span class="sc">${</span>r<span class="op">.</span><span class="at">occ</span><span class="sc">}</span><span class="vs">+</span><span class="sc">${</span>r<span class="op">.</span><span class="at">unocc</span><span class="sc">}</span><span class="vs">≠</span><span class="sc">${</span>r<span class="op">.</span><span class="at">cap</span><span class="sc">}</span><span class="vs">`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">"; "</span>)</span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> checks</span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>allPass <span class="op">=</span> validationChecks<span class="op">.</span><span class="fu">every</span>(c <span class="kw">=&gt;</span> c<span class="op">.</span><span class="at">pass</span>)</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="co">// ── Validation banner ─────────────────────────────────────────────────────</span></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>validationBanner <span class="op">=</span> {</span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (allPass) {</span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="</span></span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="vs">      background:#d4edda;border:1px solid #76b88d;border-radius:4px;</span></span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="vs">      padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px"&gt;</span></span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="vs">      ✓ Validated against City of Toronto open data for </span><span class="sc">${</span><span class="fu">fmtDate</span>(latestDate)<span class="sc">}</span></span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/div&gt;`</span></span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> failedChecks <span class="op">=</span> validationChecks<span class="op">.</span><span class="fu">filter</span>(c <span class="kw">=&gt;</span> <span class="op">!</span>c<span class="op">.</span><span class="at">pass</span>)</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="</span></span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="vs">      background:#fff3cd;border:1px solid #e0a800;border-radius:4px;</span></span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a><span class="vs">      padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px"&gt;</span></span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;strong&gt;⚠ Validation issue detected for </span><span class="sc">${</span><span class="fu">fmtDate</span>(latestDate)<span class="sc">}</span><span class="vs">&lt;/strong&gt;</span></span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;details style="margin-top:6px"&gt;</span></span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;summary style="cursor:pointer"&gt;Show details&lt;/summary&gt;</span></span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;ul style="margin:6px 0 0;padding-left:20px"&gt;</span></span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="vs">          </span><span class="sc">${</span>failedChecks<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="fu">html</span><span class="vs">`&lt;li&gt;</span><span class="sc">${</span>c<span class="op">.</span><span class="at">name</span><span class="sc">}${</span>c<span class="op">.</span><span class="at">detail</span> <span class="op">?</span> <span class="fu">html</span><span class="vs">` — &lt;em&gt;</span><span class="sc">${</span>c<span class="op">.</span><span class="at">detail</span><span class="sc">}</span><span class="vs">&lt;/em&gt;`</span> <span class="op">:</span> <span class="st">""</span><span class="sc">}</span><span class="vs">&lt;/li&gt;`</span>)<span class="sc">}</span></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;/ul&gt;</span></span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/details&gt;</span></span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/div&gt;`</span></span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-5" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb4" data-startfrom="325" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 324;"><span id="cb4-325"><a href="#cb4-325" aria-hidden="true" tabindex="-1"></a>viewof selectedDate <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">select</span>(allDates<span class="op">,</span> {</span>
+<span id="cb4-326"><a href="#cb4-326" aria-hidden="true" tabindex="-1"></a>  <span class="dt">label</span><span class="op">:</span> <span class="st">"Date"</span><span class="op">,</span></span>
+<span id="cb4-327"><a href="#cb4-327" aria-hidden="true" tabindex="-1"></a>  <span class="dt">format</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="fu">fmtDate</span>(d)</span>
+<span id="cb4-328"><a href="#cb4-328" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb5" data-startfrom="335" data-source-offset="-78"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 334;"><span id="cb5-335"><a href="#cb5-335" aria-hidden="true" tabindex="-1"></a>dayRows <span class="op">=</span> daily_occ<span class="op">.</span><span class="fu">filter</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">date</span> <span class="op">===</span> selectedDate)</span>
+<span id="cb5-336"><a href="#cb5-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-337"><a href="#cb5-337" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">n</span>(v) { <span class="cf">return</span> v <span class="op">!==</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> v <span class="op">!==</span> <span class="kw">undefined</span> <span class="op">?</span> v<span class="op">.</span><span class="fu">toLocaleString</span>() <span class="op">:</span> <span class="st">"—"</span> }</span>
+<span id="cb5-338"><a href="#cb5-338" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">pct</span>(v) { <span class="cf">return</span> v <span class="op">!==</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> v <span class="op">!==</span> <span class="kw">undefined</span> <span class="op">?</span> v<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>) <span class="op">+</span> <span class="st">"%"</span> <span class="op">:</span> <span class="st">"—"</span> }</span>
+<span id="cb5-339"><a href="#cb5-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-340"><a href="#cb5-340" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">tableRow</span>(r<span class="op">,</span> col1Label) {</span>
+<span id="cb5-341"><a href="#cb5-341" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> pad <span class="op">=</span> (r<span class="op">.</span><span class="at">indent</span> <span class="op">??</span> <span class="dv">0</span>) <span class="op">*</span> <span class="dv">16</span></span>
+<span id="cb5-342"><a href="#cb5-342" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bold <span class="op">=</span> r<span class="op">.</span><span class="at">is_total</span> <span class="op">?</span> <span class="st">"font-weight:600"</span> <span class="op">:</span> <span class="st">""</span></span>
+<span id="cb5-343"><a href="#cb5-343" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bg   <span class="op">=</span> r<span class="op">.</span><span class="at">is_total</span> <span class="op">?</span> <span class="st">"#e8edf5"</span> <span class="op">:</span> <span class="st">"#ffffff"</span></span>
+<span id="cb5-344"><a href="#cb5-344" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (r<span class="op">.</span><span class="at">col_type</span> <span class="op">===</span> <span class="st">"summary"</span>) {</span>
+<span id="cb5-345"><a href="#cb5-345" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="vs">`&lt;tr style="background:</span><span class="sc">${</span>bg<span class="sc">}</span><span class="vs">"&gt;</span></span>
+<span id="cb5-346"><a href="#cb5-346" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;td style="padding:5px 10px 5px </span><span class="sc">${</span>pad<span class="sc">}</span><span class="vs">px;</span><span class="sc">${</span>bold<span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">label</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-347"><a href="#cb5-347" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;td style="padding:5px 10px;text-align:right;</span><span class="sc">${</span>bold<span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span><span class="fu">n</span>(r<span class="op">.</span><span class="at">ind</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-348"><a href="#cb5-348" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;</span></span>
+<span id="cb5-349"><a href="#cb5-349" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/tr&gt;`</span></span>
+<span id="cb5-350"><a href="#cb5-350" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-351"><a href="#cb5-351" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="vs">`&lt;tr style="background:</span><span class="sc">${</span>bg<span class="sc">}</span><span class="vs">"&gt;</span></span>
+<span id="cb5-352"><a href="#cb5-352" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px 5px </span><span class="sc">${</span>pad<span class="sc">}</span><span class="vs">px;</span><span class="sc">${</span>bold<span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">label</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-353"><a href="#cb5-353" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px;text-align:right;</span><span class="sc">${</span>bold<span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span><span class="fu">n</span>(r<span class="op">.</span><span class="at">ind</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-354"><a href="#cb5-354" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px;text-align:right"&gt;</span><span class="sc">${</span><span class="fu">n</span>(r<span class="op">.</span><span class="at">occ</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-355"><a href="#cb5-355" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px;text-align:right"&gt;</span><span class="sc">${</span><span class="fu">n</span>(r<span class="op">.</span><span class="at">unocc</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-356"><a href="#cb5-356" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px;text-align:right"&gt;</span><span class="sc">${</span><span class="fu">n</span>(r<span class="op">.</span><span class="at">cap</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-357"><a href="#cb5-357" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px;text-align:right"&gt;</span><span class="sc">${</span><span class="fu">pct</span>(r<span class="op">.</span><span class="at">rate</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-358"><a href="#cb5-358" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;`</span></span>
+<span id="cb5-359"><a href="#cb5-359" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-360"><a href="#cb5-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-361"><a href="#cb5-361" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">sectionHeader</span>(label<span class="op">,</span> col1<span class="op">,</span> col2<span class="op">,</span> col3) {</span>
+<span id="cb5-362"><a href="#cb5-362" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="vs">`&lt;tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em"&gt;</span></span>
+<span id="cb5-363"><a href="#cb5-363" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:7px 10px"&gt;</span><span class="sc">${</span>label<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-364"><a href="#cb5-364" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:7px 10px;text-align:right"&gt;Individuals&lt;/td&gt;</span></span>
+<span id="cb5-365"><a href="#cb5-365" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:7px 10px;text-align:right"&gt;</span><span class="sc">${</span>col1<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-366"><a href="#cb5-366" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:7px 10px;text-align:right"&gt;</span><span class="sc">${</span>col2<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-367"><a href="#cb5-367" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:7px 10px;text-align:right"&gt;</span><span class="sc">${</span>col3<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-368"><a href="#cb5-368" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:7px 10px;text-align:right"&gt;Occupancy Rate&lt;/td&gt;</span></span>
+<span id="cb5-369"><a href="#cb5-369" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;`</span></span>
+<span id="cb5-370"><a href="#cb5-370" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-371"><a href="#cb5-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-372"><a href="#cb5-372" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">summaryHeader</span>() {</span>
+<span id="cb5-373"><a href="#cb5-373" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="vs">`&lt;tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em"&gt;</span></span>
+<span id="cb5-374"><a href="#cb5-374" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:7px 10px"&gt;Occupancy Summary&lt;/td&gt;</span></span>
+<span id="cb5-375"><a href="#cb5-375" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:7px 10px;text-align:right"&gt;Individuals&lt;/td&gt;</span></span>
+<span id="cb5-376"><a href="#cb5-376" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td colspan="4"&gt;&lt;/td&gt;</span></span>
+<span id="cb5-377"><a href="#cb5-377" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;`</span></span>
+<span id="cb5-378"><a href="#cb5-378" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-379"><a href="#cb5-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-380"><a href="#cb5-380" aria-hidden="true" tabindex="-1"></a>dailyTable <span class="op">=</span> {</span>
+<span id="cb5-381"><a href="#cb5-381" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> s <span class="op">=</span> (key) <span class="kw">=&gt;</span> dayRows<span class="op">.</span><span class="fu">find</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">key</span> <span class="op">===</span> key)</span>
+<span id="cb5-382"><a href="#cb5-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-383"><a href="#cb5-383" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> allShelterInd <span class="op">=</span> <span class="fu">s</span>(<span class="st">"all_shelter"</span>) <span class="op">?</span> <span class="fu">s</span>(<span class="st">"all_shelter"</span>)<span class="op">.</span><span class="at">ind</span> <span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb5-384"><a href="#cb5-384" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> totalAccomRow <span class="op">=</span> <span class="vs">`&lt;tr style="background:#e8edf5;font-weight:600"&gt;</span></span>
+<span id="cb5-385"><a href="#cb5-385" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px"&gt;Total People Accommodated †&lt;/td&gt;</span></span>
+<span id="cb5-386"><a href="#cb5-386" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px;text-align:right"&gt;</span><span class="sc">${</span><span class="fu">n</span>(allShelterInd)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb5-387"><a href="#cb5-387" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;</span></span>
+<span id="cb5-388"><a href="#cb5-388" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;`</span></span>
+<span id="cb5-389"><a href="#cb5-389" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bridgingRow <span class="op">=</span> <span class="vs">`&lt;tr style="background:#f5f5f5;color:#999;font-style:italic"&gt;</span></span>
+<span id="cb5-390"><a href="#cb5-390" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px 5px 26px"&gt;Bridging &amp;amp; Triage Programs&lt;/td&gt;</span></span>
+<span id="cb5-391"><a href="#cb5-391" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px;text-align:right;font-size:0.85em"&gt;Not published to open data&lt;/td&gt;</span></span>
+<span id="cb5-392"><a href="#cb5-392" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;</span></span>
+<span id="cb5-393"><a href="#cb5-393" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;`</span></span>
+<span id="cb5-394"><a href="#cb5-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-395"><a href="#cb5-395" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> summaryKeys <span class="op">=</span> [<span class="st">"all_shelter"</span><span class="op">,</span><span class="st">"room_based"</span><span class="op">,</span><span class="st">"singles_sector"</span><span class="op">,</span><span class="st">"singles_shelter"</span><span class="op">,</span><span class="st">"allied_summ"</span><span class="op">,</span><span class="st">"temp_summ"</span><span class="op">,</span><span class="st">"iso_summ"</span>]</span>
+<span id="cb5-396"><a href="#cb5-396" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> roomKeys    <span class="op">=</span> [<span class="st">"fam_total"</span><span class="op">,</span><span class="st">"fam_emerg"</span><span class="op">,</span><span class="st">"fam_trans_r"</span><span class="op">,</span><span class="st">"fam_hotel"</span><span class="op">,</span><span class="st">"sng_hotel"</span>]</span>
+<span id="cb5-397"><a href="#cb5-397" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bedKeys     <span class="op">=</span> [<span class="st">"singles_total"</span><span class="op">,</span><span class="st">"emerg_total"</span><span class="op">,</span><span class="st">"mix_emerg"</span><span class="op">,</span><span class="st">"men_emerg"</span><span class="op">,</span><span class="st">"wom_emerg"</span><span class="op">,</span><span class="st">"yth_emerg"</span><span class="op">,</span></span>
+<span id="cb5-398"><a href="#cb5-398" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"trans_total"</span><span class="op">,</span><span class="st">"mix_trans"</span><span class="op">,</span><span class="st">"fam_trans_b"</span><span class="op">,</span><span class="st">"men_trans"</span><span class="op">,</span><span class="st">"wom_trans"</span><span class="op">,</span><span class="st">"yth_trans"</span>]</span>
+<span id="cb5-399"><a href="#cb5-399" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> alliedKeys  <span class="op">=</span> [<span class="st">"allied_total"</span><span class="op">,</span><span class="st">"respites"</span><span class="op">,</span><span class="st">"dropin"</span>]</span>
+<span id="cb5-400"><a href="#cb5-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-401"><a href="#cb5-401" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`</span></span>
+<span id="cb5-402"><a href="#cb5-402" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;div style="overflow-x:auto;margin:0 0 1rem"&gt;</span></span>
+<span id="cb5-403"><a href="#cb5-403" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;table style="border-collapse:collapse;width:100%;font-size:0.88em;font-family:'Segoe UI',Arial,sans-serif;min-width:620px"&gt;</span></span>
+<span id="cb5-404"><a href="#cb5-404" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">summaryHeader</span>()<span class="sc">}</span></span>
+<span id="cb5-405"><a href="#cb5-405" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span>totalAccomRow<span class="sc">}</span></span>
+<span id="cb5-406"><a href="#cb5-406" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span>bridgingRow<span class="sc">}</span></span>
+<span id="cb5-407"><a href="#cb5-407" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span>summaryKeys<span class="op">.</span><span class="fu">map</span>(k <span class="kw">=&gt;</span> <span class="fu">s</span>(k) <span class="op">?</span> <span class="fu">tableRow</span>(<span class="fu">s</span>(k)) <span class="op">:</span> <span class="st">""</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">""</span>)<span class="sc">}</span></span>
+<span id="cb5-408"><a href="#cb5-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-409"><a href="#cb5-409" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">sectionHeader</span>(<span class="st">"Shelter Programs, Room-Based"</span><span class="op">,</span> <span class="st">"Occupied Rooms"</span><span class="op">,</span> <span class="st">"Unoccupied Rooms"</span><span class="op">,</span> <span class="st">"Actual Room Capacity"</span>)<span class="sc">}</span></span>
+<span id="cb5-410"><a href="#cb5-410" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span>roomKeys<span class="op">.</span><span class="fu">map</span>(k <span class="kw">=&gt;</span> <span class="fu">s</span>(k) <span class="op">?</span> <span class="fu">tableRow</span>(<span class="fu">s</span>(k)) <span class="op">:</span> <span class="st">""</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">""</span>)<span class="sc">}</span></span>
+<span id="cb5-411"><a href="#cb5-411" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-412"><a href="#cb5-412" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">sectionHeader</span>(<span class="st">"Shelter Programs, Bed-Based"</span><span class="op">,</span> <span class="st">"Occupied Beds"</span><span class="op">,</span> <span class="st">"Unoccupied Beds"</span><span class="op">,</span> <span class="st">"Actual Bed Capacity"</span>)<span class="sc">}</span></span>
+<span id="cb5-413"><a href="#cb5-413" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span>bedKeys<span class="op">.</span><span class="fu">map</span>(k <span class="kw">=&gt;</span> <span class="fu">s</span>(k) <span class="op">?</span> <span class="fu">tableRow</span>(<span class="fu">s</span>(k)) <span class="op">:</span> <span class="st">""</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">""</span>)<span class="sc">}</span></span>
+<span id="cb5-414"><a href="#cb5-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-415"><a href="#cb5-415" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">sectionHeader</span>(<span class="st">"Allied Services"</span><span class="op">,</span> <span class="st">"Occupied Spaces"</span><span class="op">,</span> <span class="st">"Unoccupied Spaces"</span><span class="op">,</span> <span class="st">"Actual Space Capacity"</span>)<span class="sc">}</span></span>
+<span id="cb5-416"><a href="#cb5-416" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span>alliedKeys<span class="op">.</span><span class="fu">map</span>(k <span class="kw">=&gt;</span> <span class="fu">s</span>(k) <span class="op">?</span> <span class="fu">tableRow</span>(<span class="fu">s</span>(k)) <span class="op">:</span> <span class="st">""</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">""</span>)<span class="sc">}</span></span>
+<span id="cb5-417"><a href="#cb5-417" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-418"><a href="#cb5-418" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em"&gt;</span></span>
+<span id="cb5-419"><a href="#cb5-419" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;td style="padding:7px 10px"&gt;Temporary Programs, Bed/Space-Based&lt;/td&gt;</span></span>
+<span id="cb5-420"><a href="#cb5-420" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;td style="padding:7px 10px;text-align:right"&gt;Individuals&lt;/td&gt;</span></span>
+<span id="cb5-421"><a href="#cb5-421" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;td style="padding:7px 10px;text-align:right"&gt;Occupied Beds/Spaces&lt;/td&gt;</span></span>
+<span id="cb5-422"><a href="#cb5-422" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;td style="padding:7px 10px;text-align:right"&gt;Unoccupied&lt;/td&gt;</span></span>
+<span id="cb5-423"><a href="#cb5-423" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;td style="padding:7px 10px;text-align:right"&gt;Actual Capacity&lt;/td&gt;</span></span>
+<span id="cb5-424"><a href="#cb5-424" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;td style="padding:7px 10px;text-align:right"&gt;Occupancy Rate&lt;/td&gt;</span></span>
+<span id="cb5-425"><a href="#cb5-425" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/tr&gt;</span></span>
+<span id="cb5-426"><a href="#cb5-426" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">s</span>(<span class="st">"temp_resp"</span>) <span class="op">?</span> <span class="fu">tableRow</span>(<span class="fu">s</span>(<span class="st">"temp_resp"</span>)) <span class="op">:</span> <span class="st">""</span><span class="sc">}</span></span>
+<span id="cb5-427"><a href="#cb5-427" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-428"><a href="#cb5-428" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">sectionHeader</span>(<span class="st">"Temporary Programs, Room/Unit-Based"</span><span class="op">,</span> <span class="st">"Occupied Rooms"</span><span class="op">,</span> <span class="st">"Unoccupied Rooms"</span><span class="op">,</span> <span class="st">"Actual Room Capacity"</span>)<span class="sc">}</span></span>
+<span id="cb5-429"><a href="#cb5-429" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">s</span>(<span class="st">"hotels"</span>) <span class="op">?</span> <span class="fu">tableRow</span>(<span class="fu">s</span>(<span class="st">"hotels"</span>)) <span class="op">:</span> <span class="st">""</span><span class="sc">}</span></span>
+<span id="cb5-430"><a href="#cb5-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-431"><a href="#cb5-431" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">sectionHeader</span>(<span class="st">"Temporary Isolation/Recovery Programs"</span><span class="op">,</span> <span class="st">"Occupied Rooms"</span><span class="op">,</span> <span class="st">"Unoccupied Rooms"</span><span class="op">,</span> <span class="st">"Actual Room Capacity"</span>)<span class="sc">}</span></span>
+<span id="cb5-432"><a href="#cb5-432" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">s</span>(<span class="st">"iso"</span>) <span class="op">?</span> <span class="fu">tableRow</span>(<span class="fu">s</span>(<span class="st">"iso"</span>)) <span class="op">:</span> <span class="st">""</span><span class="sc">}</span></span>
+<span id="cb5-433"><a href="#cb5-433" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/table&gt;</span></span>
+<span id="cb5-434"><a href="#cb5-434" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;p style="font-size:0.8em;color:#666;margin:4px 0 0"&gt;</span></span>
+<span id="cb5-435"><a href="#cb5-435" aria-hidden="true" tabindex="-1"></a><span class="vs">      † Total People Accommodated excludes Bridging &amp;amp; Triage programs,</span></span>
+<span id="cb5-436"><a href="#cb5-436" aria-hidden="true" tabindex="-1"></a><span class="vs">      which are tracked in the City's operational system but not published</span></span>
+<span id="cb5-437"><a href="#cb5-437" aria-hidden="true" tabindex="-1"></a><span class="vs">      to open data.</span></span>
+<span id="cb5-438"><a href="#cb5-438" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/p&gt;</span></span>
+<span id="cb5-439"><a href="#cb5-439" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/div&gt;`</span></span>
+<span id="cb5-440"><a href="#cb5-440" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-5-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-5-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-5-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-5-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-5-5" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-5-6" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-5-7" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<p>This table reproduces the City of Toronto’s Daily Shelter &amp; Overnight Service Usage report using the City’s open data. Two known differences from the City’s live dashboard: it does not include Bridging &amp; Triage programs, which are not published to open data (29 people on May 14, 2026); and for emergency programs, “Actual Bed Capacity” counts beds currently available for use and excludes beds temporarily offline, which the City’s live dashboard includes. Occupancy and individual counts match the City’s figures exactly. A full side-by-side comparison is available on the <a href="projects/data-validation.html" target="_blank">data validation page</a>.</p>
+<p>Contains information licensed under the <a href="https://open.toronto.ca/open-data-licence/">Open Government Licence – Toronto</a>. Source: City of Toronto Open Data — <a href="https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/">Daily Shelter &amp; Overnight Service Occupancy &amp; Capacity</a>. Aggregated by <a href="https://bonquery.ca">BonQuery</a>.</p>
+</section>
+</div>
+</div>
+</div>
+<!-- END SYNC -->
 <hr>
 <p><em>Have a humanitarian dataset you think should get this treatment? Reach out at <a href="mailto:info@BonQuery.ca">info@BonQuery.ca</a>.</em></p>
 
 
+<div class="ojs-auto-generated hidden">
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7Zm10RGF0ZShzZWxlY3RlZERhdGUpfTwvc3Bhbj5gIiwgImNlbGxOYW1lIjoib2pzLWVsZW1lbnQtaWQtMSJ9XX0=
+</script>
+</div>
 </section>
 </section>
 
 </main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImRhaWx5X29jYyA9IEZpbGVBdHRhY2htZW50KFwiZGF0YS9kYWlseV9vY2N1cGFuY3kuanNvblwiKS5qc29uKClcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Ii8vIOKUgOKUgCBEYXRlIHV0aWxpdGllcyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIBcbmZ1bmN0aW9uIGZtdERhdGUocykge1xuICBjb25zdCBbeSwgbSwgZF0gPSBzLnNwbGl0KFwiLVwiKS5tYXAoTnVtYmVyKVxuICByZXR1cm4gbmV3IERhdGUoeSwgbSAtIDEsIGQpLnRvTG9jYWxlRGF0ZVN0cmluZyhcImVuLVVTXCIsIHtcbiAgICB5ZWFyOiBcIm51bWVyaWNcIiwgbW9udGg6IFwibG9uZ1wiLCBkYXk6IFwibnVtZXJpY1wiXG4gIH0pXG59XG5cbmFsbERhdGVzID0gWy4uLm5ldyBTZXQoZGFpbHlfb2NjLm1hcChyID0+IHIuZGF0ZSkpXS5zb3J0KCkucmV2ZXJzZSgpXG5sYXRlc3REYXRlID0gYWxsRGF0ZXNbMF1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Ii8vIOKUgOKUgCBQaXBlbGluZSB2YWxpZGF0aW9uIChDS0FOLXRvLUNLQU4pIOKAlCBydW5zIG9uIG1vc3QgcmVjZW50IGRhdGUg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXG4vLyBUaGVzZSBjaGVja3MgY29uZmlybSBCb25RdWVyeSdzIGFnZ3JlZ2F0aW9uIHBpcGVsaW5lIGlzIGludGVybmFsbHkgY29ycmVjdC5cbi8vIFRoZXkgZG8gbm90IGNvbXBhcmUgYWdhaW5zdCB0aGUgQ2l0eSdzIGxpdmUgZGFzaGJvYXJkLlxuXG5sYXRlc3RSb3dzID0gZGFpbHlfb2NjLmZpbHRlcihyID0+IHIuZGF0ZSA9PT0gbGF0ZXN0RGF0ZSlcblxuZnVuY3Rpb24gZ2V0VmFsKHJvd3MsIGtleSkge1xuICBjb25zdCByb3cgPSByb3dzLmZpbmQociA9PiByLmtleSA9PT0ga2V5KVxuICByZXR1cm4gcm93ID8gcm93LmluZCA6IG51bGxcbn1cblxudmFsaWRhdGlvbkNoZWNrcyA9IHtcbiAgY29uc3Qgcm93cyA9IGxhdGVzdFJvd3NcbiAgY29uc3QgY2hlY2tzID0gW11cblxuICAvLyBDaGVjayAxOiBhbGwgZXhwZWN0ZWQga2V5cyBwcmVzZW50XG4gIGNvbnN0IGV4cGVjdGVkS2V5cyA9IFtcbiAgICBcImFsbF9zaGVsdGVyXCIsXCJyb29tX2Jhc2VkXCIsXCJzaW5nbGVzX3NlY3RvclwiLFwic2luZ2xlc19zaGVsdGVyXCIsXCJhbGxpZWRfc3VtbVwiLFxuICAgIFwidGVtcF9zdW1tXCIsXCJpc29fc3VtbVwiLFwiZmFtX3RvdGFsXCIsXCJmYW1fZW1lcmdcIixcImZhbV90cmFuc19yXCIsXCJmYW1faG90ZWxcIixcbiAgICBcInNuZ19ob3RlbFwiLFwic2luZ2xlc190b3RhbFwiLFwiZW1lcmdfdG90YWxcIixcIm1peF9lbWVyZ1wiLFwibWVuX2VtZXJnXCIsXCJ3b21fZW1lcmdcIixcbiAgICBcInl0aF9lbWVyZ1wiLFwidHJhbnNfdG90YWxcIixcIm1peF90cmFuc1wiLFwiZmFtX3RyYW5zX2JcIixcIm1lbl90cmFuc1wiLFwid29tX3RyYW5zXCIsXG4gICAgXCJ5dGhfdHJhbnNcIixcImFsbGllZF90b3RhbFwiLFwicmVzcGl0ZXNcIixcImRyb3BpblwiLFwidGVtcF9yZXNwXCIsXCJob3RlbHNcIixcImlzb1wiXG4gIF1cbiAgY29uc3QgcHJlc2VudEtleXMgPSBuZXcgU2V0KHJvd3MubWFwKHIgPT4gci5rZXkpKVxuICBjb25zdCBtaXNzaW5nS2V5cyA9IGV4cGVjdGVkS2V5cy5maWx0ZXIoayA9PiAhcHJlc2VudEtleXMuaGFzKGspKVxuICBjaGVja3MucHVzaCh7XG4gICAgbmFtZTogXCJBbGwgZXhwZWN0ZWQgcm93cyBwcmVzZW50XCIsXG4gICAgcGFzczogbWlzc2luZ0tleXMubGVuZ3RoID09PSAwLFxuICAgIGRldGFpbDogbWlzc2luZ0tleXMubGVuZ3RoID4gMCA/IGBNaXNzaW5nOiAke21pc3NpbmdLZXlzLmpvaW4oXCIsIFwiKX1gIDogbnVsbFxuICB9KVxuXG4gIC8vIENoZWNrIDI6IEFsbCBTaGVsdGVyIFByb2dyYW1zIHRvdGFsID0gc3VtIG9mIGNvbXBvbmVudHNcbiAgY29uc3QgYWxsU2hlbHRlciA9IGdldFZhbChyb3dzLCBcImFsbF9zaGVsdGVyXCIpXG4gIGNvbnN0IGNvbXBTdW0gPSBbXCJmYW1fdG90YWxcIixcInNuZ19ob3RlbFwiLFwic2luZ2xlc190b3RhbFwiLFwiYWxsaWVkX3RvdGFsXCIsXCJ0ZW1wX3Jlc3BcIixcImhvdGVsc1wiLFwiaXNvXCJdXG4gICAgLnJlZHVjZSgocywgaykgPT4gcyArIChnZXRWYWwocm93cywgaykgPz8gMCksIDApXG4gIGNoZWNrcy5wdXNoKHtcbiAgICBuYW1lOiBcIkFsbCBTaGVsdGVyIFByb2dyYW1zIHJvbGx1cCBtYXRjaGVzIGNvbXBvbmVudHNcIixcbiAgICBwYXNzOiBhbGxTaGVsdGVyID09PSBjb21wU3VtLFxuICAgIGRldGFpbDogYWxsU2hlbHRlciAhPT0gY29tcFN1bVxuICAgICAgPyBgYWxsX3NoZWx0ZXIuaW5kPSR7YWxsU2hlbHRlcn0sIGNvbXBvbmVudCBzdW09JHtjb21wU3VtfSwgZGlmZj0ke2FsbFNoZWx0ZXIgLSBjb21wU3VtfWBcbiAgICAgIDogbnVsbFxuICB9KVxuXG4gIC8vIENoZWNrIDM6IFNpbmdsZXMgc2VjdG9ycyB0b3RhbCA9IGVtZXJnZW5jeSArIHRyYW5zaXRpb25hbFxuICBjb25zdCBzaW5nbGVzVG90YWwgPSBnZXRWYWwocm93cywgXCJzaW5nbGVzX3RvdGFsXCIpXG4gIGNvbnN0IGVtZXJnVG90YWwgPSBnZXRWYWwocm93cywgXCJlbWVyZ190b3RhbFwiKVxuICBjb25zdCB0cmFuc1RvdGFsID0gZ2V0VmFsKHJvd3MsIFwidHJhbnNfdG90YWxcIilcbiAgY2hlY2tzLnB1c2goe1xuICAgIG5hbWU6IFwiU2luZ2xlcyBzZWN0b3JzIHJvbGx1cDogZW1lcmdlbmN5ICsgdHJhbnNpdGlvbmFsID0gc2luZ2xlcyB0b3RhbFwiLFxuICAgIHBhc3M6IHNpbmdsZXNUb3RhbCA9PT0gKGVtZXJnVG90YWwgKyB0cmFuc1RvdGFsKSxcbiAgICBkZXRhaWw6IHNpbmdsZXNUb3RhbCAhPT0gKGVtZXJnVG90YWwgKyB0cmFuc1RvdGFsKVxuICAgICAgPyBgc2luZ2xlcz0ke3NpbmdsZXNUb3RhbH0sIGVtZXJnK3RyYW5zPSR7ZW1lcmdUb3RhbCArIHRyYW5zVG90YWx9YFxuICAgICAgOiBudWxsXG4gIH0pXG5cbiAgLy8gQ2hlY2sgNDogRm9yIGV2ZXJ5IHJvdyB3aXRoIG5vbi1udWxsIGNhcCwgb2NjICsgdW5vY2MgPSBjYXAgKHdpdGhpbiAxLCBmb3Igcm91bmRpbmcpXG4gIGNvbnN0IGNhcFJvd3MgPSByb3dzLmZpbHRlcihyID0+IHIuY2FwICE9PSBudWxsICYmIHIuY2FwID4gMClcbiAgY29uc3QgYXJpdGhGYWlscyA9IGNhcFJvd3MuZmlsdGVyKHIgPT4gTWF0aC5hYnMoci5vY2MgKyByLnVub2NjIC0gci5jYXApID4gMC41KVxuICBjaGVja3MucHVzaCh7XG4gICAgbmFtZTogXCJJbnRlcm5hbCBhcml0aG1ldGljOiBvY2N1cGllZCArIHVub2NjdXBpZWQgPSBhY3R1YWwgY2FwYWNpdHlcIixcbiAgICBwYXNzOiBhcml0aEZhaWxzLmxlbmd0aCA9PT0gMCxcbiAgICBkZXRhaWw6IGFyaXRoRmFpbHMubGVuZ3RoID4gMFxuICAgICAgPyBhcml0aEZhaWxzLm1hcChyID0+IGAke3Iua2V5fTogJHtyLm9jY30rJHtyLnVub2NjfeKJoCR7ci5jYXB9YCkuam9pbihcIjsgXCIpXG4gICAgICA6IG51bGxcbiAgfSlcblxuICByZXR1cm4gY2hlY2tzXG59XG5cbmFsbFBhc3MgPSB2YWxpZGF0aW9uQ2hlY2tzLmV2ZXJ5KGMgPT4gYy5wYXNzKVxuXG4vLyDilIDilIAgVmFsaWRhdGlvbiBiYW5uZXIg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXG52YWxpZGF0aW9uQmFubmVyID0ge1xuICBpZiAoYWxsUGFzcykge1xuICAgIHJldHVybiBodG1sYDxkaXYgc3R5bGU9XCJcbiAgICAgIGJhY2tncm91bmQ6I2Q0ZWRkYTtib3JkZXI6MXB4IHNvbGlkICM3NmI4OGQ7Ym9yZGVyLXJhZGl1czo0cHg7XG4gICAgICBwYWRkaW5nOjhweCAxNHB4O2ZvbnQtc2l6ZTowLjg4ZW07Y29sb3I6IzFhNDczMTttYXJnaW4tYm90dG9tOjEycHhcIj5cbiAgICAgIOKckyBWYWxpZGF0ZWQgYWdhaW5zdCBDaXR5IG9mIFRvcm9udG8gb3BlbiBkYXRhIGZvciAke2ZtdERhdGUobGF0ZXN0RGF0ZSl9XG4gICAgPC9kaXY+YFxuICB9IGVsc2Uge1xuICAgIGNvbnN0IGZhaWxlZENoZWNrcyA9IHZhbGlkYXRpb25DaGVja3MuZmlsdGVyKGMgPT4gIWMucGFzcylcbiAgICByZXR1cm4gaHRtbGA8ZGl2IHN0eWxlPVwiXG4gICAgICBiYWNrZ3JvdW5kOiNmZmYzY2Q7Ym9yZGVyOjFweCBzb2xpZCAjZTBhODAwO2JvcmRlci1yYWRpdXM6NHB4O1xuICAgICAgcGFkZGluZzo4cHggMTRweDtmb250LXNpemU6MC44OGVtO2NvbG9yOiM1MzNmMDM7bWFyZ2luLWJvdHRvbToxMnB4XCI+XG4gICAgICA8c3Ryb25nPuKaoCBWYWxpZGF0aW9uIGlzc3VlIGRldGVjdGVkIGZvciAke2ZtdERhdGUobGF0ZXN0RGF0ZSl9PC9zdHJvbmc+XG4gICAgICA8ZGV0YWlscyBzdHlsZT1cIm1hcmdpbi10b3A6NnB4XCI+XG4gICAgICAgIDxzdW1tYXJ5IHN0eWxlPVwiY3Vyc29yOnBvaW50ZXJcIj5TaG93IGRldGFpbHM8L3N1bW1hcnk+XG4gICAgICAgIDx1bCBzdHlsZT1cIm1hcmdpbjo2cHggMCAwO3BhZGRpbmctbGVmdDoyMHB4XCI+XG4gICAgICAgICAgJHtmYWlsZWRDaGVja3MubWFwKGMgPT4gaHRtbGA8bGk+JHtjLm5hbWV9JHtjLmRldGFpbCA/IGh0bWxgIOKAlCA8ZW0+JHtjLmRldGFpbH08L2VtPmAgOiBcIlwifTwvbGk+YCl9XG4gICAgICAgIDwvdWw+XG4gICAgICA8L2RldGFpbHM+XG4gICAgPC9kaXY+YFxuICB9XG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTQiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2Ygc2VsZWN0ZWREYXRlID0gSW5wdXRzLnNlbGVjdChhbGxEYXRlcywge1xuICBsYWJlbDogXCJEYXRlXCIsXG4gIGZvcm1hdDogZCA9PiBmbXREYXRlKGQpXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC01IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiLy8g4pSA4pSAIFRhYmxlIHJlbmRlcmluZyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIBcbmRheVJvd3MgPSBkYWlseV9vY2MuZmlsdGVyKHIgPT4gci5kYXRlID09PSBzZWxlY3RlZERhdGUpXG5cbmZ1bmN0aW9uIG4odikgeyByZXR1cm4gdiAhPT0gbnVsbCAmJiB2ICE9PSB1bmRlZmluZWQgPyB2LnRvTG9jYWxlU3RyaW5nKCkgOiBcIuKAlFwiIH1cbmZ1bmN0aW9uIHBjdCh2KSB7IHJldHVybiB2ICE9PSBudWxsICYmIHYgIT09IHVuZGVmaW5lZCA/IHYudG9GaXhlZCgxKSArIFwiJVwiIDogXCLigJRcIiB9XG5cbmZ1bmN0aW9uIHRhYmxlUm93KHIsIGNvbDFMYWJlbCkge1xuICBjb25zdCBwYWQgPSAoci5pbmRlbnQgPz8gMCkgKiAxNlxuICBjb25zdCBib2xkID0gci5pc190b3RhbCA/IFwiZm9udC13ZWlnaHQ6NjAwXCIgOiBcIlwiXG4gIGNvbnN0IGJnICAgPSByLmlzX3RvdGFsID8gXCIjZThlZGY1XCIgOiBcIiNmZmZmZmZcIlxuICBpZiAoci5jb2xfdHlwZSA9PT0gXCJzdW1tYXJ5XCIpIHtcbiAgICByZXR1cm4gYDx0ciBzdHlsZT1cImJhY2tncm91bmQ6JHtiZ31cIj5cbiAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDEwcHggNXB4ICR7cGFkfXB4OyR7Ym9sZH1cIj4ke3IubGFiZWx9PC90ZD5cbiAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDEwcHg7dGV4dC1hbGlnbjpyaWdodDske2JvbGR9XCI+JHtuKHIuaW5kKX08L3RkPlxuICAgICAgPHRkPjwvdGQ+PHRkPjwvdGQ+PHRkPjwvdGQ+PHRkPjwvdGQ+XG4gICAgPC90cj5gXG4gIH1cbiAgcmV0dXJuIGA8dHIgc3R5bGU9XCJiYWNrZ3JvdW5kOiR7Ymd9XCI+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggMTBweCA1cHggJHtwYWR9cHg7JHtib2xkfVwiPiR7ci5sYWJlbH08L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDEwcHg7dGV4dC1hbGlnbjpyaWdodDske2JvbGR9XCI+JHtuKHIuaW5kKX08L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDEwcHg7dGV4dC1hbGlnbjpyaWdodFwiPiR7bihyLm9jYyl9PC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAxMHB4O3RleHQtYWxpZ246cmlnaHRcIj4ke24oci51bm9jYyl9PC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAxMHB4O3RleHQtYWxpZ246cmlnaHRcIj4ke24oci5jYXApfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggMTBweDt0ZXh0LWFsaWduOnJpZ2h0XCI+JHtwY3Qoci5yYXRlKX08L3RkPlxuICA8L3RyPmBcbn1cblxuZnVuY3Rpb24gc2VjdGlvbkhlYWRlcihsYWJlbCwgY29sMSwgY29sMiwgY29sMykge1xuICByZXR1cm4gYDx0ciBzdHlsZT1cImJhY2tncm91bmQ6IzFhM2M2Yjtjb2xvcjp3aGl0ZTtmb250LXdlaWdodDo2MDA7Zm9udC1zaXplOjAuODVlbVwiPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDEwcHhcIj4ke2xhYmVsfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo3cHggMTBweDt0ZXh0LWFsaWduOnJpZ2h0XCI+SW5kaXZpZHVhbHM8L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDEwcHg7dGV4dC1hbGlnbjpyaWdodFwiPiR7Y29sMX08L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDEwcHg7dGV4dC1hbGlnbjpyaWdodFwiPiR7Y29sMn08L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDEwcHg7dGV4dC1hbGlnbjpyaWdodFwiPiR7Y29sM308L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDEwcHg7dGV4dC1hbGlnbjpyaWdodFwiPk9jY3VwYW5jeSBSYXRlPC90ZD5cbiAgPC90cj5gXG59XG5cbmZ1bmN0aW9uIHN1bW1hcnlIZWFkZXIoKSB7XG4gIHJldHVybiBgPHRyIHN0eWxlPVwiYmFja2dyb3VuZDojMWEzYzZiO2NvbG9yOndoaXRlO2ZvbnQtd2VpZ2h0OjYwMDtmb250LXNpemU6MC44NWVtXCI+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo3cHggMTBweFwiPk9jY3VwYW5jeSBTdW1tYXJ5PC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjdweCAxMHB4O3RleHQtYWxpZ246cmlnaHRcIj5JbmRpdmlkdWFsczwvdGQ+XG4gICAgPHRkIGNvbHNwYW49XCI0XCI+PC90ZD5cbiAgPC90cj5gXG59XG5cbmRhaWx5VGFibGUgPSB7XG4gIGNvbnN0IHMgPSAoa2V5KSA9PiBkYXlSb3dzLmZpbmQociA9PiByLmtleSA9PT0ga2V5KVxuXG4gIGNvbnN0IGFsbFNoZWx0ZXJJbmQgPSBzKFwiYWxsX3NoZWx0ZXJcIikgPyBzKFwiYWxsX3NoZWx0ZXJcIikuaW5kIDogbnVsbFxuICBjb25zdCB0b3RhbEFjY29tUm93ID0gYDx0ciBzdHlsZT1cImJhY2tncm91bmQ6I2U4ZWRmNTtmb250LXdlaWdodDo2MDBcIj5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAxMHB4XCI+VG90YWwgUGVvcGxlIEFjY29tbW9kYXRlZCDigKA8L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDEwcHg7dGV4dC1hbGlnbjpyaWdodFwiPiR7bihhbGxTaGVsdGVySW5kKX08L3RkPlxuICAgIDx0ZD48L3RkPjx0ZD48L3RkPjx0ZD48L3RkPjx0ZD48L3RkPlxuICA8L3RyPmBcbiAgY29uc3QgYnJpZGdpbmdSb3cgPSBgPHRyIHN0eWxlPVwiYmFja2dyb3VuZDojZjVmNWY1O2NvbG9yOiM5OTk7Zm9udC1zdHlsZTppdGFsaWNcIj5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAxMHB4IDVweCAyNnB4XCI+QnJpZGdpbmcgJmFtcDsgVHJpYWdlIFByb2dyYW1zPC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAxMHB4O3RleHQtYWxpZ246cmlnaHQ7Zm9udC1zaXplOjAuODVlbVwiPk5vdCBwdWJsaXNoZWQgdG8gb3BlbiBkYXRhPC90ZD5cbiAgICA8dGQ+PC90ZD48dGQ+PC90ZD48dGQ+PC90ZD48dGQ+PC90ZD5cbiAgPC90cj5gXG5cbiAgY29uc3Qgc3VtbWFyeUtleXMgPSBbXCJhbGxfc2hlbHRlclwiLFwicm9vbV9iYXNlZFwiLFwic2luZ2xlc19zZWN0b3JcIixcInNpbmdsZXNfc2hlbHRlclwiLFwiYWxsaWVkX3N1bW1cIixcInRlbXBfc3VtbVwiLFwiaXNvX3N1bW1cIl1cbiAgY29uc3Qgcm9vbUtleXMgICAgPSBbXCJmYW1fdG90YWxcIixcImZhbV9lbWVyZ1wiLFwiZmFtX3RyYW5zX3JcIixcImZhbV9ob3RlbFwiLFwic25nX2hvdGVsXCJdXG4gIGNvbnN0IGJlZEtleXMgICAgID0gW1wic2luZ2xlc190b3RhbFwiLFwiZW1lcmdfdG90YWxcIixcIm1peF9lbWVyZ1wiLFwibWVuX2VtZXJnXCIsXCJ3b21fZW1lcmdcIixcInl0aF9lbWVyZ1wiLFxuICAgICAgICAgICAgICAgICAgICAgICBcInRyYW5zX3RvdGFsXCIsXCJtaXhfdHJhbnNcIixcImZhbV90cmFuc19iXCIsXCJtZW5fdHJhbnNcIixcIndvbV90cmFuc1wiLFwieXRoX3RyYW5zXCJdXG4gIGNvbnN0IGFsbGllZEtleXMgID0gW1wiYWxsaWVkX3RvdGFsXCIsXCJyZXNwaXRlc1wiLFwiZHJvcGluXCJdXG5cbiAgcmV0dXJuIGh0bWxgXG4gICAgPGRpdiBzdHlsZT1cIm92ZXJmbG93LXg6YXV0bzttYXJnaW46MCAwIDFyZW1cIj5cbiAgICA8dGFibGUgc3R5bGU9XCJib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7d2lkdGg6MTAwJTtmb250LXNpemU6MC44OGVtO2ZvbnQtZmFtaWx5OidTZWdvZSBVSScsQXJpYWwsc2Fucy1zZXJpZjttaW4td2lkdGg6NjIwcHhcIj5cbiAgICAgICR7c3VtbWFyeUhlYWRlcigpfVxuICAgICAgJHt0b3RhbEFjY29tUm93fVxuICAgICAgJHticmlkZ2luZ1Jvd31cbiAgICAgICR7c3VtbWFyeUtleXMubWFwKGsgPT4gcyhrKSA/IHRhYmxlUm93KHMoaykpIDogXCJcIikuam9pbihcIlwiKX1cblxuICAgICAgJHtzZWN0aW9uSGVhZGVyKFwiU2hlbHRlciBQcm9ncmFtcywgUm9vbS1CYXNlZFwiLCBcIk9jY3VwaWVkIFJvb21zXCIsIFwiVW5vY2N1cGllZCBSb29tc1wiLCBcIkFjdHVhbCBSb29tIENhcGFjaXR5XCIpfVxuICAgICAgJHtyb29tS2V5cy5tYXAoayA9PiBzKGspID8gdGFibGVSb3cocyhrKSkgOiBcIlwiKS5qb2luKFwiXCIpfVxuXG4gICAgICAke3NlY3Rpb25IZWFkZXIoXCJTaGVsdGVyIFByb2dyYW1zLCBCZWQtQmFzZWRcIiwgXCJPY2N1cGllZCBCZWRzXCIsIFwiVW5vY2N1cGllZCBCZWRzXCIsIFwiQWN0dWFsIEJlZCBDYXBhY2l0eVwiKX1cbiAgICAgICR7YmVkS2V5cy5tYXAoayA9PiBzKGspID8gdGFibGVSb3cocyhrKSkgOiBcIlwiKS5qb2luKFwiXCIpfVxuXG4gICAgICAke3NlY3Rpb25IZWFkZXIoXCJBbGxpZWQgU2VydmljZXNcIiwgXCJPY2N1cGllZCBTcGFjZXNcIiwgXCJVbm9jY3VwaWVkIFNwYWNlc1wiLCBcIkFjdHVhbCBTcGFjZSBDYXBhY2l0eVwiKX1cbiAgICAgICR7YWxsaWVkS2V5cy5tYXAoayA9PiBzKGspID8gdGFibGVSb3cocyhrKSkgOiBcIlwiKS5qb2luKFwiXCIpfVxuXG4gICAgICA8dHIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMxYTNjNmI7Y29sb3I6d2hpdGU7Zm9udC13ZWlnaHQ6NjAwO2ZvbnQtc2l6ZTowLjg1ZW1cIj5cbiAgICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo3cHggMTBweFwiPlRlbXBvcmFyeSBQcm9ncmFtcywgQmVkL1NwYWNlLUJhc2VkPC90ZD5cbiAgICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo3cHggMTBweDt0ZXh0LWFsaWduOnJpZ2h0XCI+SW5kaXZpZHVhbHM8L3RkPlxuICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjdweCAxMHB4O3RleHQtYWxpZ246cmlnaHRcIj5PY2N1cGllZCBCZWRzL1NwYWNlczwvdGQ+XG4gICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDEwcHg7dGV4dC1hbGlnbjpyaWdodFwiPlVub2NjdXBpZWQ8L3RkPlxuICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjdweCAxMHB4O3RleHQtYWxpZ246cmlnaHRcIj5BY3R1YWwgQ2FwYWNpdHk8L3RkPlxuICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjdweCAxMHB4O3RleHQtYWxpZ246cmlnaHRcIj5PY2N1cGFuY3kgUmF0ZTwvdGQ+XG4gICAgICA8L3RyPlxuICAgICAgJHtzKFwidGVtcF9yZXNwXCIpID8gdGFibGVSb3cocyhcInRlbXBfcmVzcFwiKSkgOiBcIlwifVxuXG4gICAgICAke3NlY3Rpb25IZWFkZXIoXCJUZW1wb3JhcnkgUHJvZ3JhbXMsIFJvb20vVW5pdC1CYXNlZFwiLCBcIk9jY3VwaWVkIFJvb21zXCIsIFwiVW5vY2N1cGllZCBSb29tc1wiLCBcIkFjdHVhbCBSb29tIENhcGFjaXR5XCIpfVxuICAgICAgJHtzKFwiaG90ZWxzXCIpID8gdGFibGVSb3cocyhcImhvdGVsc1wiKSkgOiBcIlwifVxuXG4gICAgICAke3NlY3Rpb25IZWFkZXIoXCJUZW1wb3JhcnkgSXNvbGF0aW9uL1JlY292ZXJ5IFByb2dyYW1zXCIsIFwiT2NjdXBpZWQgUm9vbXNcIiwgXCJVbm9jY3VwaWVkIFJvb21zXCIsIFwiQWN0dWFsIFJvb20gQ2FwYWNpdHlcIil9XG4gICAgICAke3MoXCJpc29cIikgPyB0YWJsZVJvdyhzKFwiaXNvXCIpKSA6IFwiXCJ9XG4gICAgPC90YWJsZT5cbiAgICA8cCBzdHlsZT1cImZvbnQtc2l6ZTowLjhlbTtjb2xvcjojNjY2O21hcmdpbjo0cHggMCAwXCI+XG4gICAgICDigKAgVG90YWwgUGVvcGxlIEFjY29tbW9kYXRlZCBleGNsdWRlcyBCcmlkZ2luZyAmYW1wOyBUcmlhZ2UgcHJvZ3JhbXMsXG4gICAgICB3aGljaCBhcmUgdHJhY2tlZCBpbiB0aGUgQ2l0eSdzIG9wZXJhdGlvbmFsIHN5c3RlbSBidXQgbm90IHB1Ymxpc2hlZFxuICAgICAgdG8gb3BlbiBkYXRhLlxuICAgIDwvcD5cbiAgICA8L2Rpdj5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ3NlbGVjdGVkRGF0ZScpIn1dfQ==
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
