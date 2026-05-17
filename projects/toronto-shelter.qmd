@@ -445,6 +445,6 @@ dailyTable = {
 
 This table reproduces the City of Toronto's Daily Shelter & Overnight Service Usage report using the City's open data. Two known differences from the City's live dashboard: it does not include Bridging & Triage programs, which are not published to open data (29 people on May 14, 2026); and for emergency programs, "Actual Bed Capacity" counts beds currently available for use and excludes beds temporarily offline, which the City's live dashboard includes. Occupancy and individual counts match the City's figures exactly. A full side-by-side comparison is available on the [data validation page](data-validation.qmd){target="_blank"}.
 
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca).
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca) · [Download data (JSON)](https://bonquery.ca/data/daily_occupancy.json).
 
 :::
