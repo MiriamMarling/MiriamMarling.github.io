@@ -219,6 +219,7 @@ function fmtDate(s) {
 
 allDates = [...new Set(daily_occ.map(r => r.date))].sort().reverse()
 latestDate = allDates[0]
+cityValidation = FileAttachment("data/city_validation.json").json().catch(() => null)
 ```
 
 ## Daily Occupancy & Capacity for ${fmtDate(selectedDate)}
@@ -298,13 +299,7 @@ allPass = validationChecks.every(c => c.pass)
 
 // ── Validation banner ─────────────────────────────────────────────────────
 validationBanner = {
-  if (allPass) {
-    return html`<div style="
-      background:#d4edda;border:1px solid #76b88d;border-radius:4px;
-      padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px">
-      ✓ Validated against City of Toronto open data for ${fmtDate(latestDate)}
-    </div>`
-  } else {
+  if (!allPass) {
     const failedChecks = validationChecks.filter(c => !c.pass)
     return html`<div style="
       background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
@@ -318,6 +313,32 @@ validationBanner = {
       </details>
     </div>`
   }
+  if (cityValidation === null) {
+    return html`<div style="
+      background:#e9ecef;border:1px solid #adb5bd;border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:#495057;margin-bottom:12px">
+      Validation status unavailable in local development
+    </div>`
+  }
+  if (cityValidation.passed) {
+    return html`<div style="
+      background:#d4edda;border:1px solid #76b88d;border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px">
+      ✓ Last validated against <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/" target="_blank">City of Toronto open data</a> for ${fmtDate(cityValidation.city_date)}
+    </div>`
+  }
+  if (cityValidation.mismatches && cityValidation.mismatches.length > 0 && cityValidation.mismatches[0].city !== null) {
+    return html`<div style="
+      background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px">
+      ⚠ Validation discrepancy found for ${fmtDate(cityValidation.city_date)} — BonQuery values differ from City's published table
+    </div>`
+  }
+  return html`<div style="
+    background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
+    padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px">
+    ⚠ City of Toronto shelter census page could not be reached for validation
+  </div>`
 }
 ```
 

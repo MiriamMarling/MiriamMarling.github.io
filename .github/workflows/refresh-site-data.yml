@@ -40,7 +40,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install oracledb
+          pip install oracledb requests beautifulsoup4
 
       # Pull fresh data from OCI into data/shelter_flow.json
       # Secrets are injected as environment variables to match the
@@ -62,6 +62,10 @@ jobs:
       # also picks up the latest occupancy figures.
       - name: Generate daily occupancy data (CKAN)
         run: python scripts/generate_daily_occupancy.py
+
+      # Validate BonQuery's daily occupancy totals against the City's live page.
+      - name: Validate against City of Toronto shelter census page
+        run: python scripts/validate_city_page.py
 
       # Install Quarto so we can build and publish the site
       - name: Set up Quarto
