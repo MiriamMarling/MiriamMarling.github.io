@@ -222,6 +222,8 @@ latestDate = allDates[0]
 cityValidation = FileAttachment("data/city_validation.json").json().catch(() => null)
 ```
 
+BonQuery's version of this table adds one feature the City's page doesn't have: use the date selector below to browse any date from January 2021 to the present. The City's [Daily Shelter & Overnight Service Usage page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"} shows only its most recently published date, which doesn't always update on schedule. BonQuery pulls directly from City open data and is currently ahead of the City's page.
+
 ## Daily Occupancy & Capacity for ${fmtDate(selectedDate)}
 
 ```{ojs}
@@ -333,14 +335,14 @@ validationBanner = {
     return html`<div style="
       background:#d4edda;border:1px solid #76b88d;border-radius:4px;
       padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px">
-      ✓ Validated against <a href="${CITY_CENSUS_URL}" target="_blank">City of Toronto open data</a> for ${fmtDate(cityValidation.city_date)}
+      ✓ Validated against <a href="${CITY_CENSUS_URL}" target="_blank">City's Daily Shelter &amp; Overnight Service Usage page</a> for ${fmtDate(cityValidation.city_date)}
     </div>`
   }
   if (cityValidation.passed && cityValidation.city_date !== cityValidation.bonquery_latest_date) {
     return html`<div style="
       background:#d4edda;border:1px solid #76b88d;border-radius:4px;
       padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px">
-      ✓ Last validated against <a href="${CITY_CENSUS_URL}" target="_blank">City of Toronto open data</a> for ${fmtDate(cityValidation.city_date)} · BonQuery data current to ${fmtDate(cityValidation.bonquery_latest_date)} — City page not yet updated
+      ✓ Last validated against <a href="${CITY_CENSUS_URL}" target="_blank">City's Daily Shelter &amp; Overnight Service Usage page</a> for ${fmtDate(cityValidation.city_date)} · BonQuery data current to ${fmtDate(cityValidation.bonquery_latest_date)} — City page not yet updated
     </div>`
   }
   return html`<div style="
