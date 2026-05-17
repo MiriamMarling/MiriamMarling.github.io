@@ -1,6 +1,8 @@
 {
   "city_date": null,
-  "checked_at": "2026-05-17T22:37:00Z",
+  "bonquery_latest_date": "2026-05-16",
+  "city_reachable": false,
+  "checked_at": "2026-05-17T22:49:18Z",
   "passed": false,
   "mismatches": [
     {
