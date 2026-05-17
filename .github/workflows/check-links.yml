@@ -37,6 +37,7 @@ jobs:
             --exclude "^https?://127\."
             "**/*.qmd"
             "**/*.md"
-          # Report broken links but don't fail the build — broken external
-          # URLs shouldn't block a data refresh. Review the job output manually.
-          fail: false
+          # Fail the workflow when broken links are found so GitHub sends
+          # an email notification. This does not block pushes or the data
+          # refresh workflow — both run independently of this check.
+          fail: true
