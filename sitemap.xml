@@ -2,34 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bonquery.ca/about.html</loc>
-    <lastmod>2026-05-17T12:34:28.423Z</lastmod>
+    <lastmod>2026-05-17T12:38:20.814Z</lastmod>
   </url>
   <url>
-    <loc>https://bonquery.ca/projects/monthly-snapshot.html</loc>
-    <lastmod>2026-05-17T12:34:28.426Z</lastmod>
-  </url>
-  <url>
-    <loc>https://bonquery.ca/projects/about-the-data.html</loc>
-    <lastmod>2026-05-17T12:34:28.426Z</lastmod>
-  </url>
-  <url>
-    <loc>https://bonquery.ca/projects/ytd-comparison.html</loc>
-    <lastmod>2026-05-17T12:34:28.426Z</lastmod>
-  </url>
-  <url>
-    <loc>https://bonquery.ca/reference/palette.html</loc>
-    <lastmod>2026-05-17T12:34:28.427Z</lastmod>
-  </url>
-  <url>
-    <loc>https://bonquery.ca/projects/toronto-shelter.html</loc>
-    <lastmod>2026-05-17T12:34:28.426Z</lastmod>
+    <loc>https://bonquery.ca/projects/data-validation.html</loc>
+    <lastmod>2026-05-17T12:38:20.817Z</lastmod>
   </url>
   <url>
     <loc>https://bonquery.ca/projects/historical-trends.html</loc>
-    <lastmod>2026-05-17T12:34:28.426Z</lastmod>
+    <lastmod>2026-05-17T12:38:20.817Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bonquery.ca/projects/toronto-shelter.html</loc>
+    <lastmod>2026-05-17T12:38:20.817Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bonquery.ca/reference/palette.html</loc>
+    <lastmod>2026-05-17T12:38:20.817Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bonquery.ca/projects/ytd-comparison.html</loc>
+    <lastmod>2026-05-17T12:38:20.817Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bonquery.ca/projects/about-the-data.html</loc>
+    <lastmod>2026-05-17T12:38:20.815Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bonquery.ca/projects/monthly-snapshot.html</loc>
+    <lastmod>2026-05-17T12:38:20.817Z</lastmod>
   </url>
   <url>
     <loc>https://bonquery.ca/index.html</loc>
-    <lastmod>2026-05-17T12:34:28.426Z</lastmod>
+    <lastmod>2026-05-17T12:38:20.815Z</lastmod>
   </url>
 </urlset>

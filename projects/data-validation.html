@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Miriam Marling">
+<meta name="description" content="A transparency check comparing BonQuery’s Toronto shelter occupancy figures against the City of Toronto’s live dashboard, with a full account of known data differences.">
+
+<title>Validating BonQuery’s Data Against the City of Toronto – BonQuery</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3e7735b7b22659e5fa437aca0bb49075.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="../site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="../site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="Validating BonQuery’s Data Against the City of Toronto">
+<meta property="og:description" content="A transparency check comparing BonQuery’s Toronto shelter occupancy figures against the City of Toronto’s live dashboard, with a full account of known data differences.">
+<meta property="og:site_name" content="BonQuery">
+<meta name="twitter:title" content="Validating BonQuery’s Data Against the City of Toronto">
+<meta name="twitter:description" content="A transparency check comparing BonQuery’s Toronto shelter occupancy figures against the City of Toronto’s live dashboard, with a full account of known data differences.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">BonQuery</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li>
+    <a class="dropdown-item" href="../projects/toronto-shelter.html">
+ <span class="dropdown-text">Inside Toronto’s Shelter System</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/about-the-data.html">
+ <span class="dropdown-text">About the Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/data-validation.html">
+ <span class="dropdown-text">Data Validation</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../projects/historical-trends.html">
+ <span class="dropdown-text">Historical Trends</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/monthly-snapshot.html">
+ <span class="dropdown-text">Monthly Snapshot</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/ytd-comparison.html">
+ <span class="dropdown-text">YTD Comparison</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#legend" id="toc-legend" class="nav-link active" data-scroll-target="#legend">Legend</a></li>
+  <li><a href="#side-by-side-comparison-may-14-2026" id="toc-side-by-side-comparison-may-14-2026" class="nav-link" data-scroll-target="#side-by-side-comparison-may-14-2026">Side-by-side comparison — May 14, 2026</a></li>
+  <li><a href="#notes-on-differences" id="toc-notes-on-differences" class="nav-link" data-scroll-target="#notes-on-differences">Notes on differences</a>
+  <ul class="collapse">
+  <li><a href="#emergency-bed-capacity-mark" id="toc-emergency-bed-capacity-mark" class="nav-link" data-scroll-target="#emergency-bed-capacity-mark">Emergency bed capacity (≈ mark)</a></li>
+  <li><a href="#bridging-triage-programs-not-published-to-open-data" id="toc-bridging-triage-programs-not-published-to-open-data" class="nav-link" data-scroll-target="#bridging-triage-programs-not-published-to-open-data">Bridging &amp; Triage programs (not published to open data)</a></li>
+  <li><a href="#the-takeaway" id="toc-the-takeaway" class="nav-link" data-scroll-target="#the-takeaway">The takeaway</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Validating BonQuery’s Data Against the City of Toronto</h1>
+</div>
+
+<div>
+  <div class="description">
+    A transparency check comparing BonQuery’s Toronto shelter occupancy figures against the City of Toronto’s live dashboard, with a full account of known data differences.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Miriam Marling </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This page is a transparency check. It places BonQuery’s open-data figures for daily shelter occupancy directly beside the City of Toronto’s published live-dashboard figures for the same date, and gives a precise account of every difference. BonQuery’s table is built entirely from the City’s own open data (CKAN export); the live dashboard draws on the City’s internal operational system. Most figures match exactly. Where they don’t, the reason is documented below — neither source is wrong; they answer slightly different questions.</p>
+<p><strong>Comparison as of May 14, 2026.</strong> Unlike the hub-page table — which updates each time new CKAN data is pulled — this comparison page is a periodic artifact for a documented reference date. Refreshing it requires manually capturing a new City snapshot. The reference date is noted plainly so readers know exactly what is being compared.</p>
+<hr>
+<section id="legend" class="level2">
+<h2 class="anchored" data-anchor-id="legend">Legend</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mark</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>✓</td>
+<td><strong>Matches</strong> — BonQuery’s open-data figure equals the City’s published figure</td>
+</tr>
+<tr class="even">
+<td>≈</td>
+<td><strong>Known difference</strong> — figures differ by a documented, explained amount (see notes below)</td>
+</tr>
+<tr class="odd">
+<td>✗</td>
+<td><strong>Unexplained discrepancy</strong> — should never appear; if it does, investigate</td>
+</tr>
+</tbody>
+</table>
+<p>Rows labelled <em>Not published to open data</em> are absent from the CKAN export entirely and receive no mark.</p>
+<hr>
+</section>
+<section id="side-by-side-comparison-may-14-2026" class="level2">
+<h2 class="anchored" data-anchor-id="side-by-side-comparison-may-14-2026">Side-by-side comparison — May 14, 2026</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb1" data-startfrom="37" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 36;"><span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>daily_occ <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"../data/daily_occupancy.json"</span>)<span class="op">.</span><span class="fu">json</span>()</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>city_ref  <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"../data/city_reference_2026-05-14.json"</span>)<span class="op">.</span><span class="fu">json</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb2" data-startfrom="44" data-source-offset="-28"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 43;"><span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>bq14 <span class="op">=</span> daily_occ<span class="op">.</span><span class="fu">filter</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">date</span> <span class="op">===</span> <span class="st">"2026-05-14"</span>)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">bq</span>(key) { <span class="cf">return</span> bq14<span class="op">.</span><span class="fu">find</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">key</span> <span class="op">===</span> key) }</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cr</span>(key) { <span class="cf">return</span> city_ref<span class="op">.</span><span class="fu">find</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">key</span> <span class="op">===</span> key) }</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">n</span>(v)   { <span class="cf">return</span> v <span class="op">!==</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> v <span class="op">!==</span> <span class="kw">undefined</span> <span class="op">?</span> (<span class="op">+</span>v)<span class="op">.</span><span class="fu">toLocaleString</span>() <span class="op">:</span> <span class="st">"—"</span> }</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">pct</span>(v) { <span class="cf">return</span> v <span class="op">!==</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> v <span class="op">!==</span> <span class="kw">undefined</span> <span class="op">?</span> (<span class="op">+</span>v)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>) <span class="op">+</span> <span class="st">"%"</span> <span class="op">:</span> <span class="st">"—"</span> }</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="co">// Known-difference keys (capacity/rate only — ind and occ match)</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>KNOWN_CAP_KEYS <span class="op">=</span> <span class="kw">new</span> <span class="bu">Set</span>([<span class="st">"mix_emerg"</span><span class="op">,</span><span class="st">"men_emerg"</span><span class="op">,</span><span class="st">"wom_emerg"</span><span class="op">,</span><span class="st">"yth_emerg"</span><span class="op">,</span><span class="st">"emerg_total"</span><span class="op">,</span><span class="st">"singles_total"</span>])</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">mark</span>(bqVal<span class="op">,</span> cityVal<span class="op">,</span> isCapOrRate<span class="op">,</span> key) {</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (cityVal <span class="op">===</span> <span class="kw">null</span> <span class="op">||</span> cityVal <span class="op">===</span> <span class="kw">undefined</span>) <span class="cf">return</span> <span class="st">""</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (bqVal <span class="op">===</span> <span class="kw">null</span> <span class="op">||</span> bqVal <span class="op">===</span> <span class="kw">undefined</span>) <span class="cf">return</span> <span class="st">""</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> match <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(<span class="op">+</span>bqVal <span class="op">-</span> <span class="op">+</span>cityVal) <span class="op">&lt;</span> <span class="fl">0.11</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (match) <span class="cf">return</span> <span class="vs">`&lt;span style="color:#1a7a4a;font-weight:bold"&gt;✓&lt;/span&gt;`</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (isCapOrRate <span class="op">&amp;&amp;</span> KNOWN_CAP_KEYS<span class="op">.</span><span class="fu">has</span>(key))</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="vs">`&lt;span style="color:#b06000;font-weight:bold" title="Known difference — see notes"&gt;≈&lt;/span&gt;`</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="vs">`&lt;span style="color:#c0392b;font-weight:bold"&gt;✗&lt;/span&gt;`</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">compRow</span>(key<span class="op">,</span> bqRow<span class="op">,</span> cityRow<span class="op">,</span> opts <span class="op">=</span> {}) {</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> { indent <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> isTot <span class="op">=</span> <span class="kw">false</span><span class="op">,</span> summaryOnly <span class="op">=</span> <span class="kw">false</span> } <span class="op">=</span> opts</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> pad <span class="op">=</span> indent <span class="op">*</span> <span class="dv">16</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bold <span class="op">=</span> isTot <span class="op">?</span> <span class="st">"font-weight:600"</span> <span class="op">:</span> <span class="st">""</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bg   <span class="op">=</span> isTot <span class="op">?</span> <span class="st">"#e8edf5"</span> <span class="op">:</span> <span class="st">"#fff"</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>bqRow <span class="op">||</span> <span class="op">!</span>cityRow) <span class="cf">return</span> <span class="st">""</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> useCap <span class="op">=</span> bqRow<span class="op">.</span><span class="at">col_type</span> <span class="op">!==</span> <span class="st">"summary"</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (summaryOnly <span class="op">||</span> bqRow<span class="op">.</span><span class="at">col_type</span> <span class="op">===</span> <span class="st">"summary"</span>) {</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="vs">`&lt;tr style="background:</span><span class="sc">${</span>bg<span class="sc">}</span><span class="vs">"&gt;</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;td style="padding:5px 10px 5px </span><span class="sc">${</span>pad<span class="sc">}</span><span class="vs">px;</span><span class="sc">${</span>bold<span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>bqRow<span class="op">.</span><span class="at">label</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;td style="padding:5px 8px;text-align:right;</span><span class="sc">${</span>bold<span class="sc">}</span><span class="vs">"&gt;</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a><span class="vs">        </span><span class="sc">${</span><span class="fu">n</span>(bqRow<span class="op">.</span><span class="at">ind</span>)<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span><span class="fu">mark</span>(bqRow<span class="op">.</span><span class="at">ind</span><span class="op">,</span> cityRow<span class="op">.</span><span class="at">city_ind</span><span class="op">,</span> <span class="kw">false</span><span class="op">,</span> key)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;td style="padding:5px 8px;text-align:right;color:#888"&gt;</span><span class="sc">${</span><span class="fu">n</span>(cityRow<span class="op">.</span><span class="at">city_ind</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;td colspan="6"&gt;&lt;/td&gt;</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/tr&gt;`</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="vs">`&lt;tr style="background:</span><span class="sc">${</span>bg<span class="sc">}</span><span class="vs">"&gt;</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 10px 5px </span><span class="sc">${</span>pad<span class="sc">}</span><span class="vs">px;</span><span class="sc">${</span>bold<span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>bqRow<span class="op">.</span><span class="at">label</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right;</span><span class="sc">${</span>bold<span class="sc">}</span><span class="vs">"&gt;</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">n</span>(bqRow<span class="op">.</span><span class="at">ind</span>)<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span><span class="fu">mark</span>(bqRow<span class="op">.</span><span class="at">ind</span><span class="op">,</span> cityRow<span class="op">.</span><span class="at">city_ind</span><span class="op">,</span> <span class="kw">false</span><span class="op">,</span> key)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right;color:#888"&gt;</span><span class="sc">${</span><span class="fu">n</span>(cityRow<span class="op">.</span><span class="at">city_ind</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right"&gt;</span></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">n</span>(bqRow<span class="op">.</span><span class="at">occ</span>)<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span><span class="fu">mark</span>(bqRow<span class="op">.</span><span class="at">occ</span><span class="op">,</span> cityRow<span class="op">.</span><span class="at">city_occ</span><span class="op">,</span> <span class="kw">false</span><span class="op">,</span> key)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right;color:#888"&gt;</span><span class="sc">${</span><span class="fu">n</span>(cityRow<span class="op">.</span><span class="at">city_occ</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right"&gt;</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">n</span>(bqRow<span class="op">.</span><span class="at">unocc</span>)<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span><span class="fu">mark</span>(bqRow<span class="op">.</span><span class="at">unocc</span><span class="op">,</span> cityRow<span class="op">.</span><span class="at">city_unocc</span><span class="op">,</span> <span class="kw">true</span><span class="op">,</span> key)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right;color:#888"&gt;</span><span class="sc">${</span><span class="fu">n</span>(cityRow<span class="op">.</span><span class="at">city_unocc</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right"&gt;</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">n</span>(bqRow<span class="op">.</span><span class="at">cap</span>)<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span><span class="fu">mark</span>(bqRow<span class="op">.</span><span class="at">cap</span><span class="op">,</span> cityRow<span class="op">.</span><span class="at">city_cap</span><span class="op">,</span> <span class="kw">true</span><span class="op">,</span> key)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right;color:#888"&gt;</span><span class="sc">${</span><span class="fu">n</span>(cityRow<span class="op">.</span><span class="at">city_cap</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right"&gt;</span></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a><span class="vs">      </span><span class="sc">${</span><span class="fu">pct</span>(bqRow<span class="op">.</span><span class="at">rate</span>)<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span><span class="fu">mark</span>(bqRow<span class="op">.</span><span class="at">rate</span><span class="op">,</span> cityRow<span class="op">.</span><span class="at">city_rate</span><span class="op">,</span> <span class="kw">true</span><span class="op">,</span> key)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:5px 8px;text-align:right;color:#888"&gt;</span><span class="sc">${</span><span class="fu">pct</span>(cityRow<span class="op">.</span><span class="at">city_rate</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;`</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">secHead</span>(label<span class="op">,</span> col1) {</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="vs">`&lt;tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.82em"&gt;</span></span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:6px 10px" rowspan="2"&gt;</span><span class="sc">${</span>label<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:6px 8px;text-align:center" colspan="2"&gt;Individuals&lt;/td&gt;</span></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:6px 8px;text-align:center" colspan="2"&gt;</span><span class="sc">${</span>col1[<span class="dv">0</span>]<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:6px 8px;text-align:center" colspan="2"&gt;</span><span class="sc">${</span>col1[<span class="dv">1</span>]<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:6px 8px;text-align:center" colspan="2"&gt;</span><span class="sc">${</span>col1[<span class="dv">2</span>]<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:6px 8px;text-align:center" colspan="2"&gt;Occupancy Rate&lt;/td&gt;</span></span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;</span></span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;tr style="background:#2c5282;color:#cfe0f7;font-size:0.78em"&gt;</span></span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;BQ&lt;/td&gt;</span></span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;City&lt;/td&gt;</span></span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;BQ&lt;/td&gt;</span></span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;City&lt;/td&gt;</span></span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;BQ&lt;/td&gt;</span></span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;City&lt;/td&gt;</span></span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;BQ&lt;/td&gt;</span></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;City&lt;/td&gt;</span></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;BQ&lt;/td&gt;</span></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;City&lt;/td&gt;</span></span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;`</span></span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">summarySecHead</span>() {</span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="vs">`&lt;tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.82em"&gt;</span></span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:6px 10px" rowspan="2"&gt;Occupancy Summary&lt;/td&gt;</span></span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:6px 8px;text-align:center" colspan="2"&gt;Individuals&lt;/td&gt;</span></span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td colspan="8"&gt;&lt;/td&gt;</span></span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;</span></span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;tr style="background:#2c5282;color:#cfe0f7;font-size:0.78em"&gt;</span></span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;BQ&lt;/td&gt;</span></span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td style="padding:3px 8px;text-align:center"&gt;City&lt;/td&gt;</span></span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;td colspan="8"&gt;&lt;/td&gt;</span></span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/tr&gt;`</span></span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>bridgingRow <span class="op">=</span> <span class="vs">`&lt;tr style="background:#f5f5f5;color:#888"&gt;</span></span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;td style="padding:5px 10px 5px 20px;font-style:italic"&gt;Bridging &amp;amp; Triage Programs&lt;/td&gt;</span></span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;td style="padding:5px 8px;text-align:right;font-size:0.85em" colspan="2"&gt;Not published to open data (29 people)&lt;/td&gt;</span></span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;td colspan="8"&gt;&lt;/td&gt;</span></span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a><span class="vs">&lt;/tr&gt;`</span></span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>compTable <span class="op">=</span> {</span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> rows <span class="op">=</span> [</span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all_shelter"</span><span class="op">,</span><span class="st">"room_based"</span><span class="op">,</span><span class="st">"singles_sector"</span><span class="op">,</span><span class="st">"singles_shelter"</span><span class="op">,</span><span class="st">"allied_summ"</span><span class="op">,</span><span class="st">"temp_summ"</span><span class="op">,</span><span class="st">"iso_summ"</span></span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`</span></span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;div style="overflow-x:auto;margin:1rem 0"&gt;</span></span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;table style="border-collapse:collapse;width:100%;font-size:0.83em;font-family:'Segoe UI',Arial,sans-serif;min-width:800px"&gt;</span></span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">summarySecHead</span>()<span class="sc">}</span></span>
+<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"all_shelter"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"all_shelter"</span>)<span class="op">,</span>    <span class="fu">cr</span>(<span class="st">"all_shelter"</span>)<span class="op">,</span>    {<span class="dt">isTot</span><span class="op">:</span><span class="kw">true</span><span class="op">,</span>  <span class="dt">summaryOnly</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span>bridgingRow<span class="sc">}</span></span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"room_based"</span><span class="op">,</span>      <span class="fu">bq</span>(<span class="st">"room_based"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"room_based"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span><span class="op">,</span> <span class="dt">summaryOnly</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"singles_sector"</span><span class="op">,</span>  <span class="fu">bq</span>(<span class="st">"singles_sector"</span>)<span class="op">,</span> {<span class="dt">city_ind</span><span class="op">:</span><span class="dv">5727</span>}<span class="op">,</span>      {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span><span class="op">,</span> <span class="dt">summaryOnly</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"singles_shelter"</span><span class="op">,</span> <span class="fu">bq</span>(<span class="st">"singles_shelter"</span>)<span class="op">,</span><span class="fu">cr</span>(<span class="st">"singles_total"</span>)<span class="op">,</span>  {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span><span class="op">,</span> <span class="dt">summaryOnly</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"allied_summ"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"allied_summ"</span>)<span class="op">,</span>    <span class="fu">cr</span>(<span class="st">"allied_total"</span>)<span class="op">,</span>   {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span><span class="op">,</span> <span class="dt">summaryOnly</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"temp_summ"</span><span class="op">,</span>       <span class="fu">bq</span>(<span class="st">"temp_summ"</span>)<span class="op">,</span>      {<span class="dt">city_ind</span><span class="op">:</span><span class="dv">1901</span>}<span class="op">,</span>      {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span><span class="op">,</span> <span class="dt">summaryOnly</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"iso_summ"</span><span class="op">,</span>        <span class="fu">bq</span>(<span class="st">"iso_summ"</span>)<span class="op">,</span>       <span class="fu">cr</span>(<span class="st">"iso"</span>)<span class="op">,</span>            {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span><span class="op">,</span> <span class="dt">summaryOnly</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">secHead</span>(<span class="st">"Shelter Programs, Room-Based"</span><span class="op">,</span> [<span class="st">"Occupied Rooms"</span><span class="op">,</span><span class="st">"Unoccupied Rooms"</span><span class="op">,</span><span class="st">"Actual Room Capacity"</span>])<span class="sc">}</span></span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"fam_total"</span><span class="op">,</span>   <span class="fu">bq</span>(<span class="st">"fam_total"</span>)<span class="op">,</span>   <span class="fu">cr</span>(<span class="st">"fam_total"</span>)<span class="op">,</span>   {<span class="dt">isTot</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"fam_emerg"</span><span class="op">,</span>   <span class="fu">bq</span>(<span class="st">"fam_emerg"</span>)<span class="op">,</span>   <span class="fu">cr</span>(<span class="st">"fam_emerg"</span>)<span class="op">,</span>   {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span>})<span class="sc">}</span></span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"fam_trans_r"</span><span class="op">,</span> <span class="fu">bq</span>(<span class="st">"fam_trans_r"</span>)<span class="op">,</span> <span class="fu">cr</span>(<span class="st">"fam_trans_r"</span>)<span class="op">,</span> {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span>})<span class="sc">}</span></span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"fam_hotel"</span><span class="op">,</span>   <span class="fu">bq</span>(<span class="st">"fam_hotel"</span>)<span class="op">,</span>   <span class="fu">cr</span>(<span class="st">"fam_hotel"</span>)<span class="op">,</span>   {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span>})<span class="sc">}</span></span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"sng_hotel"</span><span class="op">,</span>   <span class="fu">bq</span>(<span class="st">"sng_hotel"</span>)<span class="op">,</span>   <span class="fu">cr</span>(<span class="st">"sng_hotel"</span>)<span class="op">,</span>   {<span class="dt">isTot</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">secHead</span>(<span class="st">"Shelter Programs, Bed-Based"</span><span class="op">,</span> [<span class="st">"Occupied Beds"</span><span class="op">,</span><span class="st">"Unoccupied Beds"</span><span class="op">,</span><span class="st">"Actual Bed Capacity"</span>])<span class="sc">}</span></span>
+<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"singles_total"</span><span class="op">,</span> <span class="fu">bq</span>(<span class="st">"singles_total"</span>)<span class="op">,</span> <span class="fu">cr</span>(<span class="st">"singles_total"</span>)<span class="op">,</span> {<span class="dt">isTot</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"emerg_total"</span><span class="op">,</span>   <span class="fu">bq</span>(<span class="st">"emerg_total"</span>)<span class="op">,</span>   <span class="fu">cr</span>(<span class="st">"emerg_total"</span>)<span class="op">,</span>   {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span><span class="op">,</span> <span class="dt">isTot</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"mix_emerg"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"mix_emerg"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"mix_emerg"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"men_emerg"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"men_emerg"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"men_emerg"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"wom_emerg"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"wom_emerg"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"wom_emerg"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"yth_emerg"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"yth_emerg"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"yth_emerg"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"trans_total"</span><span class="op">,</span>   <span class="fu">bq</span>(<span class="st">"trans_total"</span>)<span class="op">,</span>   <span class="fu">cr</span>(<span class="st">"trans_total"</span>)<span class="op">,</span>   {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span><span class="op">,</span> <span class="dt">isTot</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"mix_trans"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"mix_trans"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"mix_trans"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"fam_trans_b"</span><span class="op">,</span>   <span class="fu">bq</span>(<span class="st">"fam_trans_b"</span>)<span class="op">,</span>   <span class="fu">cr</span>(<span class="st">"fam_trans_b"</span>)<span class="op">,</span>   {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"men_trans"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"men_trans"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"men_trans"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"wom_trans"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"wom_trans"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"wom_trans"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"yth_trans"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"yth_trans"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"yth_trans"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">2</span>})<span class="sc">}</span></span>
+<span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">secHead</span>(<span class="st">"Allied Services"</span><span class="op">,</span> [<span class="st">"Occupied Spaces"</span><span class="op">,</span><span class="st">"Unoccupied Spaces"</span><span class="op">,</span><span class="st">"Actual Space Capacity"</span>])<span class="sc">}</span></span>
+<span id="cb2-187"><a href="#cb2-187" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"allied_total"</span><span class="op">,</span> <span class="fu">bq</span>(<span class="st">"allied_total"</span>)<span class="op">,</span> <span class="fu">cr</span>(<span class="st">"allied_total"</span>)<span class="op">,</span> {<span class="dt">isTot</span><span class="op">:</span><span class="kw">true</span>})<span class="sc">}</span></span>
+<span id="cb2-188"><a href="#cb2-188" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"respites"</span><span class="op">,</span>     <span class="fu">bq</span>(<span class="st">"respites"</span>)<span class="op">,</span>     <span class="fu">cr</span>(<span class="st">"respites"</span>)<span class="op">,</span>     {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span>})<span class="sc">}</span></span>
+<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"dropin"</span><span class="op">,</span>       <span class="fu">bq</span>(<span class="st">"dropin"</span>)<span class="op">,</span>       <span class="fu">cr</span>(<span class="st">"dropin"</span>)<span class="op">,</span>       {<span class="dt">indent</span><span class="op">:</span><span class="dv">1</span>})<span class="sc">}</span></span>
+<span id="cb2-190"><a href="#cb2-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-191"><a href="#cb2-191" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">secHead</span>(<span class="st">"Temporary Programs (Bed/Space)"</span><span class="op">,</span> [<span class="st">"Occ. Beds/Spaces"</span><span class="op">,</span><span class="st">"Unocc. Beds/Spaces"</span><span class="op">,</span><span class="st">"Actual Capacity"</span>])<span class="sc">}</span></span>
+<span id="cb2-192"><a href="#cb2-192" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"temp_resp"</span><span class="op">,</span> <span class="fu">bq</span>(<span class="st">"temp_resp"</span>)<span class="op">,</span> <span class="fu">cr</span>(<span class="st">"temp_resp"</span>))<span class="sc">}</span></span>
+<span id="cb2-193"><a href="#cb2-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-194"><a href="#cb2-194" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">secHead</span>(<span class="st">"Temporary Programs (Room/Unit)"</span><span class="op">,</span> [<span class="st">"Occupied Rooms"</span><span class="op">,</span><span class="st">"Unoccupied Rooms"</span><span class="op">,</span><span class="st">"Actual Room Capacity"</span>])<span class="sc">}</span></span>
+<span id="cb2-195"><a href="#cb2-195" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"hotels"</span><span class="op">,</span> <span class="fu">bq</span>(<span class="st">"hotels"</span>)<span class="op">,</span> <span class="fu">cr</span>(<span class="st">"hotels"</span>))<span class="sc">}</span></span>
+<span id="cb2-196"><a href="#cb2-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-197"><a href="#cb2-197" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">secHead</span>(<span class="st">"Temporary Isolation/Recovery"</span><span class="op">,</span> [<span class="st">"Occupied Rooms"</span><span class="op">,</span><span class="st">"Unoccupied Rooms"</span><span class="op">,</span><span class="st">"Actual Room Capacity"</span>])<span class="sc">}</span></span>
+<span id="cb2-198"><a href="#cb2-198" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span><span class="sc">${</span><span class="fu">compRow</span>(<span class="st">"iso"</span><span class="op">,</span> <span class="fu">bq</span>(<span class="st">"iso"</span>)<span class="op">,</span> <span class="fu">cr</span>(<span class="st">"iso"</span>))<span class="sc">}</span></span>
+<span id="cb2-199"><a href="#cb2-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-200"><a href="#cb2-200" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/table&gt;</span></span>
+<span id="cb2-201"><a href="#cb2-201" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb2-202"><a href="#cb2-202" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-5" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-6" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-7" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-8" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-9" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-10" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-11" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-12" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="notes-on-differences" class="level2">
+<h2 class="anchored" data-anchor-id="notes-on-differences">Notes on differences</h2>
+<section id="emergency-bed-capacity-mark" class="level3">
+<h3 class="anchored" data-anchor-id="emergency-bed-capacity-mark">Emergency bed capacity (≈ mark)</h3>
+<p>The ≈ mark appears in the <strong>Unoccupied Beds</strong>, <strong>Actual Bed Capacity</strong>, and <strong>Occupancy Rate</strong> cells for emergency bed programs (Mixed Adult, Men, Women, Youth emergency; and their totals). On May 14, 2026, the total gap was <strong>62 beds</strong> across those programs — 2.2% of the City’s stated emergency bed capacity of 2,810.</p>
+<p>This is not an error in either source. It is a definitional difference between two City data products:</p>
+<ul>
+<li><strong>CKAN open-data export</strong> (<code>CAPACITY_ACTUAL_BED</code>): counts beds currently available for occupancy — that is, occupied beds plus available-but-empty beds. Beds that are temporarily offline (under maintenance, decommissioned for a period, etc.) are recorded separately in a <code>UNAVAILABLE_BEDS</code> column.</li>
+<li><strong>City’s live dashboard</strong> (“Actual Bed Capacity”): appears to include some of those temporarily unavailable beds in its capacity figure.</li>
+</ul>
+<p>Both figures are valid. They answer different questions. BonQuery’s table uses the CKAN open-data definition because that is the published, reproducible data; the difference with the live dashboard is documented here for full transparency.</p>
+</section>
+<section id="bridging-triage-programs-not-published-to-open-data" class="level3">
+<h3 class="anchored" data-anchor-id="bridging-triage-programs-not-published-to-open-data">Bridging &amp; Triage programs (not published to open data)</h3>
+<p>The City’s live dashboard shows 29 people in Bridging &amp; Triage programs on May 14, 2026. This program type is not present in the CKAN open-data export at all — the programs are tracked in the City’s internal operational system but not published to the open data portal. BonQuery cannot reproduce this figure from open data, and the row is labelled accordingly in the table above.</p>
+</section>
+<section id="the-takeaway" class="level3">
+<h3 class="anchored" data-anchor-id="the-takeaway">The takeaway</h3>
+<p>BonQuery’s table is fully reproducible by anyone from published open data: the <a href="https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/">CKAN export</a>, the <a href="https://github.com/">aggregation function</a>, and this comparison page together constitute a complete audit trail. The live dashboard draws on internal system state that is not fully present in the CKAN export. These are different tools for different questions: the live dashboard is designed for daily operational decisions; BonQuery’s table is designed for longitudinal, reproducible research.</p>
+<hr>
+<p>Contains information licensed under the <a href="https://open.toronto.ca/open-data-licence/">Open Government Licence – Toronto</a>. Source: City of Toronto Open Data — <a href="https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/">Daily Shelter &amp; Overnight Service Occupancy &amp; Capacity</a>. Aggregated by <a href="https://bonquery.ca">BonQuery</a>.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImRhaWx5X29jYyA9IEZpbGVBdHRhY2htZW50KFwiLi4vZGF0YS9kYWlseV9vY2N1cGFuY3kuanNvblwiKS5qc29uKClcbmNpdHlfcmVmICA9IEZpbGVBdHRhY2htZW50KFwiLi4vZGF0YS9jaXR5X3JlZmVyZW5jZV8yMDI2LTA1LTE0Lmpzb25cIikuanNvbigpXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiIvLyBCb25RdWVyeSByb3dzIGZvciBNYXkgMTRcbmJxMTQgPSBkYWlseV9vY2MuZmlsdGVyKHIgPT4gci5kYXRlID09PSBcIjIwMjYtMDUtMTRcIilcblxuZnVuY3Rpb24gYnEoa2V5KSB7IHJldHVybiBicTE0LmZpbmQociA9PiByLmtleSA9PT0ga2V5KSB9XG5mdW5jdGlvbiBjcihrZXkpIHsgcmV0dXJuIGNpdHlfcmVmLmZpbmQociA9PiByLmtleSA9PT0ga2V5KSB9XG5cbmZ1bmN0aW9uIG4odikgICB7IHJldHVybiB2ICE9PSBudWxsICYmIHYgIT09IHVuZGVmaW5lZCA/ICgrdikudG9Mb2NhbGVTdHJpbmcoKSA6IFwi4oCUXCIgfVxuZnVuY3Rpb24gcGN0KHYpIHsgcmV0dXJuIHYgIT09IG51bGwgJiYgdiAhPT0gdW5kZWZpbmVkID8gKCt2KS50b0ZpeGVkKDEpICsgXCIlXCIgOiBcIuKAlFwiIH1cblxuLy8gS25vd24tZGlmZmVyZW5jZSBrZXlzIChjYXBhY2l0eS9yYXRlIG9ubHkg4oCUIGluZCBhbmQgb2NjIG1hdGNoKVxuS05PV05fQ0FQX0tFWVMgPSBuZXcgU2V0KFtcIm1peF9lbWVyZ1wiLFwibWVuX2VtZXJnXCIsXCJ3b21fZW1lcmdcIixcInl0aF9lbWVyZ1wiLFwiZW1lcmdfdG90YWxcIixcInNpbmdsZXNfdG90YWxcIl0pXG5cbmZ1bmN0aW9uIG1hcmsoYnFWYWwsIGNpdHlWYWwsIGlzQ2FwT3JSYXRlLCBrZXkpIHtcbiAgaWYgKGNpdHlWYWwgPT09IG51bGwgfHwgY2l0eVZhbCA9PT0gdW5kZWZpbmVkKSByZXR1cm4gXCJcIlxuICBpZiAoYnFWYWwgPT09IG51bGwgfHwgYnFWYWwgPT09IHVuZGVmaW5lZCkgcmV0dXJuIFwiXCJcbiAgY29uc3QgbWF0Y2ggPSBNYXRoLmFicygrYnFWYWwgLSArY2l0eVZhbCkgPCAwLjExXG4gIGlmIChtYXRjaCkgcmV0dXJuIGA8c3BhbiBzdHlsZT1cImNvbG9yOiMxYTdhNGE7Zm9udC13ZWlnaHQ6Ym9sZFwiPuKckzwvc3Bhbj5gXG4gIGlmIChpc0NhcE9yUmF0ZSAmJiBLTk9XTl9DQVBfS0VZUy5oYXMoa2V5KSlcbiAgICByZXR1cm4gYDxzcGFuIHN0eWxlPVwiY29sb3I6I2IwNjAwMDtmb250LXdlaWdodDpib2xkXCIgdGl0bGU9XCJLbm93biBkaWZmZXJlbmNlIOKAlCBzZWUgbm90ZXNcIj7iiYg8L3NwYW4+YFxuICByZXR1cm4gYDxzcGFuIHN0eWxlPVwiY29sb3I6I2MwMzkyYjtmb250LXdlaWdodDpib2xkXCI+4pyXPC9zcGFuPmBcbn1cblxuZnVuY3Rpb24gY29tcFJvdyhrZXksIGJxUm93LCBjaXR5Um93LCBvcHRzID0ge30pIHtcbiAgY29uc3QgeyBpbmRlbnQgPSAwLCBpc1RvdCA9IGZhbHNlLCBzdW1tYXJ5T25seSA9IGZhbHNlIH0gPSBvcHRzXG4gIGNvbnN0IHBhZCA9IGluZGVudCAqIDE2XG4gIGNvbnN0IGJvbGQgPSBpc1RvdCA/IFwiZm9udC13ZWlnaHQ6NjAwXCIgOiBcIlwiXG4gIGNvbnN0IGJnICAgPSBpc1RvdCA/IFwiI2U4ZWRmNVwiIDogXCIjZmZmXCJcblxuICBpZiAoIWJxUm93IHx8ICFjaXR5Um93KSByZXR1cm4gXCJcIlxuXG4gIGNvbnN0IHVzZUNhcCA9IGJxUm93LmNvbF90eXBlICE9PSBcInN1bW1hcnlcIlxuXG4gIGlmIChzdW1tYXJ5T25seSB8fCBicVJvdy5jb2xfdHlwZSA9PT0gXCJzdW1tYXJ5XCIpIHtcbiAgICByZXR1cm4gYDx0ciBzdHlsZT1cImJhY2tncm91bmQ6JHtiZ31cIj5cbiAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDEwcHggNXB4ICR7cGFkfXB4OyR7Ym9sZH1cIj4ke2JxUm93LmxhYmVsfTwvdGQ+XG4gICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjVweCA4cHg7dGV4dC1hbGlnbjpyaWdodDske2JvbGR9XCI+XG4gICAgICAgICR7bihicVJvdy5pbmQpfSAke21hcmsoYnFSb3cuaW5kLCBjaXR5Um93LmNpdHlfaW5kLCBmYWxzZSwga2V5KX08L3RkPlxuICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggOHB4O3RleHQtYWxpZ246cmlnaHQ7Y29sb3I6Izg4OFwiPiR7bihjaXR5Um93LmNpdHlfaW5kKX08L3RkPlxuICAgICAgPHRkIGNvbHNwYW49XCI2XCI+PC90ZD5cbiAgICA8L3RyPmBcbiAgfVxuXG4gIHJldHVybiBgPHRyIHN0eWxlPVwiYmFja2dyb3VuZDoke2JnfVwiPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDEwcHggNXB4ICR7cGFkfXB4OyR7Ym9sZH1cIj4ke2JxUm93LmxhYmVsfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggOHB4O3RleHQtYWxpZ246cmlnaHQ7JHtib2xkfVwiPlxuICAgICAgJHtuKGJxUm93LmluZCl9ICR7bWFyayhicVJvdy5pbmQsIGNpdHlSb3cuY2l0eV9pbmQsIGZhbHNlLCBrZXkpfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggOHB4O3RleHQtYWxpZ246cmlnaHQ7Y29sb3I6Izg4OFwiPiR7bihjaXR5Um93LmNpdHlfaW5kKX08L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDhweDt0ZXh0LWFsaWduOnJpZ2h0XCI+XG4gICAgICAke24oYnFSb3cub2NjKX0gJHttYXJrKGJxUm93Lm9jYywgY2l0eVJvdy5jaXR5X29jYywgZmFsc2UsIGtleSl9PC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjVweCA4cHg7dGV4dC1hbGlnbjpyaWdodDtjb2xvcjojODg4XCI+JHtuKGNpdHlSb3cuY2l0eV9vY2MpfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggOHB4O3RleHQtYWxpZ246cmlnaHRcIj5cbiAgICAgICR7bihicVJvdy51bm9jYyl9ICR7bWFyayhicVJvdy51bm9jYywgY2l0eVJvdy5jaXR5X3Vub2NjLCB0cnVlLCBrZXkpfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggOHB4O3RleHQtYWxpZ246cmlnaHQ7Y29sb3I6Izg4OFwiPiR7bihjaXR5Um93LmNpdHlfdW5vY2MpfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggOHB4O3RleHQtYWxpZ246cmlnaHRcIj5cbiAgICAgICR7bihicVJvdy5jYXApfSAke21hcmsoYnFSb3cuY2FwLCBjaXR5Um93LmNpdHlfY2FwLCB0cnVlLCBrZXkpfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggOHB4O3RleHQtYWxpZ246cmlnaHQ7Y29sb3I6Izg4OFwiPiR7bihjaXR5Um93LmNpdHlfY2FwKX08L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDhweDt0ZXh0LWFsaWduOnJpZ2h0XCI+XG4gICAgICAke3BjdChicVJvdy5yYXRlKX0gJHttYXJrKGJxUm93LnJhdGUsIGNpdHlSb3cuY2l0eV9yYXRlLCB0cnVlLCBrZXkpfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggOHB4O3RleHQtYWxpZ246cmlnaHQ7Y29sb3I6Izg4OFwiPiR7cGN0KGNpdHlSb3cuY2l0eV9yYXRlKX08L3RkPlxuICA8L3RyPmBcbn1cblxuZnVuY3Rpb24gc2VjSGVhZChsYWJlbCwgY29sMSkge1xuICByZXR1cm4gYDx0ciBzdHlsZT1cImJhY2tncm91bmQ6IzFhM2M2Yjtjb2xvcjp3aGl0ZTtmb250LXdlaWdodDo2MDA7Zm9udC1zaXplOjAuODJlbVwiPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NnB4IDEwcHhcIiByb3dzcGFuPVwiMlwiPiR7bGFiZWx9PC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjZweCA4cHg7dGV4dC1hbGlnbjpjZW50ZXJcIiBjb2xzcGFuPVwiMlwiPkluZGl2aWR1YWxzPC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjZweCA4cHg7dGV4dC1hbGlnbjpjZW50ZXJcIiBjb2xzcGFuPVwiMlwiPiR7Y29sMVswXX08L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NnB4IDhweDt0ZXh0LWFsaWduOmNlbnRlclwiIGNvbHNwYW49XCIyXCI+JHtjb2wxWzFdfTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo2cHggOHB4O3RleHQtYWxpZ246Y2VudGVyXCIgY29sc3Bhbj1cIjJcIj4ke2NvbDFbMl19PC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjZweCA4cHg7dGV4dC1hbGlnbjpjZW50ZXJcIiBjb2xzcGFuPVwiMlwiPk9jY3VwYW5jeSBSYXRlPC90ZD5cbiAgPC90cj5cbiAgPHRyIHN0eWxlPVwiYmFja2dyb3VuZDojMmM1MjgyO2NvbG9yOiNjZmUwZjc7Zm9udC1zaXplOjAuNzhlbVwiPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6M3B4IDhweDt0ZXh0LWFsaWduOmNlbnRlclwiPkJRPC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjNweCA4cHg7dGV4dC1hbGlnbjpjZW50ZXJcIj5DaXR5PC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjNweCA4cHg7dGV4dC1hbGlnbjpjZW50ZXJcIj5CUTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzozcHggOHB4O3RleHQtYWxpZ246Y2VudGVyXCI+Q2l0eTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzozcHggOHB4O3RleHQtYWxpZ246Y2VudGVyXCI+QlE8L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6M3B4IDhweDt0ZXh0LWFsaWduOmNlbnRlclwiPkNpdHk8L3RkPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6M3B4IDhweDt0ZXh0LWFsaWduOmNlbnRlclwiPkJRPC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjNweCA4cHg7dGV4dC1hbGlnbjpjZW50ZXJcIj5DaXR5PC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjNweCA4cHg7dGV4dC1hbGlnbjpjZW50ZXJcIj5CUTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzozcHggOHB4O3RleHQtYWxpZ246Y2VudGVyXCI+Q2l0eTwvdGQ+XG4gIDwvdHI+YFxufVxuXG5mdW5jdGlvbiBzdW1tYXJ5U2VjSGVhZCgpIHtcbiAgcmV0dXJuIGA8dHIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMxYTNjNmI7Y29sb3I6d2hpdGU7Zm9udC13ZWlnaHQ6NjAwO2ZvbnQtc2l6ZTowLjgyZW1cIj5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjZweCAxMHB4XCIgcm93c3Bhbj1cIjJcIj5PY2N1cGFuY3kgU3VtbWFyeTwvdGQ+XG4gICAgPHRkIHN0eWxlPVwicGFkZGluZzo2cHggOHB4O3RleHQtYWxpZ246Y2VudGVyXCIgY29sc3Bhbj1cIjJcIj5JbmRpdmlkdWFsczwvdGQ+XG4gICAgPHRkIGNvbHNwYW49XCI4XCI+PC90ZD5cbiAgPC90cj5cbiAgPHRyIHN0eWxlPVwiYmFja2dyb3VuZDojMmM1MjgyO2NvbG9yOiNjZmUwZjc7Zm9udC1zaXplOjAuNzhlbVwiPlxuICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6M3B4IDhweDt0ZXh0LWFsaWduOmNlbnRlclwiPkJRPC90ZD5cbiAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjNweCA4cHg7dGV4dC1hbGlnbjpjZW50ZXJcIj5DaXR5PC90ZD5cbiAgICA8dGQgY29sc3Bhbj1cIjhcIj48L3RkPlxuICA8L3RyPmBcbn1cblxuYnJpZGdpbmdSb3cgPSBgPHRyIHN0eWxlPVwiYmFja2dyb3VuZDojZjVmNWY1O2NvbG9yOiM4ODhcIj5cbiAgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggMTBweCA1cHggMjBweDtmb250LXN0eWxlOml0YWxpY1wiPkJyaWRnaW5nICZhbXA7IFRyaWFnZSBQcm9ncmFtczwvdGQ+XG4gIDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDhweDt0ZXh0LWFsaWduOnJpZ2h0O2ZvbnQtc2l6ZTowLjg1ZW1cIiBjb2xzcGFuPVwiMlwiPk5vdCBwdWJsaXNoZWQgdG8gb3BlbiBkYXRhICgyOSBwZW9wbGUpPC90ZD5cbiAgPHRkIGNvbHNwYW49XCI4XCI+PC90ZD5cbjwvdHI+YFxuXG5jb21wVGFibGUgPSB7XG4gIGNvbnN0IHJvd3MgPSBbXG4gICAgXCJhbGxfc2hlbHRlclwiLFwicm9vbV9iYXNlZFwiLFwic2luZ2xlc19zZWN0b3JcIixcInNpbmdsZXNfc2hlbHRlclwiLFwiYWxsaWVkX3N1bW1cIixcInRlbXBfc3VtbVwiLFwiaXNvX3N1bW1cIlxuICBdXG4gIHJldHVybiBodG1sYFxuICA8ZGl2IHN0eWxlPVwib3ZlcmZsb3cteDphdXRvO21hcmdpbjoxcmVtIDBcIj5cbiAgPHRhYmxlIHN0eWxlPVwiYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO3dpZHRoOjEwMCU7Zm9udC1zaXplOjAuODNlbTtmb250LWZhbWlseTonU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWY7bWluLXdpZHRoOjgwMHB4XCI+XG5cbiAgICAke3N1bW1hcnlTZWNIZWFkKCl9XG4gICAgJHtjb21wUm93KFwiYWxsX3NoZWx0ZXJcIiwgICAgIGJxKFwiYWxsX3NoZWx0ZXJcIiksICAgIGNyKFwiYWxsX3NoZWx0ZXJcIiksICAgIHtpc1RvdDp0cnVlLCAgc3VtbWFyeU9ubHk6dHJ1ZX0pfVxuICAgICR7YnJpZGdpbmdSb3d9XG4gICAgJHtjb21wUm93KFwicm9vbV9iYXNlZFwiLCAgICAgIGJxKFwicm9vbV9iYXNlZFwiKSwgICAgIGNyKFwicm9vbV9iYXNlZFwiKSwgICAgIHtpbmRlbnQ6MSwgc3VtbWFyeU9ubHk6dHJ1ZX0pfVxuICAgICR7Y29tcFJvdyhcInNpbmdsZXNfc2VjdG9yXCIsICBicShcInNpbmdsZXNfc2VjdG9yXCIpLCB7Y2l0eV9pbmQ6NTcyN30sICAgICAge2luZGVudDoxLCBzdW1tYXJ5T25seTp0cnVlfSl9XG4gICAgJHtjb21wUm93KFwic2luZ2xlc19zaGVsdGVyXCIsIGJxKFwic2luZ2xlc19zaGVsdGVyXCIpLGNyKFwic2luZ2xlc190b3RhbFwiKSwgIHtpbmRlbnQ6Miwgc3VtbWFyeU9ubHk6dHJ1ZX0pfVxuICAgICR7Y29tcFJvdyhcImFsbGllZF9zdW1tXCIsICAgICBicShcImFsbGllZF9zdW1tXCIpLCAgICBjcihcImFsbGllZF90b3RhbFwiKSwgICB7aW5kZW50OjIsIHN1bW1hcnlPbmx5OnRydWV9KX1cbiAgICAke2NvbXBSb3coXCJ0ZW1wX3N1bW1cIiwgICAgICAgYnEoXCJ0ZW1wX3N1bW1cIiksICAgICAge2NpdHlfaW5kOjE5MDF9LCAgICAgIHtpbmRlbnQ6Miwgc3VtbWFyeU9ubHk6dHJ1ZX0pfVxuICAgICR7Y29tcFJvdyhcImlzb19zdW1tXCIsICAgICAgICBicShcImlzb19zdW1tXCIpLCAgICAgICBjcihcImlzb1wiKSwgICAgICAgICAgICB7aW5kZW50OjEsIHN1bW1hcnlPbmx5OnRydWV9KX1cblxuICAgICR7c2VjSGVhZChcIlNoZWx0ZXIgUHJvZ3JhbXMsIFJvb20tQmFzZWRcIiwgW1wiT2NjdXBpZWQgUm9vbXNcIixcIlVub2NjdXBpZWQgUm9vbXNcIixcIkFjdHVhbCBSb29tIENhcGFjaXR5XCJdKX1cbiAgICAke2NvbXBSb3coXCJmYW1fdG90YWxcIiwgICBicShcImZhbV90b3RhbFwiKSwgICBjcihcImZhbV90b3RhbFwiKSwgICB7aXNUb3Q6dHJ1ZX0pfVxuICAgICR7Y29tcFJvdyhcImZhbV9lbWVyZ1wiLCAgIGJxKFwiZmFtX2VtZXJnXCIpLCAgIGNyKFwiZmFtX2VtZXJnXCIpLCAgIHtpbmRlbnQ6MX0pfVxuICAgICR7Y29tcFJvdyhcImZhbV90cmFuc19yXCIsIGJxKFwiZmFtX3RyYW5zX3JcIiksIGNyKFwiZmFtX3RyYW5zX3JcIiksIHtpbmRlbnQ6MX0pfVxuICAgICR7Y29tcFJvdyhcImZhbV9ob3RlbFwiLCAgIGJxKFwiZmFtX2hvdGVsXCIpLCAgIGNyKFwiZmFtX2hvdGVsXCIpLCAgIHtpbmRlbnQ6MX0pfVxuICAgICR7Y29tcFJvdyhcInNuZ19ob3RlbFwiLCAgIGJxKFwic25nX2hvdGVsXCIpLCAgIGNyKFwic25nX2hvdGVsXCIpLCAgIHtpc1RvdDp0cnVlfSl9XG5cbiAgICAke3NlY0hlYWQoXCJTaGVsdGVyIFByb2dyYW1zLCBCZWQtQmFzZWRcIiwgW1wiT2NjdXBpZWQgQmVkc1wiLFwiVW5vY2N1cGllZCBCZWRzXCIsXCJBY3R1YWwgQmVkIENhcGFjaXR5XCJdKX1cbiAgICAke2NvbXBSb3coXCJzaW5nbGVzX3RvdGFsXCIsIGJxKFwic2luZ2xlc190b3RhbFwiKSwgY3IoXCJzaW5nbGVzX3RvdGFsXCIpLCB7aXNUb3Q6dHJ1ZX0pfVxuICAgICR7Y29tcFJvdyhcImVtZXJnX3RvdGFsXCIsICAgYnEoXCJlbWVyZ190b3RhbFwiKSwgICBjcihcImVtZXJnX3RvdGFsXCIpLCAgIHtpbmRlbnQ6MSwgaXNUb3Q6dHJ1ZX0pfVxuICAgICR7Y29tcFJvdyhcIm1peF9lbWVyZ1wiLCAgICAgYnEoXCJtaXhfZW1lcmdcIiksICAgICBjcihcIm1peF9lbWVyZ1wiKSwgICAgIHtpbmRlbnQ6Mn0pfVxuICAgICR7Y29tcFJvdyhcIm1lbl9lbWVyZ1wiLCAgICAgYnEoXCJtZW5fZW1lcmdcIiksICAgICBjcihcIm1lbl9lbWVyZ1wiKSwgICAgIHtpbmRlbnQ6Mn0pfVxuICAgICR7Y29tcFJvdyhcIndvbV9lbWVyZ1wiLCAgICAgYnEoXCJ3b21fZW1lcmdcIiksICAgICBjcihcIndvbV9lbWVyZ1wiKSwgICAgIHtpbmRlbnQ6Mn0pfVxuICAgICR7Y29tcFJvdyhcInl0aF9lbWVyZ1wiLCAgICAgYnEoXCJ5dGhfZW1lcmdcIiksICAgICBjcihcInl0aF9lbWVyZ1wiKSwgICAgIHtpbmRlbnQ6Mn0pfVxuICAgICR7Y29tcFJvdyhcInRyYW5zX3RvdGFsXCIsICAgYnEoXCJ0cmFuc190b3RhbFwiKSwgICBjcihcInRyYW5zX3RvdGFsXCIpLCAgIHtpbmRlbnQ6MSwgaXNUb3Q6dHJ1ZX0pfVxuICAgICR7Y29tcFJvdyhcIm1peF90cmFuc1wiLCAgICAgYnEoXCJtaXhfdHJhbnNcIiksICAgICBjcihcIm1peF90cmFuc1wiKSwgICAgIHtpbmRlbnQ6Mn0pfVxuICAgICR7Y29tcFJvdyhcImZhbV90cmFuc19iXCIsICAgYnEoXCJmYW1fdHJhbnNfYlwiKSwgICBjcihcImZhbV90cmFuc19iXCIpLCAgIHtpbmRlbnQ6Mn0pfVxuICAgICR7Y29tcFJvdyhcIm1lbl90cmFuc1wiLCAgICAgYnEoXCJtZW5fdHJhbnNcIiksICAgICBjcihcIm1lbl90cmFuc1wiKSwgICAgIHtpbmRlbnQ6Mn0pfVxuICAgICR7Y29tcFJvdyhcIndvbV90cmFuc1wiLCAgICAgYnEoXCJ3b21fdHJhbnNcIiksICAgICBjcihcIndvbV90cmFuc1wiKSwgICAgIHtpbmRlbnQ6Mn0pfVxuICAgICR7Y29tcFJvdyhcInl0aF90cmFuc1wiLCAgICAgYnEoXCJ5dGhfdHJhbnNcIiksICAgICBjcihcInl0aF90cmFuc1wiKSwgICAgIHtpbmRlbnQ6Mn0pfVxuXG4gICAgJHtzZWNIZWFkKFwiQWxsaWVkIFNlcnZpY2VzXCIsIFtcIk9jY3VwaWVkIFNwYWNlc1wiLFwiVW5vY2N1cGllZCBTcGFjZXNcIixcIkFjdHVhbCBTcGFjZSBDYXBhY2l0eVwiXSl9XG4gICAgJHtjb21wUm93KFwiYWxsaWVkX3RvdGFsXCIsIGJxKFwiYWxsaWVkX3RvdGFsXCIpLCBjcihcImFsbGllZF90b3RhbFwiKSwge2lzVG90OnRydWV9KX1cbiAgICAke2NvbXBSb3coXCJyZXNwaXRlc1wiLCAgICAgYnEoXCJyZXNwaXRlc1wiKSwgICAgIGNyKFwicmVzcGl0ZXNcIiksICAgICB7aW5kZW50OjF9KX1cbiAgICAke2NvbXBSb3coXCJkcm9waW5cIiwgICAgICAgYnEoXCJkcm9waW5cIiksICAgICAgIGNyKFwiZHJvcGluXCIpLCAgICAgICB7aW5kZW50OjF9KX1cblxuICAgICR7c2VjSGVhZChcIlRlbXBvcmFyeSBQcm9ncmFtcyAoQmVkL1NwYWNlKVwiLCBbXCJPY2MuIEJlZHMvU3BhY2VzXCIsXCJVbm9jYy4gQmVkcy9TcGFjZXNcIixcIkFjdHVhbCBDYXBhY2l0eVwiXSl9XG4gICAgJHtjb21wUm93KFwidGVtcF9yZXNwXCIsIGJxKFwidGVtcF9yZXNwXCIpLCBjcihcInRlbXBfcmVzcFwiKSl9XG5cbiAgICAke3NlY0hlYWQoXCJUZW1wb3JhcnkgUHJvZ3JhbXMgKFJvb20vVW5pdClcIiwgW1wiT2NjdXBpZWQgUm9vbXNcIixcIlVub2NjdXBpZWQgUm9vbXNcIixcIkFjdHVhbCBSb29tIENhcGFjaXR5XCJdKX1cbiAgICAke2NvbXBSb3coXCJob3RlbHNcIiwgYnEoXCJob3RlbHNcIiksIGNyKFwiaG90ZWxzXCIpKX1cblxuICAgICR7c2VjSGVhZChcIlRlbXBvcmFyeSBJc29sYXRpb24vUmVjb3ZlcnlcIiwgW1wiT2NjdXBpZWQgUm9vbXNcIixcIlVub2NjdXBpZWQgUm9vbXNcIixcIkFjdHVhbCBSb29tIENhcGFjaXR5XCJdKX1cbiAgICAke2NvbXBSb3coXCJpc29cIiwgYnEoXCJpc29cIiksIGNyKFwiaXNvXCIpKX1cblxuICA8L3RhYmxlPlxuICA8L2Rpdj5gXG59XG4ifV19
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../../projects";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "..";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/bonquery\.ca");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Miriam Marling · BonQuery</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
