@@ -1,5 +1,15 @@
 ---
 title: "About"
+description: "About Miriam Marling and BonQuery — open data research on humanitarian issues, starting with Toronto's shelter system."
+author: "Miriam Marling"
+open-graph:
+  title: "About — BonQuery"
+  description: "About Miriam Marling and BonQuery — open data research on humanitarian issues, starting with Toronto's shelter system."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "About — BonQuery"
+  description: "About Miriam Marling and BonQuery — open data research on humanitarian issues, starting with Toronto's shelter system."
 ---
 
 ![](images/miriam-headshot.jpg){fig-align="center" width="250" .rounded}

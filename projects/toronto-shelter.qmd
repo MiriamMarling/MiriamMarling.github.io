@@ -1,11 +1,31 @@
 ---
 title: "Inside Toronto's Shelter System"
-subtitle: "Monthly flow data from the City of Toronto, with analysis and findings"
+subtitle: "Daily occupancy and monthly flow data from the City of Toronto — open, interactive, validated"
+description: "Toronto shelter system data — daily occupancy and capacity, monthly system flow, validated against the City of Toronto's open data. Interactive tables with date selectors."
+author: "Miriam Marling"
+open-graph:
+  title: "Inside Toronto's Shelter System"
+  description: "Toronto shelter system data — daily occupancy and capacity, monthly system flow, validated against the City of Toronto's open data. Interactive tables with date selectors."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Inside Toronto's Shelter System"
+  description: "Toronto shelter system data — daily occupancy and capacity, monthly system flow, validated against the City of Toronto's open data. Interactive tables with date selectors."
 ---
+
+```{ojs}
+//| echo: false
+daily_occ = FileAttachment("../data/daily_occupancy.json").json()
+```
+
+This page is a hub for Toronto shelter system datasets sourced from the City of Toronto's open data portal. Each section covers one dataset — use the headings to jump to what you need.
+
+::: {.callout-note collapse="true"}
+## Monthly Shelter System Flow
 
 Toronto publishes monthly data on its taxed shelter system, and the
 City's own dashboards do a good job presenting the headline numbers.
-This page goes a step further: interactive filters on every chart, a
+This section goes a step further: interactive filters on every chart, a
 clear note on what the data captures and what it leaves out, and
 findings that usually stay buried in technical documentation.
 
@@ -15,7 +35,7 @@ System Flow dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow
 New data loads automatically each month, usually around the 15th,
 after the City publishes the prior month's figures.
 
-## The dashboards
+### The dashboards
 
 ::: {.mobile-dashboard-links}
 Open each dashboard directly in your browser — they're built for
@@ -33,7 +53,7 @@ filters on every chart.
 
 ::: {.panel-tabset}
 
-### Monthly Snapshot
+#### Monthly Snapshot
 
 A point-in-time view of the shelter system for any month from January
 2018 forward. Use the date filter at the top to change months.
@@ -48,7 +68,7 @@ A point-in-time view of the shelter system for any month from January
   loading="lazy">
 </iframe>
 
-### Year-to-Date Comparison
+#### Year-to-Date Comparison
 
 Compares the current year's cumulative figures against the same period
 the prior year. Useful for seeing whether the system is on track to
@@ -64,7 +84,7 @@ exceed, match, or fall below last year.
   loading="lazy">
 </iframe>
 
-### Historical Trends
+#### Historical Trends
 
 Multi-year time series for the headline metrics, with filters for
 population group, year, and month. Useful for spotting long-term
@@ -86,12 +106,8 @@ patterns or seasonal trends.
 
 ```{=html}
 <style>
-/* Always show tabs; hide the plain-link fallback on all screen sizes */
 .mobile-dashboard-links { display: none !important; }
 .desktop-dashboard-tabs { display: block; }
-
-/* On mobile, break iframes out of the container padding so they span
-   edge-to-edge, and drop the border so there's only one clean line */
 @media (max-width: 768px) {
   .desktop-dashboard-tabs iframe {
     width: 100vw !important;
@@ -103,7 +119,7 @@ patterns or seasonal trends.
 </style>
 ```
 
-## How to read this data
+### How to read this data
 
 These numbers reflect the shelter *system*, not all homelessness. The
 data captures people who used a City-funded overnight service at
@@ -115,7 +131,7 @@ Toronto aren't reflected in these numbers. Trends here reflect
 changes in the shelter system specifically — not in total homelessness
 in the city.
 
-## Key terms
+### Key terms
 
 The dashboards use a few terms that have specific meanings worth
 knowing before you read the charts.
@@ -156,10 +172,236 @@ Data page](https://www.toronto.ca/city-government/data-research-maps/research-re
 
 [Read all data findings →](about-the-data.qmd)
 
-## Data source
+### Data source
 
 All data comes from the City of Toronto's [Shelter System Flow
 dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/),
 published monthly on the City's open data portal.
 
 Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
+
+:::
+
+---
+
+::: {.callout-note collapse="true"}
+
+```{ojs}
+//| echo: false
+// ── Date utilities ────────────────────────────────────────────────────────
+function fmtDate(s) {
+  const [y, m, d] = s.split("-").map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+    year: "numeric", month: "long", day: "numeric"
+  })
+}
+
+allDates = [...new Set(daily_occ.map(r => r.date))].sort().reverse()
+latestDate = allDates[0]
+```
+
+## Daily Occupancy & Capacity for ${fmtDate(selectedDate)}
+
+```{ojs}
+//| echo: false
+// ── Pipeline validation (CKAN-to-CKAN) — runs on most recent date ─────────
+// These checks confirm BonQuery's aggregation pipeline is internally correct.
+// They do not compare against the City's live dashboard.
+
+latestRows = daily_occ.filter(r => r.date === latestDate)
+
+function getVal(rows, key) {
+  const row = rows.find(r => r.key === key)
+  return row ? row.ind : null
+}
+
+validationChecks = {
+  const rows = latestRows
+  const checks = []
+
+  // Check 1: all expected keys present
+  const expectedKeys = [
+    "all_shelter","room_based","singles_sector","singles_shelter","allied_summ",
+    "temp_summ","iso_summ","fam_total","fam_emerg","fam_trans_r","fam_hotel",
+    "sng_hotel","singles_total","emerg_total","mix_emerg","men_emerg","wom_emerg",
+    "yth_emerg","trans_total","mix_trans","fam_trans_b","men_trans","wom_trans",
+    "yth_trans","allied_total","respites","dropin","temp_resp","hotels","iso"
+  ]
+  const presentKeys = new Set(rows.map(r => r.key))
+  const missingKeys = expectedKeys.filter(k => !presentKeys.has(k))
+  checks.push({
+    name: "All expected rows present",
+    pass: missingKeys.length === 0,
+    detail: missingKeys.length > 0 ? `Missing: ${missingKeys.join(", ")}` : null
+  })
+
+  // Check 2: All Shelter Programs total = sum of components
+  const allShelter = getVal(rows, "all_shelter")
+  const compSum = ["fam_total","sng_hotel","singles_total","allied_total","temp_resp","hotels","iso"]
+    .reduce((s, k) => s + (getVal(rows, k) ?? 0), 0)
+  checks.push({
+    name: "All Shelter Programs rollup matches components",
+    pass: allShelter === compSum,
+    detail: allShelter !== compSum
+      ? `all_shelter.ind=${allShelter}, component sum=${compSum}, diff=${allShelter - compSum}`
+      : null
+  })
+
+  // Check 3: Singles sectors total = emergency + transitional
+  const singlesTotal = getVal(rows, "singles_total")
+  const emergTotal = getVal(rows, "emerg_total")
+  const transTotal = getVal(rows, "trans_total")
+  checks.push({
+    name: "Singles sectors rollup: emergency + transitional = singles total",
+    pass: singlesTotal === (emergTotal + transTotal),
+    detail: singlesTotal !== (emergTotal + transTotal)
+      ? `singles=${singlesTotal}, emerg+trans=${emergTotal + transTotal}`
+      : null
+  })
+
+  // Check 4: For every row with non-null cap, occ + unocc = cap (within 1, for rounding)
+  const capRows = rows.filter(r => r.cap !== null && r.cap > 0)
+  const arithFails = capRows.filter(r => Math.abs(r.occ + r.unocc - r.cap) > 0.5)
+  checks.push({
+    name: "Internal arithmetic: occupied + unoccupied = actual capacity",
+    pass: arithFails.length === 0,
+    detail: arithFails.length > 0
+      ? arithFails.map(r => `${r.key}: ${r.occ}+${r.unocc}≠${r.cap}`).join("; ")
+      : null
+  })
+
+  return checks
+}
+
+allPass = validationChecks.every(c => c.pass)
+
+// ── Validation banner ─────────────────────────────────────────────────────
+validationBanner = {
+  if (allPass) {
+    return html`<div style="
+      background:#d4edda;border:1px solid #76b88d;border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px">
+      ✓ Validated against City of Toronto open data for ${fmtDate(latestDate)}
+    </div>`
+  } else {
+    const failedChecks = validationChecks.filter(c => !c.pass)
+    return html`<div style="
+      background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px">
+      <strong>⚠ Validation issue detected for ${fmtDate(latestDate)}</strong>
+      <details style="margin-top:6px">
+        <summary style="cursor:pointer">Show details</summary>
+        <ul style="margin:6px 0 0;padding-left:20px">
+          ${failedChecks.map(c => html`<li>${c.name}${c.detail ? html` — <em>${c.detail}</em>` : ""}</li>`)}
+        </ul>
+      </details>
+    </div>`
+  }
+}
+```
+
+```{ojs}
+//| echo: false
+viewof selectedDate = Inputs.select(allDates, {
+  label: "Date",
+  format: d => fmtDate(d)
+})
+```
+
+```{ojs}
+//| echo: false
+// ── Table rendering ───────────────────────────────────────────────────────
+dayRows = daily_occ.filter(r => r.date === selectedDate)
+
+function n(v) { return v !== null && v !== undefined ? v.toLocaleString() : "—" }
+function pct(v) { return v !== null && v !== undefined ? v.toFixed(1) + "%" : "—" }
+
+function tableRow(r, col1Label) {
+  const pad = (r.indent ?? 0) * 16
+  const bold = r.is_total ? "font-weight:600" : ""
+  const bg   = r.is_total ? "#e8edf5" : "#ffffff"
+  if (r.col_type === "summary") {
+    return `<tr style="background:${bg}">
+      <td style="padding:5px 10px 5px ${pad}px;${bold}">${r.label}</td>
+      <td style="padding:5px 10px;text-align:right;${bold}">${n(r.ind)}</td>
+      <td></td><td></td><td></td><td></td>
+    </tr>`
+  }
+  return `<tr style="background:${bg}">
+    <td style="padding:5px 10px 5px ${pad}px;${bold}">${r.label}</td>
+    <td style="padding:5px 10px;text-align:right;${bold}">${n(r.ind)}</td>
+    <td style="padding:5px 10px;text-align:right">${n(r.occ)}</td>
+    <td style="padding:5px 10px;text-align:right">${n(r.unocc)}</td>
+    <td style="padding:5px 10px;text-align:right">${n(r.cap)}</td>
+    <td style="padding:5px 10px;text-align:right">${pct(r.rate)}</td>
+  </tr>`
+}
+
+function sectionHeader(label, col1, col2, col3) {
+  return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
+    <td style="padding:7px 10px">${label}</td>
+    <td style="padding:7px 10px;text-align:right">Individuals</td>
+    <td style="padding:7px 10px;text-align:right">${col1}</td>
+    <td style="padding:7px 10px;text-align:right">${col2}</td>
+    <td style="padding:7px 10px;text-align:right">${col3}</td>
+    <td style="padding:7px 10px;text-align:right">Occupancy Rate</td>
+  </tr>`
+}
+
+function summaryHeader() {
+  return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
+    <td style="padding:7px 10px">Occupancy Summary</td>
+    <td style="padding:7px 10px;text-align:right">Individuals</td>
+    <td colspan="4"></td>
+  </tr>`
+}
+
+dailyTable = {
+  const s = (key) => dayRows.find(r => r.key === key)
+
+  const summaryKeys = ["all_shelter","room_based","singles_sector","singles_shelter","allied_summ","temp_summ","iso_summ"]
+  const roomKeys    = ["fam_total","fam_emerg","fam_trans_r","fam_hotel","sng_hotel"]
+  const bedKeys     = ["singles_total","emerg_total","mix_emerg","men_emerg","wom_emerg","yth_emerg",
+                       "trans_total","mix_trans","fam_trans_b","men_trans","wom_trans","yth_trans"]
+  const alliedKeys  = ["allied_total","respites","dropin"]
+
+  return html`
+    <div style="overflow-x:auto;margin:0 0 1rem">
+    <table style="border-collapse:collapse;width:100%;font-size:0.88em;font-family:'Segoe UI',Arial,sans-serif;min-width:620px">
+      ${summaryHeader()}
+      ${summaryKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
+
+      ${sectionHeader("Shelter Programs, Room-Based", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity")}
+      ${roomKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
+
+      ${sectionHeader("Shelter Programs, Bed-Based", "Occupied Beds", "Unoccupied Beds", "Actual Bed Capacity")}
+      ${bedKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
+
+      ${sectionHeader("Allied Services", "Occupied Spaces", "Unoccupied Spaces", "Actual Space Capacity")}
+      ${alliedKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
+
+      <tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
+        <td style="padding:7px 10px">Temporary Programs, Bed/Space-Based</td>
+        <td style="padding:7px 10px;text-align:right">Individuals</td>
+        <td style="padding:7px 10px;text-align:right">Occupied Beds/Spaces</td>
+        <td style="padding:7px 10px;text-align:right">Unoccupied</td>
+        <td style="padding:7px 10px;text-align:right">Actual Capacity</td>
+        <td style="padding:7px 10px;text-align:right">Occupancy Rate</td>
+      </tr>
+      ${s("temp_resp") ? tableRow(s("temp_resp")) : ""}
+
+      ${sectionHeader("Temporary Programs, Room/Unit-Based", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity")}
+      ${s("hotels") ? tableRow(s("hotels")) : ""}
+
+      ${sectionHeader("Temporary Isolation/Recovery Programs", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity")}
+      ${s("iso") ? tableRow(s("iso")) : ""}
+    </table>
+    </div>`
+}
+```
+
+This table reproduces the City of Toronto's Daily Shelter & Overnight Service Usage report using the City's open data. Two known differences from the City's live dashboard: it does not include Bridging & Triage programs, which are not published to open data (29 people on May 14, 2026); and for emergency programs, "Actual Bed Capacity" counts beds currently available for use and excludes beds temporarily offline, which the City's live dashboard includes. Occupancy and individual counts match the City's figures exactly. A full side-by-side comparison is available on the [data validation page](data-validation.qmd){target="_blank"}.
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca).
+
+:::

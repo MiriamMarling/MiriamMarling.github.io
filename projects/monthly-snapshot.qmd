@@ -1,6 +1,16 @@
 ---
 title: "Monthly Snapshot"
 subtitle: "Toronto Shelter System — current month at a glance"
+description: "Interactive monthly snapshot of Toronto's shelter system — actively homeless counts, flow metrics, and population group breakdowns for any month from January 2018 onward."
+author: "Miriam Marling"
+open-graph:
+  title: "Monthly Snapshot — Toronto Shelter System"
+  description: "Interactive monthly snapshot of Toronto's shelter system — actively homeless counts, flow metrics, and population group breakdowns for any month from January 2018 onward."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Monthly Snapshot — Toronto Shelter System"
+  description: "Interactive monthly snapshot of Toronto's shelter system — actively homeless counts, flow metrics, and population group breakdowns for any month from January 2018 onward."
 format:
   html:
     page-layout: full

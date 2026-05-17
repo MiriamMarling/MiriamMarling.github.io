@@ -16,6 +16,8 @@ website:
             text: "Inside Toronto's Shelter System"
           - href: projects/about-the-data.qmd
             text: "About the Data"
+          - href: projects/data-validation.qmd
+            text: "Data Validation"
           - text: "---"
           - href: projects/historical-trends.qmd
             text: "Historical Trends"

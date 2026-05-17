@@ -1,6 +1,16 @@
 ---
 title: "Historical Trends"
 subtitle: "Toronto Shelter System — multi-year time series"
+description: "Multi-year historical trends in Toronto's shelter system — actively homeless, housing exits, and chronic homelessness from January 2018 to present, with interactive filters."
+author: "Miriam Marling"
+open-graph:
+  title: "Historical Trends — Toronto Shelter System"
+  description: "Multi-year historical trends in Toronto's shelter system — actively homeless, housing exits, and chronic homelessness from January 2018 to present, with interactive filters."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Historical Trends — Toronto Shelter System"
+  description: "Multi-year historical trends in Toronto's shelter system — actively homeless, housing exits, and chronic homelessness from January 2018 to present, with interactive filters."
 format:
   html:
     page-layout: full

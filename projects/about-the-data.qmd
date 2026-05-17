@@ -1,6 +1,16 @@
 ---
 title: "About the Data"
 subtitle: "What Toronto's shelter system flow data does and doesn't tell us"
+description: "Data notes for Toronto's shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions."
+author: "Miriam Marling"
+open-graph:
+  title: "About the Data — Toronto Shelter System"
+  description: "Data notes for Toronto's shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "About the Data — Toronto Shelter System"
+  description: "Data notes for Toronto's shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions."
 ---
 
 The numbers on the [shelter system project page](toronto-shelter.qmd)

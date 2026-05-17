@@ -1,6 +1,16 @@
 ---
 title: "YTD Comparison"
 subtitle: "Toronto Shelter System — year-to-date cumulative trends"
+description: "Year-to-date comparison of Toronto's shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates."
+author: "Miriam Marling"
+open-graph:
+  title: "YTD Comparison — Toronto Shelter System"
+  description: "Year-to-date comparison of Toronto's shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "YTD Comparison — Toronto Shelter System"
+  description: "Year-to-date comparison of Toronto's shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates."
 format:
   html:
     page-layout: full

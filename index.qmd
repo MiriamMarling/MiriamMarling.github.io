@@ -1,6 +1,16 @@
 ---
 title: "BonQuery"
 subtitle: "Data for the greater good"
+description: "BonQuery turns humanitarian open data into clear, useful analysis — starting with Toronto's shelter system capacity, demand, and flow."
+author: "Miriam Marling"
+open-graph:
+  title: "BonQuery — Data for the Greater Good"
+  description: "BonQuery turns humanitarian open data into clear, useful analysis — starting with Toronto's shelter system capacity, demand, and flow."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "BonQuery — Data for the Greater Good"
+  description: "BonQuery turns humanitarian open data into clear, useful analysis — starting with Toronto's shelter system capacity, demand, and flow."
 ---
 
 # Welcome

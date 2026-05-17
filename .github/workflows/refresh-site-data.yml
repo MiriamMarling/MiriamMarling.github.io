@@ -45,19 +45,25 @@ jobs:
       # Pull fresh data from OCI into data/shelter_flow.json
       # Secrets are injected as environment variables to match the
       # naming in generate_data.py
-      - name: Generate fresh data file
+      - name: Generate shelter flow data (OCI)
         env:
           OCI_DSN: ${{ secrets.OCI_DSN }}
           OCI_DB_USER: ${{ secrets.OCI_DB_USER }}
           OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
         run: python scripts/generate_data.py
 
-      # Confirm the file actually got written and isn't empty
-      - name: Verify data file
+      # Pull fresh daily occupancy data from CKAN (no secrets needed)
+      - name: Generate daily occupancy data (CKAN)
+        run: python scripts/generate_daily_occupancy.py
+
+      # Confirm both files are present and non-empty
+      - name: Verify data files
         run: |
-          ls -lh data/shelter_flow.json
-          echo "Row count check:"
+          ls -lh data/shelter_flow.json data/daily_occupancy.json data/city_reference_2026-05-14.json
+          echo "shelter_flow rows:"
           python -c "import json; print(len(json.load(open('data/shelter_flow.json'))), 'rows')"
+          echo "daily_occupancy rows:"
+          python -c "import json; print(len(json.load(open('data/daily_occupancy.json'))), 'rows')"
 
       # Install Quarto so we can build and publish the site
       - name: Set up Quarto

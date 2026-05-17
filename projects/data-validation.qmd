@@ -1,0 +1,230 @@
+---
+title: "Validating BonQuery's Data Against the City of Toronto"
+description: "A transparency check comparing BonQuery's Toronto shelter occupancy figures against the City of Toronto's live dashboard, with a full account of known data differences."
+author: "Miriam Marling"
+open-graph:
+  title: "Validating BonQuery's Data Against the City of Toronto"
+  description: "A transparency check comparing BonQuery's Toronto shelter occupancy figures against the City of Toronto's live dashboard, with a full account of known data differences."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Validating BonQuery's Data Against the City of Toronto"
+  description: "A transparency check comparing BonQuery's Toronto shelter occupancy figures against the City of Toronto's live dashboard, with a full account of known data differences."
+---
+
+This page is a transparency check. It places BonQuery's open-data figures for daily shelter occupancy directly beside the City of Toronto's published live-dashboard figures for the same date, and gives a precise account of every difference. BonQuery's table is built entirely from the City's own open data (CKAN export); the live dashboard draws on the City's internal operational system. Most figures match exactly. Where they don't, the reason is documented below — neither source is wrong; they answer slightly different questions.
+
+**Comparison as of May 14, 2026.** Unlike the hub-page table — which updates each time new CKAN data is pulled — this comparison page is a periodic artifact for a documented reference date. Refreshing it requires manually capturing a new City snapshot. The reference date is noted plainly so readers know exactly what is being compared.
+
+---
+
+## Legend
+
+| Mark | Meaning |
+|---|---|
+| ✓ | **Matches** — BonQuery's open-data figure equals the City's published figure |
+| ≈ | **Known difference** — figures differ by a documented, explained amount (see notes below) |
+| ✗ | **Unexplained discrepancy** — should never appear; if it does, investigate |
+
+Rows labelled *Not published to open data* are absent from the CKAN export entirely and receive no mark.
+
+---
+
+## Side-by-side comparison — May 14, 2026
+
+```{ojs}
+//| echo: false
+daily_occ = FileAttachment("../data/daily_occupancy.json").json()
+city_ref  = FileAttachment("../data/city_reference_2026-05-14.json").json()
+```
+
+```{ojs}
+//| echo: false
+// BonQuery rows for May 14
+bq14 = daily_occ.filter(r => r.date === "2026-05-14")
+
+function bq(key) { return bq14.find(r => r.key === key) }
+function cr(key) { return city_ref.find(r => r.key === key) }
+
+function n(v)   { return v !== null && v !== undefined ? (+v).toLocaleString() : "—" }
+function pct(v) { return v !== null && v !== undefined ? (+v).toFixed(1) + "%" : "—" }
+
+// Known-difference keys (capacity/rate only — ind and occ match)
+KNOWN_CAP_KEYS = new Set(["mix_emerg","men_emerg","wom_emerg","yth_emerg","emerg_total","singles_total"])
+
+function mark(bqVal, cityVal, isCapOrRate, key) {
+  if (cityVal === null || cityVal === undefined) return ""
+  if (bqVal === null || bqVal === undefined) return ""
+  const match = Math.abs(+bqVal - +cityVal) < 0.11
+  if (match) return `<span style="color:#1a7a4a;font-weight:bold">✓</span>`
+  if (isCapOrRate && KNOWN_CAP_KEYS.has(key))
+    return `<span style="color:#b06000;font-weight:bold" title="Known difference — see notes">≈</span>`
+  return `<span style="color:#c0392b;font-weight:bold">✗</span>`
+}
+
+function compRow(key, bqRow, cityRow, opts = {}) {
+  const { indent = 0, isTot = false, summaryOnly = false } = opts
+  const pad = indent * 16
+  const bold = isTot ? "font-weight:600" : ""
+  const bg   = isTot ? "#e8edf5" : "#fff"
+
+  if (!bqRow || !cityRow) return ""
+
+  const useCap = bqRow.col_type !== "summary"
+
+  if (summaryOnly || bqRow.col_type === "summary") {
+    return `<tr style="background:${bg}">
+      <td style="padding:5px 10px 5px ${pad}px;${bold}">${bqRow.label}</td>
+      <td style="padding:5px 8px;text-align:right;${bold}">
+        ${n(bqRow.ind)} ${mark(bqRow.ind, cityRow.city_ind, false, key)}</td>
+      <td style="padding:5px 8px;text-align:right;color:#888">${n(cityRow.city_ind)}</td>
+      <td colspan="6"></td>
+    </tr>`
+  }
+
+  return `<tr style="background:${bg}">
+    <td style="padding:5px 10px 5px ${pad}px;${bold}">${bqRow.label}</td>
+    <td style="padding:5px 8px;text-align:right;${bold}">
+      ${n(bqRow.ind)} ${mark(bqRow.ind, cityRow.city_ind, false, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:#888">${n(cityRow.city_ind)}</td>
+    <td style="padding:5px 8px;text-align:right">
+      ${n(bqRow.occ)} ${mark(bqRow.occ, cityRow.city_occ, false, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:#888">${n(cityRow.city_occ)}</td>
+    <td style="padding:5px 8px;text-align:right">
+      ${n(bqRow.unocc)} ${mark(bqRow.unocc, cityRow.city_unocc, true, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:#888">${n(cityRow.city_unocc)}</td>
+    <td style="padding:5px 8px;text-align:right">
+      ${n(bqRow.cap)} ${mark(bqRow.cap, cityRow.city_cap, true, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:#888">${n(cityRow.city_cap)}</td>
+    <td style="padding:5px 8px;text-align:right">
+      ${pct(bqRow.rate)} ${mark(bqRow.rate, cityRow.city_rate, true, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:#888">${pct(cityRow.city_rate)}</td>
+  </tr>`
+}
+
+function secHead(label, col1) {
+  return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.82em">
+    <td style="padding:6px 10px" rowspan="2">${label}</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">Individuals</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">${col1[0]}</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">${col1[1]}</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">${col1[2]}</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">Occupancy Rate</td>
+  </tr>
+  <tr style="background:#2c5282;color:#cfe0f7;font-size:0.78em">
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">City</td>
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">City</td>
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">City</td>
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">City</td>
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">City</td>
+  </tr>`
+}
+
+function summarySecHead() {
+  return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.82em">
+    <td style="padding:6px 10px" rowspan="2">Occupancy Summary</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">Individuals</td>
+    <td colspan="8"></td>
+  </tr>
+  <tr style="background:#2c5282;color:#cfe0f7;font-size:0.78em">
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">City</td>
+    <td colspan="8"></td>
+  </tr>`
+}
+
+bridgingRow = `<tr style="background:#f5f5f5;color:#888">
+  <td style="padding:5px 10px 5px 20px;font-style:italic">Bridging &amp; Triage Programs</td>
+  <td style="padding:5px 8px;text-align:right;font-size:0.85em" colspan="2">Not published to open data (29 people)</td>
+  <td colspan="8"></td>
+</tr>`
+
+compTable = {
+  const rows = [
+    "all_shelter","room_based","singles_sector","singles_shelter","allied_summ","temp_summ","iso_summ"
+  ]
+  return html`
+  <div style="overflow-x:auto;margin:1rem 0">
+  <table style="border-collapse:collapse;width:100%;font-size:0.83em;font-family:'Segoe UI',Arial,sans-serif;min-width:800px">
+
+    ${summarySecHead()}
+    ${compRow("all_shelter",     bq("all_shelter"),    cr("all_shelter"),    {isTot:true,  summaryOnly:true})}
+    ${bridgingRow}
+    ${compRow("room_based",      bq("room_based"),     cr("room_based"),     {indent:1, summaryOnly:true})}
+    ${compRow("singles_sector",  bq("singles_sector"), {city_ind:5727},      {indent:1, summaryOnly:true})}
+    ${compRow("singles_shelter", bq("singles_shelter"),cr("singles_total"),  {indent:2, summaryOnly:true})}
+    ${compRow("allied_summ",     bq("allied_summ"),    cr("allied_total"),   {indent:2, summaryOnly:true})}
+    ${compRow("temp_summ",       bq("temp_summ"),      {city_ind:1901},      {indent:2, summaryOnly:true})}
+    ${compRow("iso_summ",        bq("iso_summ"),       cr("iso"),            {indent:1, summaryOnly:true})}
+
+    ${secHead("Shelter Programs, Room-Based", ["Occupied Rooms","Unoccupied Rooms","Actual Room Capacity"])}
+    ${compRow("fam_total",   bq("fam_total"),   cr("fam_total"),   {isTot:true})}
+    ${compRow("fam_emerg",   bq("fam_emerg"),   cr("fam_emerg"),   {indent:1})}
+    ${compRow("fam_trans_r", bq("fam_trans_r"), cr("fam_trans_r"), {indent:1})}
+    ${compRow("fam_hotel",   bq("fam_hotel"),   cr("fam_hotel"),   {indent:1})}
+    ${compRow("sng_hotel",   bq("sng_hotel"),   cr("sng_hotel"),   {isTot:true})}
+
+    ${secHead("Shelter Programs, Bed-Based", ["Occupied Beds","Unoccupied Beds","Actual Bed Capacity"])}
+    ${compRow("singles_total", bq("singles_total"), cr("singles_total"), {isTot:true})}
+    ${compRow("emerg_total",   bq("emerg_total"),   cr("emerg_total"),   {indent:1, isTot:true})}
+    ${compRow("mix_emerg",     bq("mix_emerg"),     cr("mix_emerg"),     {indent:2})}
+    ${compRow("men_emerg",     bq("men_emerg"),     cr("men_emerg"),     {indent:2})}
+    ${compRow("wom_emerg",     bq("wom_emerg"),     cr("wom_emerg"),     {indent:2})}
+    ${compRow("yth_emerg",     bq("yth_emerg"),     cr("yth_emerg"),     {indent:2})}
+    ${compRow("trans_total",   bq("trans_total"),   cr("trans_total"),   {indent:1, isTot:true})}
+    ${compRow("mix_trans",     bq("mix_trans"),     cr("mix_trans"),     {indent:2})}
+    ${compRow("fam_trans_b",   bq("fam_trans_b"),   cr("fam_trans_b"),   {indent:2})}
+    ${compRow("men_trans",     bq("men_trans"),     cr("men_trans"),     {indent:2})}
+    ${compRow("wom_trans",     bq("wom_trans"),     cr("wom_trans"),     {indent:2})}
+    ${compRow("yth_trans",     bq("yth_trans"),     cr("yth_trans"),     {indent:2})}
+
+    ${secHead("Allied Services", ["Occupied Spaces","Unoccupied Spaces","Actual Space Capacity"])}
+    ${compRow("allied_total", bq("allied_total"), cr("allied_total"), {isTot:true})}
+    ${compRow("respites",     bq("respites"),     cr("respites"),     {indent:1})}
+    ${compRow("dropin",       bq("dropin"),       cr("dropin"),       {indent:1})}
+
+    ${secHead("Temporary Programs (Bed/Space)", ["Occ. Beds/Spaces","Unocc. Beds/Spaces","Actual Capacity"])}
+    ${compRow("temp_resp", bq("temp_resp"), cr("temp_resp"))}
+
+    ${secHead("Temporary Programs (Room/Unit)", ["Occupied Rooms","Unoccupied Rooms","Actual Room Capacity"])}
+    ${compRow("hotels", bq("hotels"), cr("hotels"))}
+
+    ${secHead("Temporary Isolation/Recovery", ["Occupied Rooms","Unoccupied Rooms","Actual Room Capacity"])}
+    ${compRow("iso", bq("iso"), cr("iso"))}
+
+  </table>
+  </div>`
+}
+```
+
+---
+
+## Notes on differences
+
+### Emergency bed capacity (≈ mark)
+
+The ≈ mark appears in the **Unoccupied Beds**, **Actual Bed Capacity**, and **Occupancy Rate** cells for emergency bed programs (Mixed Adult, Men, Women, Youth emergency; and their totals). On May 14, 2026, the total gap was **62 beds** across those programs — 2.2% of the City's stated emergency bed capacity of 2,810.
+
+This is not an error in either source. It is a definitional difference between two City data products:
+
+- **CKAN open-data export** (`CAPACITY_ACTUAL_BED`): counts beds currently available for occupancy — that is, occupied beds plus available-but-empty beds. Beds that are temporarily offline (under maintenance, decommissioned for a period, etc.) are recorded separately in a `UNAVAILABLE_BEDS` column.
+- **City's live dashboard** ("Actual Bed Capacity"): appears to include some of those temporarily unavailable beds in its capacity figure.
+
+Both figures are valid. They answer different questions. BonQuery's table uses the CKAN open-data definition because that is the published, reproducible data; the difference with the live dashboard is documented here for full transparency.
+
+### Bridging & Triage programs (not published to open data)
+
+The City's live dashboard shows 29 people in Bridging & Triage programs on May 14, 2026. This program type is not present in the CKAN open-data export at all — the programs are tracked in the City's internal operational system but not published to the open data portal. BonQuery cannot reproduce this figure from open data, and the row is labelled accordingly in the table above.
+
+### The takeaway
+
+BonQuery's table is fully reproducible by anyone from published open data: the [CKAN export](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/), the [aggregation function](https://github.com/), and this comparison page together constitute a complete audit trail. The live dashboard draws on internal system state that is not fully present in the CKAN export. These are different tools for different questions: the live dashboard is designed for daily operational decisions; BonQuery's table is designed for longitudinal, reproducible research.
+
+---
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca).
