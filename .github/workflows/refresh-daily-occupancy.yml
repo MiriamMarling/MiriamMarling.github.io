@@ -5,9 +5,10 @@
 # The City typically publishes the previous day's shelter occupancy figures
 # overnight; 08:00 UTC ensures the data is available before the pull runs.
 #
-# This workflow is separate from refresh-site-data.yml, which handles the
-# monthly shelter flow pull from OCI. The two workflows are independent:
-# this one runs daily and needs no database secrets.
+# This workflow rebuilds the entire site, so it must generate ALL data files —
+# both shelter_flow.json (from OCI) and daily_occupancy.json (from CKAN).
+# The OCI pull is fast (~2s) and the data changes only monthly, but skipping
+# it would leave shelter_flow.json missing and break the monthly flow pages.
 #
 # Author: Miriam Marling <miriam@BonQuery.ca>
 # Date: 2026
@@ -35,20 +36,35 @@ jobs:
         with:
           python-version: '3.13'
 
-      # No external packages needed — generate_daily_occupancy.py uses
-      # only the Python standard library.
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install oracledb
+
+      # shelter_flow.json — monthly shelter flow data from OCI.
+      # Required by monthly-snapshot.qmd, ytd-comparison.qmd, historical-trends.qmd.
+      # Data changes only monthly but must be regenerated on every site build
+      # because data/ is gitignored.
+      - name: Generate shelter flow data (OCI)
+        env:
+          OCI_DSN: ${{ secrets.OCI_DSN }}
+          OCI_DB_USER: ${{ secrets.OCI_DB_USER }}
+          OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
+        run: python scripts/generate_data.py
+
+      # daily_occupancy.json — daily shelter occupancy from CKAN (no secrets needed).
       - name: Pull daily occupancy data from CKAN
         run: python scripts/generate_daily_occupancy.py
 
       - name: Verify output
         run: |
-          ls -lh data/daily_occupancy.json data/city_reference_2026-05-14.json
+          ls -lh data/shelter_flow.json data/daily_occupancy.json data/city_reference_2026-05-14.json
           python -c "
           import json
           rows = json.load(open('data/daily_occupancy.json'))
           dates = sorted({r['date'] for r in rows}, reverse=True)
-          print(f'{len(rows):,} rows across {len(dates)} dates')
-          print(f'Most recent date: {dates[0]}')
+          print(f'daily_occupancy: {len(rows):,} rows, most recent {dates[0]}')
+          print(f'shelter_flow: {len(json.load(open(\"data/shelter_flow.json\"))):,} rows')
           "
 
       - name: Set up Quarto
