@@ -278,6 +278,8 @@ allPass = validationChecks.every(c => c.pass)
 
 // ── Validation banner ─────────────────────────────────────────────────────
 validationBanner = {
+  const CITY_CENSUS_URL = "https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/"
+
   if (!allPass) {
     const failedChecks = validationChecks.filter(c => !c.pass)
     return html`<div style="
@@ -299,24 +301,31 @@ validationBanner = {
       Validation status unavailable in local development
     </div>`
   }
-  if (cityValidation.passed) {
-    return html`<div style="
-      background:#d4edda;border:1px solid #76b88d;border-radius:4px;
-      padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px">
-      ✓ Last validated against <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/" target="_blank">City of Toronto open data</a> for ${fmtDate(cityValidation.city_date)}
-    </div>`
-  }
-  if (cityValidation.mismatches && cityValidation.mismatches.length > 0 && cityValidation.mismatches[0].city !== null) {
+  if (!cityValidation.city_reachable) {
     return html`<div style="
       background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
       padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px">
-      ⚠ Validation discrepancy found for ${fmtDate(cityValidation.city_date)} — BonQuery values differ from City's published table
+      ⚠ City of Toronto shelter census page could not be reached · <a href="${CITY_CENSUS_URL}" target="_blank">View City data →</a>
+    </div>`
+  }
+  if (cityValidation.passed && cityValidation.city_date === cityValidation.bonquery_latest_date) {
+    return html`<div style="
+      background:#d4edda;border:1px solid #76b88d;border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px">
+      ✓ Validated against <a href="${CITY_CENSUS_URL}" target="_blank">City of Toronto open data</a> for ${fmtDate(cityValidation.city_date)}
+    </div>`
+  }
+  if (cityValidation.passed && cityValidation.city_date !== cityValidation.bonquery_latest_date) {
+    return html`<div style="
+      background:#d4edda;border:1px solid #76b88d;border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:#1a4731;margin-bottom:12px">
+      ✓ Last validated against <a href="${CITY_CENSUS_URL}" target="_blank">City of Toronto open data</a> for ${fmtDate(cityValidation.city_date)} · BonQuery data current to ${fmtDate(cityValidation.bonquery_latest_date)} — City page not yet updated
     </div>`
   }
   return html`<div style="
     background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
     padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px">
-    ⚠ City of Toronto shelter census page could not be reached for validation
+    ⚠ Discrepancy found for ${fmtDate(cityValidation.city_date)} — BonQuery values differ from <a href="${CITY_CENSUS_URL}" target="_blank">City's published table</a>
   </div>`
 }
 ```
@@ -445,6 +454,8 @@ dailyTable = {
 
 This table reproduces the City of Toronto's Daily Shelter & Overnight Service Usage report using the City's open data. Two known differences from the City's live dashboard: it does not include Bridging & Triage programs, which are not published to open data (29 people on May 14, 2026); and for emergency programs, "Actual Bed Capacity" counts beds currently available for use and excludes beds temporarily offline, which the City's live dashboard includes. Occupancy and individual counts match the City's figures exactly. A full side-by-side comparison is available on the [data validation page](data-validation.qmd){target="_blank"}.
 
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca) · [Download data (JSON)](https://bonquery.ca/data/daily_occupancy.json).
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca).
+
+BonQuery's aggregated data is available for download from 2021 to present: [JSON](https://bonquery.ca/data/daily_occupancy.json) · [CSV](https://bonquery.ca/data/daily_occupancy.csv)
 
 :::

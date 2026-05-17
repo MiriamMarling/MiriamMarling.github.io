@@ -50,10 +50,28 @@ MONTH_NAMES = {
     "September": 9, "October": 10, "November": 11, "December": 12,
 }
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xhtml+xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-CA,en;q=0.9",
+}
 
-def write_result(passed, city_date, mismatches):
+
+def get_bonquery_latest_date():
+    """Return the most recent date string in daily_occupancy.json, or None."""
+    try:
+        daily_occ = json.loads(OCCUPANCY_FILE.read_text())
+        dates = sorted({r["date"] for r in daily_occ if r.get("date")}, reverse=True)
+        return dates[0] if dates else None
+    except Exception:
+        return None
+
+
+def write_result(city_reachable, passed, city_date, bonquery_latest_date, mismatches):
     result = {
         "city_date": city_date,
+        "bonquery_latest_date": bonquery_latest_date,
+        "city_reachable": city_reachable,
         "checked_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "passed": passed,
         "mismatches": mismatches,
@@ -71,6 +89,8 @@ def parse_number(text):
 
 
 def extract_city_date(soup):
+    # BeautifulSoup decodes &amp; → & automatically, so the regex matches
+    # plain & regardless of how it was encoded in the source HTML.
     for tag in soup.find_all(["h2", "h3", "h4"]):
         text = tag.get_text(strip=True)
         m = re.search(r"Daily Occupancy\s*&\s*Capacity for\s+(\w+)\s+(\d+)", text)
@@ -102,30 +122,62 @@ def extract_city_values(soup):
 
 
 def main():
+    bonquery_latest_date = get_bonquery_latest_date()
+
+    # ── Fetch City page ───────────────────────────────────────────────────────
     try:
-        resp = requests.get(CITY_URL, timeout=30, headers={"User-Agent": "BonQuery-Validator/1.0"})
+        resp = requests.get(CITY_URL, timeout=30, headers=HEADERS)
         resp.raise_for_status()
     except Exception as exc:
-        write_result(False, None, [{"label": "City page fetch failed", "key": None, "city": None, "bonquery": str(exc)}])
+        # city_reachable: false — network/HTTP failure
+        write_result(
+            city_reachable=False,
+            passed=False,
+            city_date=None,
+            bonquery_latest_date=bonquery_latest_date,
+            mismatches=[{"label": "City page fetch failed", "key": None, "city": None, "bonquery": str(exc)}],
+        )
         sys.exit(0)
 
     soup = BeautifulSoup(resp.text, "html.parser")
 
+    # ── Parse date heading ────────────────────────────────────────────────────
     city_date = extract_city_date(soup)
     if not city_date:
-        write_result(False, None, [{"label": "City page date not found", "key": None, "city": None, "bonquery": "Could not parse date heading"}])
+        # city_reachable: false — page loaded but date could not be parsed
+        write_result(
+            city_reachable=False,
+            passed=False,
+            city_date=None,
+            bonquery_latest_date=bonquery_latest_date,
+            mismatches=[{"label": "City page date not found", "key": None, "city": None, "bonquery": "Could not parse date heading"}],
+        )
         sys.exit(0)
+
+    # ── Page is reachable from here on; errors are value mismatches ──────────
 
     city_values = extract_city_values(soup)
     if not city_values:
-        write_result(False, city_date, [{"label": "City table parse failed", "key": None, "city": None, "bonquery": "No table rows matched expected labels"}])
+        write_result(
+            city_reachable=True,
+            passed=False,
+            city_date=city_date,
+            bonquery_latest_date=bonquery_latest_date,
+            mismatches=[{"label": "City table parse failed", "key": None, "city": None, "bonquery": "No table rows matched expected labels"}],
+        )
         sys.exit(0)
 
     daily_occ = json.loads(OCCUPANCY_FILE.read_text())
     bonquery_rows = {r["key"]: r for r in daily_occ if r["date"] == city_date}
 
     if not bonquery_rows:
-        write_result(False, city_date, [{"label": "No BonQuery data for City date", "key": None, "city": None, "bonquery": f"No rows found for {city_date}"}])
+        write_result(
+            city_reachable=True,
+            passed=False,
+            city_date=city_date,
+            bonquery_latest_date=bonquery_latest_date,
+            mismatches=[{"label": "No BonQuery data for City date", "key": None, "city": None, "bonquery": f"No rows found for {city_date}"}],
+        )
         sys.exit(0)
 
     mismatches = []
@@ -140,7 +192,13 @@ def main():
         if city_val != bq_val:
             mismatches.append({"label": label, "key": key, "city": city_val, "bonquery": bq_val})
 
-    write_result(len(mismatches) == 0, city_date, mismatches)
+    write_result(
+        city_reachable=True,
+        passed=len(mismatches) == 0,
+        city_date=city_date,
+        bonquery_latest_date=bonquery_latest_date,
+        mismatches=mismatches,
+    )
 
 
 if __name__ == "__main__":

@@ -228,3 +228,5 @@ BonQuery's table is fully reproducible by anyone from published open data: the [
 ---
 
 Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca).
+
+BonQuery's aggregated data is available for download from 2021 to present: [JSON](https://bonquery.ca/data/daily_occupancy.json) · [CSV](https://bonquery.ca/data/daily_occupancy.csv)

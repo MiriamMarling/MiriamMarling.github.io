@@ -56,6 +56,20 @@ jobs:
       - name: Pull daily occupancy data from CKAN
         run: python scripts/generate_daily_occupancy.py
 
+      - name: Convert daily occupancy JSON to CSV
+        run: |
+          python -c "
+          import csv, json
+          from pathlib import Path
+          rows = json.loads(Path('data/daily_occupancy.json').read_text())
+          fields = ['date', 'key', 'label', 'ind', 'occ', 'unocc', 'cap', 'rate', 'col_type', 'indent', 'is_total']
+          with open('data/daily_occupancy.csv', 'w', newline='') as f:
+              w = csv.DictWriter(f, fieldnames=fields, extrasaction='ignore')
+              w.writeheader()
+              w.writerows(rows)
+          print(f'Wrote {len(rows):,} rows to data/daily_occupancy.csv')
+          "
+
       - name: Validate against City of Toronto shelter census page
         run: python scripts/validate_city_page.py
 
