@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: _site   # built HTML goes here — not committed to main
+  resources:
+    - data/daily_occupancy.csv   # not FileAttachment-referenced, must be listed explicitly
 
 website:
   title: "BonQuery"

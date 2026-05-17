@@ -89,17 +89,16 @@ def parse_number(text):
 
 
 def extract_city_date(soup):
-    # BeautifulSoup decodes &amp; → & automatically, so the regex matches
-    # plain & regardless of how it was encoded in the source HTML.
-    for tag in soup.find_all(["h2", "h3", "h4"]):
-        text = tag.get_text(strip=True)
-        m = re.search(r"Daily Occupancy\s*&\s*Capacity for\s+(\w+)\s+(\d+)", text)
+    # The date lives in a <div data-type="toggle"> accordion trigger, not a heading.
+    # BeautifulSoup decodes &amp; → & automatically before the regex sees it.
+    pattern = re.compile(r"Daily Occupancy\s*&\s*Capacity for\s+(\w+)\s+(\d+)")
+    for tag in soup.find_all(True):
+        m = pattern.search(tag.get_text(strip=True))
         if m:
-            month_str, day_str = m.group(1), m.group(2)
-            month = MONTH_NAMES.get(month_str)
+            month = MONTH_NAMES.get(m.group(1))
             if month:
                 year = datetime.now(timezone.utc).year
-                return f"{year}-{month:02d}-{int(day_str):02d}"
+                return f"{year}-{month:02d}-{int(m.group(2)):02d}"
     return None
 
 
