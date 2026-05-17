@@ -1,0 +1,42 @@
+# Check all external URLs in .qmd source files for broken links.
+# Runs on every push to main and weekly on Mondays.
+# Can also be triggered manually via the Actions tab.
+#
+# Author: Miriam Marling <miriam@BonQuery.ca>
+# Date: 2026
+
+name: Check links
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.qmd"
+      - "**/*.md"
+  schedule:
+    - cron: '0 9 * * 1'     # Every Monday at 09:00 UTC
+  workflow_dispatch:
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Check all .qmd and .md files; skip mailto: links and localhost
+          args: >
+            --verbose
+            --no-progress
+            --exclude "^mailto:"
+            --exclude "^https?://localhost"
+            --exclude "^https?://127\."
+            "**/*.qmd"
+            "**/*.md"
+          # Report broken links but don't fail the build — broken external
+          # URLs shouldn't block a data refresh. Review the job output manually.
+          fail: false
