@@ -1,0 +1,62 @@
+# Refresh daily occupancy data from the City of Toronto's CKAN open data
+# portal and republish the Quarto site.
+#
+# Runs every day at 08:00 UTC (4am EDT / 3am EST).
+# The City typically publishes the previous day's shelter occupancy figures
+# overnight; 08:00 UTC ensures the data is available before the pull runs.
+#
+# This workflow is separate from refresh-site-data.yml, which handles the
+# monthly shelter flow pull from OCI. The two workflows are independent:
+# this one runs daily and needs no database secrets.
+#
+# Author: Miriam Marling <miriam@BonQuery.ca>
+# Date: 2026
+
+name: Refresh daily occupancy and publish
+
+on:
+  schedule:
+    - cron: '0 8 * * *'   # 08:00 UTC every day
+  workflow_dispatch:       # Allow manual triggering from the Actions tab
+
+permissions:
+  contents: write          # Needed to push to gh-pages
+
+jobs:
+  refresh-occupancy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      # No external packages needed — generate_daily_occupancy.py uses
+      # only the Python standard library.
+      - name: Pull daily occupancy data from CKAN
+        run: python scripts/generate_daily_occupancy.py
+
+      - name: Verify output
+        run: |
+          ls -lh data/daily_occupancy.json data/city_reference_2026-05-14.json
+          python -c "
+          import json
+          rows = json.load(open('data/daily_occupancy.json'))
+          dates = sorted({r['date'] for r in rows}, reverse=True)
+          print(f'{len(rows):,} rows across {len(dates)} dates')
+          print(f'Most recent date: {dates[0]}')
+          "
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render and publish to GitHub Pages
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

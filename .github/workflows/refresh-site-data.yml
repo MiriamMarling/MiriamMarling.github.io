@@ -52,18 +52,16 @@ jobs:
           OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
         run: python scripts/generate_data.py
 
-      # Pull fresh daily occupancy data from CKAN (no secrets needed)
+      # Confirm the shelter flow file is present and non-empty
+      - name: Verify shelter flow data
+        run: |
+          ls -lh data/shelter_flow.json
+          python -c "import json; print(len(json.load(open('data/shelter_flow.json'))), 'rows')"
+
+      # Pull fresh daily occupancy data from CKAN so the monthly publish
+      # also picks up the latest occupancy figures.
       - name: Generate daily occupancy data (CKAN)
         run: python scripts/generate_daily_occupancy.py
-
-      # Confirm both files are present and non-empty
-      - name: Verify data files
-        run: |
-          ls -lh data/shelter_flow.json data/daily_occupancy.json data/city_reference_2026-05-14.json
-          echo "shelter_flow rows:"
-          python -c "import json; print(len(json.load(open('data/shelter_flow.json'))), 'rows')"
-          echo "daily_occupancy rows:"
-          python -c "import json; print(len(json.load(open('data/daily_occupancy.json'))), 'rows')"
 
       # Install Quarto so we can build and publish the site
       - name: Set up Quarto
