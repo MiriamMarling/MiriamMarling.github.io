@@ -35,6 +35,7 @@ jobs:
             --exclude "^mailto:"
             --exclude "^https?://localhost"
             --exclude "^https?://127\."
+            --exclude "^https://www\.linkedin\.com"
             "**/*.qmd"
             "**/*.md"
           # Fail the workflow when broken links are found so GitHub sends
