@@ -1,15 +1,8 @@
 {
-  "city_date": null,
+  "city_date": "2026-05-14",
   "bonquery_latest_date": "2026-05-16",
-  "city_reachable": false,
-  "checked_at": "2026-05-17T22:49:18Z",
-  "passed": false,
-  "mismatches": [
-    {
-      "label": "City page date not found",
-      "key": null,
-      "city": null,
-      "bonquery": "Could not parse date heading"
-    }
-  ]
+  "city_reachable": true,
+  "checked_at": "2026-05-17T22:58:03Z",
+  "passed": true,
+  "mismatches": []
 }
