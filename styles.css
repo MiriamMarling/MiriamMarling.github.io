@@ -1,1 +1,5 @@
 /* css styles */
+
+/* Hide the rendered author/date block — footer carries attribution site-wide.
+   The author: YAML field is kept intact for SEO and OpenGraph metadata. */
+.quarto-title-meta { display: none !important; }
