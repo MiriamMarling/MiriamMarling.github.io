@@ -359,6 +359,21 @@ function summaryHeader() {
 dailyTable = {
   const s = (key) => dayRows.find(r => r.key === key)
 
+  // Two rows the City shows at the top of the summary section.
+  // "Total People Accommodated" = our All Shelter total (Bridging & Triage excluded).
+  // "Bridging & Triage" is not published to CKAN open data — shown greyed.
+  const allShelterInd = s("all_shelter") ? s("all_shelter").ind : null
+  const totalAccomRow = `<tr style="background:#e8edf5;font-weight:600">
+    <td style="padding:5px 10px">Total People Accommodated †</td>
+    <td style="padding:5px 10px;text-align:right">${n(allShelterInd)}</td>
+    <td></td><td></td><td></td><td></td>
+  </tr>`
+  const bridgingRow = `<tr style="background:#f5f5f5;color:#999;font-style:italic">
+    <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
+    <td style="padding:5px 10px;text-align:right;font-size:0.85em">Not published to open data</td>
+    <td></td><td></td><td></td><td></td>
+  </tr>`
+
   const summaryKeys = ["all_shelter","room_based","singles_sector","singles_shelter","allied_summ","temp_summ","iso_summ"]
   const roomKeys    = ["fam_total","fam_emerg","fam_trans_r","fam_hotel","sng_hotel"]
   const bedKeys     = ["singles_total","emerg_total","mix_emerg","men_emerg","wom_emerg","yth_emerg",
@@ -369,6 +384,8 @@ dailyTable = {
     <div style="overflow-x:auto;margin:0 0 1rem">
     <table style="border-collapse:collapse;width:100%;font-size:0.88em;font-family:'Segoe UI',Arial,sans-serif;min-width:620px">
       ${summaryHeader()}
+      ${totalAccomRow}
+      ${bridgingRow}
       ${summaryKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
 
       ${sectionHeader("Shelter Programs, Room-Based", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity")}
@@ -396,6 +413,11 @@ dailyTable = {
       ${sectionHeader("Temporary Isolation/Recovery Programs", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity")}
       ${s("iso") ? tableRow(s("iso")) : ""}
     </table>
+    <p style="font-size:0.8em;color:#666;margin:4px 0 0">
+      † Total People Accommodated excludes Bridging &amp; Triage programs,
+      which are tracked in the City's operational system but not published
+      to open data.
+    </p>
     </div>`
 }
 ```
