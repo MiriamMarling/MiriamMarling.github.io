@@ -6,3 +6,5 @@ We use publicly available data to investigate urgent humanitarian issues, starti
 
 Live site: https://bonquery.ca  
 About: https://bonquery.ca/about.html
+
+Website built with the help of [Claude Code](https://claude.com/product/claude-code).
