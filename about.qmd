@@ -1,6 +1,6 @@
 ---
 title: "About"
-description: "About Miriam Marling and BonQuery — open data research on humanitarian issues, starting with Toronto's shelter system."
+# description: "About Miriam Marling and BonQuery — open data research on humanitarian issues, starting with Toronto's shelter system.1"
 author: "Miriam Marling"
 open-graph:
   title: "About — BonQuery"
@@ -18,15 +18,12 @@ I'm a Toronto-based data researcher with a
 Master's in cognitive neuroscience, two peer-reviewed publications,
 and a public-service role at Statistics Canada.
 
-R is my native analytical language. Over the past several months
-I've been adding Oracle SQL, Python, and APEX to my toolkit so I
-can build BonQuery's projects end-to-end — database, dashboard,
-analysis, and writing.
+R is my native analytical language. I’m also using Oracle SQL, APEX, and Python to build BonQuery’s projects end-to-end — database, dashboard, analysis, and writing.
 
 I started BonQuery because so much of the publicly available data
 on humanitarian issues in Canada sits on government open-data pages
 where most people will never see it. The first project focuses on
-Toronto's taxed shelter system. More will follow.
+Toronto's taxed shelter system. More to follow.
 
 ## Get in touch
 

@@ -1,7 +1,7 @@
 ---
 title: "Occupancy Spike Detection"
 subtitle: "Toronto Shelter System — days unusually above seasonal and trend expectations"
-description: "Retrospective spike detection for Toronto's daily shelter occupancy — identifying days well above seasonal and trend expectations using STL decomposition and robust thresholds."
+description: "Retrospective spike detection for Toronto’s daily shelter occupancy — identifying days well above seasonal and trend expectations with **Seasonal-Trend decomposition using LOESS** (Locally Estimated Scatterplot Smoothing), abbreviated STL, and robust thresholds."
 author: "Miriam Marling"
 open-graph:
   title: "Occupancy Spike Detection — Toronto Shelter System"
@@ -44,8 +44,6 @@ format:
         .crisis-hero .hero-sub { font-size: 0.9rem; color: #aab; line-height: 1.5; }
         </style>
 ---
-
-Retrospective spike detection for Toronto's daily shelter occupancy — identifying days well above seasonal and trend expectations with **Seasonal-Trend decomposition using LOESS** (Locally Estimated Scatterplot Smoothing), abbreviated STL, and robust thresholds.
 
 A **spike** is a day when the shelter system housed substantially more people than season and trend would predict — not merely a busy day. The system follows well-established patterns: occupancy rises in winter as cold weather drives demand, and falls in summer. It also carries a long-run trend that reflects structural changes in the city's housing market and refugee policy. This analysis uses STL decomposition to remove both of those forces mathematically, leaving behind only the part that cannot be explained. A spike is a day when that unexplained remainder is unusually large. The charts on this page apply spike detection to the City's Daily Shelter & Overnight Service Occupancy & Capacity data — an analysis that, as far as can be determined, has not been published before.
 
