@@ -45,11 +45,13 @@ format:
         </style>
 ---
 
-A **spike** is a day when the shelter system housed substantially more people than season and trend would predict — not merely a busy day. The system follows well-established patterns: occupancy rises in winter as cold weather drives demand, and falls in summer. It also carries a long-run trend that reflects structural changes in the city's housing market and refugee policy. This analysis uses STL decomposition to remove both of those forces mathematically, leaving behind only the part that cannot be explained. A spike is a day when that unexplained remainder is unusually large.
+Retrospective spike detection for Toronto's daily shelter occupancy — identifying days well above seasonal and trend expectations with **Seasonal-Trend decomposition using LOESS** (Locally Estimated Scatterplot Smoothing), abbreviated STL, and robust thresholds.
+
+A **spike** is a day when the shelter system housed substantially more people than season and trend would predict — not merely a busy day. The system follows well-established patterns: occupancy rises in winter as cold weather drives demand, and falls in summer. It also carries a long-run trend that reflects structural changes in the city's housing market and refugee policy. This analysis uses STL decomposition to remove both of those forces mathematically, leaving behind only the part that cannot be explained. A spike is a day when that unexplained remainder is unusually large. The charts on this page apply spike detection to the City's Daily Shelter & Overnight Service Occupancy & Capacity data — an analysis that, as far as can be determined, has not been published before.
 
 This approach measures **individuals accommodated** (SERVICE_USER_COUNT in the City's open data), not the occupancy rate. The distinction matters. A count spike unambiguously means more people were in the system on that day. A rate spike could mean more people, or it could mean fewer available beds — two very different situations with different policy implications. Count is the right signal for detecting stress events.
 
-This is a **retrospective, descriptive analysis**. It identifies days that were statistically anomalous given what the system had been doing in the preceding two years — it does not predict future spikes. The thresholds are empirical, not normative: a flagged day is unusual by the system's own recent standards, but the analysis does not assign a cause. A forward-looking spike-probability model is planned for a future update.
+This is a **retrospective, descriptive analysis**. It identifies days that were statistically anomalous given what the system had been doing in the preceding two years — it does not predict future spikes. The thresholds are set against the system's own recent behaviour, not against any external standard of what occupancy levels *should* look like. A predictive spike-probability model is planned for a future update.
 
 The page shows **two threshold bands**. The amber band (2 MAD-SD, or two Median Absolute Deviation standard deviations above the seasonal-trend expected value) flags more days and catches subtler anomalies — useful for building a comprehensive record. The red band (3 MAD-SD) flags only pronounced spikes unlikely to arise from routine daily noise. Both thresholds are calibrated against the most recent two years of system behaviour, so the bar rises or falls as the system becomes more or less volatile over time.
 
@@ -154,7 +156,7 @@ Plot.plot({
     // Threshold bands (toggleable) — area between expected and threshold levels
     showBands.includes("2 MAD-SD")
       ? Plot.areaY(systemData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-          fill: "#ff9500", fillOpacity: 0.12, title: "2 MAD-SD threshold zone"})
+          fill: "#ff9500", fillOpacity: 0.20})
       : null,
     showBands.includes("3 MAD-SD")
       ? Plot.areaY(systemData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
@@ -188,13 +190,30 @@ Plot.plot({
 
 ### Men's Sector — Most Affected
 
-::: {.crisis-hero}
-<div class="hero-number">30%</div>
-<div class="hero-text">
-<div class="hero-label">of all sector spike days in Toronto's shelter system occurred in the <strong>Men's sector</strong> — more than any other, and nearly double the next highest.</div>
-<div class="hero-sub">279 of 920 total spike days &nbsp;·&nbsp; 170 were severe (3 MAD-SD) &nbsp;·&nbsp; 2021–present</div>
-</div>
-:::
+```{ojs}
+//| echo: false
+heroStats = {
+  const sectors = ["men","women","mixed_adult","youth","families"]
+  const menRows = spikeData.filter(d => d.series === "men")
+  const menSpikes = menRows.filter(d => d.spike_flag !== "none").length
+  const menSevere = menRows.filter(d => d.spike_flag === "3mad").length
+  const totalSpikes = spikeData.filter(d => sectors.includes(d.series) && d.spike_flag !== "none").length
+  const pct = Math.round(menSpikes / totalSpikes * 100)
+  const startYear = spikeData.reduce((mn, d) => Math.min(mn, +d.date.slice(0,4)), 9999)
+  return {menSpikes, menSevere, totalSpikes, pct, startYear}
+}
+```
+
+```{ojs}
+//| echo: false
+html`<div class="crisis-hero">
+  <div class="hero-number">${heroStats.pct}%</div>
+  <div class="hero-text">
+    <div class="hero-label">of all sector spike days in Toronto's shelter system occurred in the <strong>Men's sector</strong> — more than any other, and nearly double the next highest.</div>
+    <div class="hero-sub">${heroStats.menSpikes.toLocaleString()} of ${heroStats.totalSpikes.toLocaleString()} total spike days &nbsp;·&nbsp; ${heroStats.menSevere} were severe (3 MAD-SD) &nbsp;·&nbsp; ${heroStats.startYear}–present</div>
+  </div>
+</div>`
+```
 
 ```{ojs}
 //| echo: false
@@ -237,7 +256,10 @@ Plot.plot({
 })
 ```
 
-Men are both the largest sector in Toronto's shelter system and the most frequently affected by occupancy spikes. Across 2021–present, 279 of the 920 total sector spike days occurred in the Men's sector — 30%, more than any other sector by a significant margin. And unlike other sectors, Men's spike days skew toward the most severe band: 170 of the 279 crossed the 3 MAD-SD threshold, compared to just 109 at the 2 MAD-SD level, indicating that Men's sector anomalies tend to be pronounced rather than subtle. This is consistent with a broader pattern in Toronto's homelessness data: men make up the majority of the city's chronically homeless population. When the system comes under pressure, the Men's sector shows it first and most sharply. That pattern is visible here.
+```{ojs}
+//| echo: false
+html`<p>Men are both the largest sector in Toronto's shelter system and the most frequently affected by occupancy spikes. Across ${heroStats.startYear}–present, ${heroStats.menSpikes.toLocaleString()} of the ${heroStats.totalSpikes.toLocaleString()} total sector spike days occurred in the Men's sector — ${heroStats.pct}%, more than any other sector by a significant margin. And unlike other sectors, Men's spike days skew toward the most severe band: ${heroStats.menSevere} of the ${heroStats.menSpikes.toLocaleString()} crossed the 3 MAD-SD threshold, compared to just ${heroStats.menSpikes - heroStats.menSevere} at the 2 MAD-SD level, indicating that Men's sector anomalies tend to be pronounced rather than subtle. This is consistent with a broader pattern in Toronto's homelessness data: men make up the majority of the city's chronically homeless population. When the system comes under pressure, the Men's sector shows it first and most sharply. That pattern is visible here.</p>`
+```
 
 ```{ojs}
 //| echo: false
@@ -248,7 +270,7 @@ Plot.plot({
   marks: [
     showBands.includes("2 MAD-SD")
       ? Plot.areaY(menData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-          fill: "#ff9500", fillOpacity: 0.12})
+          fill: "#ff9500", fillOpacity: 0.20})
       : null,
     showBands.includes("3 MAD-SD")
       ? Plot.areaY(menData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
@@ -301,7 +323,7 @@ html`<div class="sector-grid">${sectorOrder.map(sec => {
     marks: [
       showBands.includes("2 MAD-SD")
         ? Plot.areaY(secData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-            fill: "#ff9500", fillOpacity: 0.12})
+            fill: "#ff9500", fillOpacity: 0.20})
         : null,
       showBands.includes("3 MAD-SD")
         ? Plot.areaY(secData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
