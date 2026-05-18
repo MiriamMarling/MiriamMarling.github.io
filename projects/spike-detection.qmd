@@ -1,0 +1,377 @@
+---
+title: "Occupancy Spike Detection"
+subtitle: "Toronto Shelter System — days unusually above seasonal and trend expectations"
+description: "Retrospective spike detection for Toronto's daily shelter occupancy — identifying days well above seasonal and trend expectations using STL decomposition and robust thresholds."
+author: "Miriam Marling"
+open-graph:
+  title: "Occupancy Spike Detection — Toronto Shelter System"
+  description: "Retrospective spike detection for Toronto's daily shelter occupancy — identifying days well above seasonal and trend expectations using STL decomposition and robust thresholds."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Occupancy Spike Detection — Toronto Shelter System"
+  description: "Retrospective spike detection for Toronto's daily shelter occupancy — identifying days well above seasonal and trend expectations using STL decomposition and robust thresholds."
+format:
+  html:
+    page-layout: full
+    toc: false
+    include-in-header:
+      text: |
+        <style>
+        /* same max-width override as other chart pages */
+        .quarto-container, .container-fluid, .container { max-width: none !important; }
+        .cell-output-display { max-width: none !important; overflow: visible !important; }
+        .cell-output-display svg .tick text { font-size: 13px; }
+        /* small-multiples grid for sector panels */
+        .sector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+        .sector-panel { min-width: 0; }
+        /* Men's sector hero highlight */
+        .crisis-hero {
+          background: #1a1a2e; color: #fff;
+          border-radius: 0.75rem; padding: 2rem 2.5rem;
+          margin: 1.5rem 0 1rem;
+          display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
+        }
+        .crisis-hero .hero-number {
+          font-size: 5rem; font-weight: 800; color: #ff3b30;
+          line-height: 1; white-space: nowrap; flex-shrink: 0;
+        }
+        .crisis-hero .hero-text { max-width: 520px; }
+        .crisis-hero .hero-text strong { color: #ff3b30; }
+        .crisis-hero .hero-label {
+          font-size: 1.15rem; font-weight: 600; line-height: 1.4; margin-bottom: 0.5rem;
+        }
+        .crisis-hero .hero-sub { font-size: 0.9rem; color: #aab; line-height: 1.5; }
+        </style>
+---
+
+A **spike** is a day when the shelter system housed substantially more people than season and trend would predict — not merely a busy day. The system follows well-established patterns: occupancy rises in winter as cold weather drives demand, and falls in summer. It also carries a long-run trend that reflects structural changes in the city's housing market and refugee policy. This analysis uses STL decomposition to remove both of those forces mathematically, leaving behind only the part that cannot be explained. A spike is a day when that unexplained remainder is unusually large.
+
+This approach measures **individuals accommodated** (SERVICE_USER_COUNT in the City's open data), not the occupancy rate. The distinction matters. A count spike unambiguously means more people were in the system on that day. A rate spike could mean more people, or it could mean fewer available beds — two very different situations with different policy implications. Count is the right signal for detecting stress events.
+
+This is a **retrospective, descriptive analysis**. It identifies days that were statistically anomalous given what the system had been doing in the preceding two years — it does not predict future spikes. The thresholds are empirical, not normative: a flagged day is unusual by the system's own recent standards, but the analysis does not assign a cause. A forward-looking spike-probability model is planned for a future update.
+
+The page shows **two threshold bands**. The amber band (2 MAD-SD, or two Median Absolute Deviation standard deviations above the seasonal-trend expected value) flags more days and catches subtler anomalies — useful for building a comprehensive record. The red band (3 MAD-SD) flags only pronounced spikes unlikely to arise from routine daily noise. Both thresholds are calibrated against the most recent two years of system behaviour, so the bar rises or falls as the system becomes more or less volatile over time.
+
+```{ojs}
+//| echo: false
+data = FileAttachment("../data/spike_detection.json").json()
+```
+
+```{ojs}
+//| echo: false
+// Parse dates — spike_detection.json has date as "YYYY-MM-DD" string
+spikeData = data.map(d => ({
+  ...d,
+  dateObj: new Date(d.date + "T00:00:00")   // avoid UTC/local midnight shift
+}))
+```
+
+```{ojs}
+//| echo: false
+// Window dropdown — controls x-axis zoom only, NOT decomposition
+windowOptions = [
+  {label: "1 Month",  months: 1},
+  {label: "3 Months", months: 3},
+  {label: "6 Months", months: 6},
+  {label: "12 Months", months: 12},
+  {label: "All (2021–present)", months: null}
+]
+viewof selectedWindow = Inputs.select(windowOptions, {
+  label: "View window",
+  format: d => d.label,
+  value: windowOptions[4]   // default: All
+})
+```
+
+```{ojs}
+//| echo: false
+// Band toggle — toggleable shaded regions
+viewof showBands = Inputs.checkbox(["2 MAD-SD", "3 MAD-SD"], {
+  label: "Show threshold bands",
+  value: ["2 MAD-SD", "3 MAD-SD"]
+})
+```
+
+```{ojs}
+//| echo: false
+// Compute x-axis cutoff from window selection
+windowCutoff = selectedWindow.months === null
+  ? new Date("2021-01-01")
+  : (() => {
+      const d = new Date()
+      d.setMonth(d.getMonth() - selectedWindow.months)
+      return d
+    })()
+
+// Filter system-wide series to selected window (zoom only)
+systemData = spikeData
+  .filter(d => d.series === "system" && d.dateObj >= windowCutoff)
+  .sort((a, b) => a.dateObj - b.dateObj)
+
+// Men gets its own full-width chart; remaining four go into the small-multiples grid
+menData = spikeData
+  .filter(d => d.series === "men" && d.dateObj >= windowCutoff)
+  .sort((a, b) => a.dateObj - b.dateObj)
+
+sectorOrder = ["women", "mixed_adult", "youth", "families"]
+sectorLabels = ({women: "Women", mixed_adult: "Mixed Adult", youth: "Youth", families: "Families"})
+```
+
+```{ojs}
+//| echo: false
+// x-axis config shared across charts
+MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+
+xAxis = (() => {
+  if (!systemData.length) return {type: "time", label: null}
+  const spanDays = (systemData[systemData.length-1].dateObj - systemData[0].dateObj) / 86400000
+  const spanMonths = spanDays / 30.44
+  return {
+    type: "time",
+    label: null,
+    ticks: spanMonths <= 3 ? d3.utcDay.every(7) : spanMonths <= 18 ? d3.utcMonth.every(1) : 8,
+    tickFormat: d => {
+      const m = d.getMonth(), y = d.getFullYear()
+      if (spanMonths <= 18) return m === 0 ? `${MON[m]}-${y}` : MON[m]
+      return m === 0 ? String(y) : m === 6 ? `Jul ${y}` : ""
+    }
+  }
+})()
+
+fmtN = d => d.toLocaleString()
+```
+
+### System-Wide Occupancy — All Programs
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width, height: 400, marginLeft: 70,
+  x: xAxis,
+  y: {label: "Individuals accommodated", grid: true, tickFormat: fmtN},
+  marks: [
+    // Threshold bands (toggleable) — area between expected and threshold levels
+    showBands.includes("2 MAD-SD")
+      ? Plot.areaY(systemData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
+          fill: "#ff9500", fillOpacity: 0.12, title: "2 MAD-SD threshold zone"})
+      : null,
+    showBands.includes("3 MAD-SD")
+      ? Plot.areaY(systemData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
+          fill: "#ff3b30", fillOpacity: 0.15})
+      : null,
+    // Expected line (trend + seasonal)
+    Plot.line(systemData, {x: "dateObj", y: "expected",
+      stroke: "#aaa", strokeWidth: 1.5, strokeDasharray: "4,3"}),
+    // Observed line
+    Plot.line(systemData, {x: "dateObj", y: "observed",
+      stroke: "#0066cc", strokeWidth: 2}),
+    // Spike dots — colored by severity
+    Plot.dot(systemData.filter(d => d.spike_flag !== "none"), {
+      x: "dateObj",
+      y: "observed",
+      fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
+      r: 4,
+      title: d => `${d.date}\n${d.observed.toLocaleString()} individuals\n${d.remainder_mad_sd.toFixed(1)} MAD-SD above expected`
+    }),
+    Plot.tip(systemData, Plot.pointerX({
+      x: "dateObj", y: "observed",
+      title: d => {
+        const flag = d.spike_flag === "3mad" ? " ★ SPIKE (3 MAD-SD)"
+                   : d.spike_flag === "2mad" ? " ▲ Spike (2 MAD-SD)" : ""
+        return `${d.date}${flag}\nObserved: ${d.observed.toLocaleString()}\nExpected: ${Math.round(d.expected).toLocaleString()}\nDeviation: ${d.remainder_mad_sd.toFixed(1)} MAD-SD`
+      }
+    }))
+  ]
+})
+```
+
+### Men's Sector — Most Affected
+
+::: {.crisis-hero}
+<div class="hero-number">30%</div>
+<div class="hero-text">
+<div class="hero-label">of all sector spike days in Toronto's shelter system occurred in the <strong>Men's sector</strong> — more than any other, and nearly double the next highest.</div>
+<div class="hero-sub">279 of 920 total spike days &nbsp;·&nbsp; 170 were severe (3 MAD-SD) &nbsp;·&nbsp; 2021–present</div>
+</div>
+:::
+
+```{ojs}
+//| echo: false
+// Sector spike comparison — computed from live data
+_sectorLabels = ({men: "Men", women: "Women", mixed_adult: "Mixed Adult", youth: "Youth", families: "Families"})
+
+sectorStats = ["men", "youth", "families", "women", "mixed_adult"].map(sec => {
+  const rows = spikeData.filter(d => d.series === sec)
+  const spikes = rows.filter(d => d.spike_flag !== "none").length
+  const spikes3 = rows.filter(d => d.spike_flag === "3mad").length
+  return {
+    label: _sectorLabels[sec],
+    spikes,
+    spikes3,
+    pctDays: spikes / rows.length * 100,
+    isMen: sec === "men"
+  }
+}).sort((a, b) => b.spikes - a.spikes)
+
+Plot.plot({
+  width, height: 210, marginLeft: 110, marginRight: 160,
+  x: {label: "% of days that were spike days", tickFormat: d => d + "%", domain: [0, 18]},
+  y: {label: null},
+  marks: [
+    Plot.barX(sectorStats, {
+      x: "pctDays", y: "label",
+      fill: d => d.isMen ? "#ff3b30" : "#4a6fa5",
+      fillOpacity: d => d.isMen ? 1 : 0.45,
+      sort: {y: "-x"}
+    }),
+    Plot.text(sectorStats, {
+      x: "pctDays", y: "label",
+      text: d => `${d.pctDays.toFixed(1)}%  (${d.spikes} days, ${d.spikes3} severe)`,
+      dx: 8, textAnchor: "start", fontSize: 13,
+      fill: d => d.isMen ? "#ff3b30" : "#333",
+      fontWeight: d => d.isMen ? "700" : "400"
+    }),
+    Plot.ruleX([0])
+  ]
+})
+```
+
+Men are both the largest sector in Toronto's shelter system and the most frequently affected by occupancy spikes. Across 2021–present, 279 of the 920 total sector spike days occurred in the Men's sector — 30%, more than any other sector by a significant margin. And unlike other sectors, Men's spike days skew toward the most severe band: 170 of the 279 crossed the 3 MAD-SD threshold, compared to just 109 at the 2 MAD-SD level, indicating that Men's sector anomalies tend to be pronounced rather than subtle. This is consistent with a broader pattern in Toronto's homelessness data: men make up the majority of the city's chronically homeless population. When the system comes under pressure, the Men's sector shows it first and most sharply. That pattern is visible here.
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width, height: 400, marginLeft: 70,
+  x: xAxis,
+  y: {label: "Men — individuals accommodated", grid: true, tickFormat: fmtN},
+  marks: [
+    showBands.includes("2 MAD-SD")
+      ? Plot.areaY(menData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
+          fill: "#ff9500", fillOpacity: 0.12})
+      : null,
+    showBands.includes("3 MAD-SD")
+      ? Plot.areaY(menData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
+          fill: "#ff3b30", fillOpacity: 0.15})
+      : null,
+    Plot.line(menData, {x: "dateObj", y: "expected",
+      stroke: "#aaa", strokeWidth: 1.5, strokeDasharray: "4,3"}),
+    Plot.line(menData, {x: "dateObj", y: "observed",
+      stroke: "#0066cc", strokeWidth: 2}),
+    Plot.dot(menData.filter(d => d.spike_flag !== "none"), {
+      x: "dateObj", y: "observed",
+      fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
+      r: 4,
+      title: d => `${d.date}\n${d.observed.toLocaleString()} individuals\n${d.remainder_mad_sd.toFixed(1)} MAD-SD above expected`
+    }),
+    Plot.tip(menData, Plot.pointerX({
+      x: "dateObj", y: "observed",
+      title: d => {
+        const flag = d.spike_flag === "3mad" ? " ★ SPIKE (3 MAD-SD)"
+                   : d.spike_flag === "2mad" ? " ▲ Spike (2 MAD-SD)" : ""
+        return `Men${flag}\n${d.date}\nObserved: ${d.observed.toLocaleString()}\nExpected: ${Math.round(d.expected).toLocaleString()}\nDeviation: ${d.remainder_mad_sd.toFixed(1)} MAD-SD`
+      }
+    }))
+  ]
+})
+```
+
+### Other Sectors
+
+Each panel uses its own y-axis and its own threshold — sectors differ too much in size to share a scale. When the system-wide or Men's chart shows a spike, these panels show whether other sectors were also affected.
+
+```{ojs}
+//| echo: false
+// Small multiples — one Plot.plot() per sector
+// Use html`` template to arrange in CSS grid
+html`<div class="sector-grid">${sectorOrder.map(sec => {
+  const secData = spikeData
+    .filter(d => d.series === sec && d.dateObj >= windowCutoff)
+    .sort((a, b) => a.dateObj - b.dateObj)
+  const label = sectorLabels[sec]
+  if (!secData.length) return html`<div class="sector-panel"><em>${label}: no data</em></div>`
+  const chart = Plot.plot({
+    width: Math.max(300, Math.floor((width - 40) / 3)),
+    height: 220,
+    marginLeft: 60,
+    marginTop: 30,
+    caption: label,
+    x: xAxis,
+    y: {label: null, grid: true, tickFormat: fmtN},
+    marks: [
+      showBands.includes("2 MAD-SD")
+        ? Plot.areaY(secData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
+            fill: "#ff9500", fillOpacity: 0.12})
+        : null,
+      showBands.includes("3 MAD-SD")
+        ? Plot.areaY(secData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
+            fill: "#ff3b30", fillOpacity: 0.15})
+        : null,
+      Plot.line(secData, {x: "dateObj", y: "expected",
+        stroke: "#aaa", strokeWidth: 1, strokeDasharray: "3,2"}),
+      Plot.line(secData, {x: "dateObj", y: "observed",
+        stroke: "#0066cc", strokeWidth: 1.5}),
+      Plot.dot(secData.filter(d => d.spike_flag !== "none"), {
+        x: "dateObj", y: "observed",
+        fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
+        r: 3,
+        title: d => `${d.date}\n${d.observed.toLocaleString()} individuals\n${d.remainder_mad_sd.toFixed(1)} MAD-SD`
+      }),
+      Plot.tip(secData, Plot.pointerX({
+        x: "dateObj", y: "observed",
+        title: d => {
+          const flag = d.spike_flag === "3mad" ? " ★ SPIKE"
+                     : d.spike_flag === "2mad" ? " ▲ Spike" : ""
+          return `${label}${flag}\n${d.date}\n${d.observed.toLocaleString()} individuals`
+        }
+      }))
+    ]
+  })
+  return html`<div class="sector-panel">${chart}</div>`
+})}</div>`
+```
+
+### Spike Days
+
+```{ojs}
+//| echo: false
+// All spike rows across all series, most-recent-first
+allSpikes = spikeData
+  .filter(d => d.spike_flag !== "none")
+  .sort((a, b) => b.date.localeCompare(a.date))
+  .map(d => ({
+    Date: d.date,
+    Metric: d.label,
+    Observed: d.observed,
+    Expected: Math.round(d.expected),
+    "Deviation (MAD-SD)": +d.remainder_mad_sd.toFixed(1),
+    Band: d.spike_flag === "3mad" ? "3 MAD-SD ★" : "2 MAD-SD",
+    Notes: ""
+  }))
+```
+
+```{ojs}
+//| echo: false
+viewof spikeSearch = Inputs.search(allSpikes, {placeholder: "Filter by metric or date…"})
+```
+
+```{ojs}
+//| echo: false
+Inputs.table(spikeSearch, {
+  columns: ["Date","Metric","Observed","Expected","Deviation (MAD-SD)","Band","Notes"],
+  format: {
+    Observed: d => d.toLocaleString(),
+    Expected: d => d.toLocaleString()
+  },
+  sort: "Date",
+  reverse: true
+})
+```
+
+---
+
+> Contains information licensed under the
+> [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
+> Source: City of Toronto Open Data —
+> [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/).
+> Analysis by [BonQuery](https://bonquery.ca).

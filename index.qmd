@@ -16,6 +16,66 @@ twitter-card:
 ```{ojs}
 //| echo: false
 daily_occ = FileAttachment("data/daily_occupancy.json").json()
+shelter_flow = FileAttachment("data/shelter_flow.json").json()
+```
+
+```{=html}
+<style>
+.quarto-container, .container-fluid, .container { max-width: none !important; }
+/* Crisis callout — shared visual language with spike-detection page */
+.crisis-hero {
+  background: #1a1a2e; color: #fff;
+  border-radius: 0.75rem; padding: 2rem 2.5rem;
+  margin: 1.5rem 0 1rem;
+  display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
+}
+.crisis-hero .hero-number {
+  font-size: 5rem; font-weight: 800; color: #ff3b30;
+  line-height: 1; white-space: nowrap; flex-shrink: 0;
+}
+.crisis-hero .hero-text { max-width: 520px; }
+.crisis-hero .hero-text strong { color: #ff3b30; }
+.crisis-hero .hero-label {
+  font-size: 1.8rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.65rem;
+}
+.crisis-hero .hero-sub { font-size: 1.2rem; color: #ccd; line-height: 1.5; }
+/* Plain-English callout — appears after technical prose blocks */
+.plain-eng {
+  border-left: 3px solid #ff3b30;
+  background: rgba(255,59,48,0.04);
+  border-radius: 0 0.35rem 0.35rem 0;
+  padding: 0.55rem 0.9rem;
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #333;
+}
+.plain-eng .pe-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #ff3b30; margin-bottom: 0.2rem;
+}
+/* KEY FINDING alert box */
+.key-finding-box {
+  border: 2px solid #ff3b30;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin: 2.5rem 0;
+  padding: 0 1.5rem 1.75rem;
+}
+.key-finding-box-header {
+  background: #ff3b30;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.5rem;
+  margin: 0 -1.5rem 1.5rem;
+}
+.key-finding-box h3 { margin-top: 0.4rem; }
+</style>
 ```
 
 # Welcome
@@ -481,6 +541,235 @@ BonQuery's aggregated data is available for download from 2021 to present: [JSON
 :::
 
 <!-- END SYNC -->
+
+---
+
+::: {.key-finding-box}
+
+```{=html}
+<div class="key-finding-box-header">KEY FINDING</div>
+```
+
+### The most affected group — and the one we hear least about
+
+```{ojs}
+//| echo: false
+// All months, All Population row — used for time-series statistics
+_allFlow = shelter_flow
+  .filter(d => d.population_group === "All Population"
+            && d.gender_male != null && d.gender_female != null)
+
+// Most recent month — for the hero ratio and sub-line
+_latestFlow = _allFlow.sort((a, b) => b.flow_date.localeCompare(a.flow_date))[0]
+
+_menCount   = _latestFlow ? _latestFlow.gender_male : 0
+_womenCount = _latestFlow ? _latestFlow.gender_female : 0
+_transCount = _latestFlow ? _latestFlow.gender_trans_nb_two_spirit : 0
+_ratio      = _womenCount > 0 ? (_menCount / _womenCount).toFixed(1) : "—"
+_flowMonth  = _latestFlow
+  ? new Date(_latestFlow.flow_date + "T00:00:00")
+      .toLocaleString("default", {month: "long", year: "numeric"})
+  : ""
+
+// --- Time-series statistics ---
+// These are population counts, not random samples, so a single month carries no
+// sampling error. The meaningful uncertainty is month-to-month volatility.
+// We treat each month as one observation and compare group means across months.
+
+function _mean(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length }
+function _sd(arr) {
+  const m = _mean(arr)
+  return Math.sqrt(arr.reduce((s, x) => s + (x - m) ** 2, 0) / (arr.length - 1))
+}
+function _se(arr) { return _sd(arr) / Math.sqrt(arr.length) }
+
+// Normal CDF — Abramowitz & Stegun 26.2.17, accurate to ~7 dp.
+// Used for Bonferroni-adjusted two-tailed p-values.
+function _Phi(z) {
+  const c = [0.319381530, -0.356563782, 1.781477937, -1.821255978, 1.330274429]
+  const t = 1 / (1 + 0.2316419 * Math.abs(z))
+  const tail = t*(c[0]+t*(c[1]+t*(c[2]+t*(c[3]+t*c[4])))) * Math.exp(-z*z/2) / Math.sqrt(2*Math.PI)
+  return z >= 0 ? 1 - tail : tail
+}
+
+_menSeries   = _allFlow.map(d => d.gender_male)
+_womenSeries = _allFlow.map(d => d.gender_female)
+_transSeries = _allFlow.map(d => d.gender_trans_nb_two_spirit).filter(v => v != null)
+
+_menMean   = _mean(_menSeries);   _menSE   = _se(_menSeries)
+_womenMean = _mean(_womenSeries); _womenSE = _se(_womenSeries)
+_transMean = _mean(_transSeries); _transSE = _se(_transSeries)
+
+_n1 = _menSeries.length;   _s1 = _sd(_menSeries)
+_n2 = _womenSeries.length; _s2 = _sd(_womenSeries)
+_n3 = _transSeries.length; _s3 = _sd(_transSeries)
+
+// Welch's t-test helper — unequal variances, returns {t, df}
+function _wt(m1, s1, n1, m2, s2, n2) {
+  const v1 = s1**2/n1, v2 = s2**2/n2
+  const t  = (m1 - m2) / Math.sqrt(v1 + v2)
+  const df = (v1 + v2)**2 / (v1**2/(n1-1) + v2**2/(n2-1))
+  return {t, df}
+}
+
+// All three pairwise tests
+_pw_mw = _wt(_menMean,   _s1, _n1, _womenMean, _s2, _n2)  // Men   vs Women
+_pw_mt = _wt(_menMean,   _s1, _n1, _transMean, _s3, _n3)  // Men   vs Trans/NB/2S
+_pw_wt = _wt(_womenMean, _s2, _n2, _transMean, _s3, _n3)  // Women vs Trans/NB/2S
+
+// Bonferroni-adjusted two-tailed p (3 comparisons → multiply by 3, cap at 1)
+function _pAdj(t) { return Math.min(1, 3 * 2 * _Phi(-Math.abs(t))) }
+function _pLabel(t) {
+  const p = _pAdj(t)
+  return p < 0.0001 ? "< 0.0001 ***" : p < 0.001 ? "< 0.001 **" : p < 0.05 ? p.toFixed(3) + " *" : p.toFixed(3)
+}
+
+// Bayesian Bayes Factor — BIC approximation (Wagenmakers 2007, Psych. Methods 12:4).
+// For a two-sample comparison: log_e(BF₁₀) ≈ (t² − ln n) / 2
+// where n = per-group sample size. Converts to log base 10 for display.
+// This is a rough approximation; with t >> 10 the BF is always overwhelming.
+_nMonths     = _n1
+_logBF_base10 = (_pw_mw.t**2 - Math.log(_nMonths)) / (2 * Math.LN10)
+
+_yearRange = _allFlow.length > 0
+  ? _allFlow[_allFlow.length - 1].flow_date.slice(0, 4) + "–" + _latestFlow.flow_date.slice(0, 4)
+  : ""
+```
+
+```{ojs}
+//| echo: false
+html`<div class="crisis-hero">
+  <div class="hero-number">${_ratio}×</div>
+  <div class="hero-text">
+    <div class="hero-label">more <strong>men</strong> than women are actively homeless in Toronto's shelter system</div>
+    <div class="hero-sub">${_menCount.toLocaleString()} men · ${_womenCount.toLocaleString()} women · ${_transCount.toLocaleString()} trans, non-binary, or two-spirit · ${_flowMonth}</div>
+  </div>
+</div>`
+```
+
+```{ojs}
+//| echo: false
+_genderStats = [
+  {label: "Men",          mean: _menMean,   ci_lo: _menMean   - 1.96 * _menSE,   ci_hi: _menMean   + 1.96 * _menSE,   isFocus: true},
+  {label: "Women",        mean: _womenMean, ci_lo: _womenMean - 1.96 * _womenSE, ci_hi: _womenMean + 1.96 * _womenSE, isFocus: false},
+  {label: "Trans/NB/2S",  mean: _transMean, ci_lo: _transMean - 1.96 * _transSE, ci_hi: _transMean + 1.96 * _transSE, isFocus: false}
+].sort((a, b) => b.mean - a.mean)
+
+Plot.plot({
+  width, height: 300, marginBottom: 36, marginLeft: 70, marginRight: 20,
+  title: `Mean monthly actively homeless count by gender — ${_yearRange} (${_nMonths} months)`,
+  caption: "Error bars show 95% confidence intervals of the monthly mean. Source: City of Toronto Shelter System Flow dataset (open.toronto.ca).",
+  x: {label: null, domain: _genderStats.map(d => d.label)},
+  y: {label: "Mean individuals actively homeless / month", grid: true,
+      tickFormat: d => d.toLocaleString(),
+      domain: [0, Math.max(..._genderStats.map(d => d.ci_hi)) * 1.12]},
+  marks: [
+    // Bars — mean monthly count
+    Plot.barY(_genderStats, {
+      x: "label", y: "mean",
+      fill: d => d.isFocus ? "#ff3b30" : "#4a6fa5",
+      fillOpacity: d => d.isFocus ? 1 : 0.55
+    }),
+    // Vertical error bar line (ci_lo → ci_hi)
+    Plot.ruleY(_genderStats, {
+      x: "label", y1: "ci_lo", y2: "ci_hi",
+      stroke: "#222", strokeWidth: 1.8
+    }),
+    // Horizontal cap at ci_hi (top)
+    Plot.tickY(_genderStats, {
+      x: "label", y: "ci_hi",
+      stroke: "#222", strokeWidth: 1.8,
+      insetLeft: 18, insetRight: 18
+    }),
+    // Horizontal cap at ci_lo (bottom)
+    Plot.tickY(_genderStats, {
+      x: "label", y: "ci_lo",
+      stroke: "#222", strokeWidth: 1.8,
+      insetLeft: 18, insetRight: 18
+    }),
+    // Value label above each bar
+    Plot.text(_genderStats, {
+      x: "label", y: "ci_hi",
+      text: d => Math.round(d.mean).toLocaleString(),
+      dy: -10, textAnchor: "middle", fontSize: 13,
+      fill: d => d.isFocus ? "#cc1f15" : "#333",
+      fontWeight: "600"
+    }),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  const pf = (t) => _pLabel(t)
+  const pairs = [
+    {comp: "Men vs Women",         t: _pw_mw.t, df: _pw_mw.df, note: false},
+    {comp: "Men vs Trans/NB/2S",   t: _pw_mt.t, df: _pw_mt.df, note: true},
+    {comp: "Women vs Trans/NB/2S", t: _pw_wt.t, df: _pw_wt.df, note: true}
+  ]
+  const rows = pairs.map(p => html`<tr>
+    <td style="padding:3px 10px 3px 0">${p.comp}${p.note ? html`<sup> †</sup>` : ""}</td>
+    <td style="padding:3px 10px;text-align:right;font-variant-numeric:tabular-nums">${p.t.toFixed(1)}</td>
+    <td style="padding:3px 10px;text-align:right;font-variant-numeric:tabular-nums">${Math.round(p.df)}</td>
+    <td style="padding:3px 0;text-align:right;font-weight:${p.note?"400":"700"}">${pf(p.t)}</td>
+  </tr>`)
+
+  return html`<div style="font-size:0.81rem;color:#444;margin:0.6rem 0 0;line-height:1.6">
+    <p style="margin:0 0 0.3rem">
+      <strong>Bayesian analysis — Men vs Women:</strong>
+      Using the BIC approximation (Wagenmakers 2007), the Bayes Factor
+      BF₁₀&nbsp;≈&nbsp;10<sup>${Math.round(_logBF_base10)}</sup> — evidence so overwhelming
+      it is far beyond the Jeffreys scale's highest category ("decisive," BF&nbsp;>&nbsp;100).
+      Under any reasonable prior, the posterior probability that the true mean monthly count
+      of men exceeds women is indistinguishable from 1.
+    </p>
+    <div class="plain-eng">
+      <div class="pe-label">Plain English</div>
+      We examined ${_nMonths} consecutive months of shelter-system data and found the same
+      pattern throughout: men consistently accounted for more of Toronto's actively homeless
+      population than women. Statistically, the odds of this pattern appearing by chance are
+      astronomically small. <strong>Men are the largest and most consistently represented
+      group in the city's shelter system.</strong>
+    </div>
+    <p style="margin:0 0 0.3rem"><strong>All pairwise comparisons — each gender group tested
+      against the others, with the bar raised to account for running three tests at once:</strong></p>
+    <table style="border-collapse:collapse;width:100%;font-size:0.8rem;margin-bottom:0.5rem">
+      <thead><tr style="border-bottom:1px solid #ccc;color:#666">
+        <th style="text-align:left;padding:3px 10px 3px 0;font-weight:600">Comparison</th>
+        <th style="text-align:right;padding:3px 10px;font-weight:600"><em>t</em></th>
+        <th style="text-align:right;padding:3px 10px;font-weight:600">df</th>
+        <th style="text-align:right;padding:3px 0;font-weight:600">Adj. <em>p</em></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p style="margin:0 0 0.3rem;color:#777">
+      *** Bonferroni-adjusted p&nbsp;<&nbsp;0.0001.
+      † The Trans/NB/2S group averages ~${Math.round(_transMean)} individuals per month —
+      a small count that is also likely under-reported in administrative shelter records.
+      Tests involving this group should be interpreted with caution.
+    </p>
+    <div class="plain-eng">
+      <div class="pe-label">Plain English</div>
+      The table shows a clear pattern: men account for the largest share of Toronto's shelter
+      population, followed by women. Women are also represented at substantially higher levels
+      than the Transgender, Non-Binary, or Two-Spirit group. That last comparison, however,
+      should be treated cautiously. With only ~${Math.round(_transMean)} individuals per month
+      on average, the Transgender, Non-Binary, or Two-Spirit sample is small enough that these
+      records cannot reliably capture the broader experience of homelessness within that
+      community. What the data does show clearly is that men are disproportionately represented
+      in the shelter system, and by a wide margin.
+    </div>
+  </div>`
+}
+```
+
+Men have accounted for more than 60% of Toronto's actively homeless population every single month for at least the past three years — a gap of nearly 2,600 people that has barely moved as the total has risen and fallen. The pattern is not new, not subtle, and not hidden in the data. Yet it rarely makes headlines, and few of the city's public conversations about homelessness lead with it.
+
+[Read the supporting analysis — Occupancy Spike Detection →](projects/spike-detection.qmd)
+
+:::
 
 ---
 

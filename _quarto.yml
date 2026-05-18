@@ -27,6 +27,8 @@ website:
             text: "Monthly Snapshot"
           - href: projects/ytd-comparison.qmd
             text: "YTD Comparison"
+          - href: projects/spike-detection.qmd
+            text: "Occupancy Spike Detection"
       - href: about.qmd
         text: About
   page-footer:
