@@ -86,6 +86,59 @@ jobs:
           print(f'city_validation: city_date={v[\"city_date\"]}, passed={v[\"passed\"]}')
           "
 
+      # -----------------------------------------------------------------------
+      # Spike detection — runs daily so the spike chart stays current.
+      # Checks out the toronto-shelter-analytics repo (R scripts only — no
+      # data files), sets up R, installs packages from cache when possible,
+      # then runs generate_spike_json.R. The script downloads raw occupancy
+      # data directly from the City of Toronto's CKAN API when no local CSV
+      # is present, so no separate download step is needed.
+      # -----------------------------------------------------------------------
+
+      - name: Checkout toronto-shelter-analytics (R scripts)
+        uses: actions/checkout@v4
+        with:
+          repository: MiriamMarling/toronto-shelter-analytics
+          path: toronto-shelter-analytics
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-r-spike-${{ hashFiles('toronto-shelter-analytics/analysis/R/detect_spikes.R', 'toronto-shelter-analytics/analysis/R/generate_spike_json.R') }}
+          restore-keys: |
+            ${{ runner.os }}-r-spike-
+
+      - name: Install R packages for spike detection
+        run: |
+          Rscript -e "
+            pkgs <- c('dplyr', 'readr', 'jsonlite', 'here', 'purrr', 'tibble')
+            missing <- pkgs[!pkgs %in% rownames(installed.packages())]
+            if (length(missing)) install.packages(missing, repos='https://cloud.r-project.org', quiet=TRUE)
+          "
+
+      - name: Generate spike detection data
+        run: |
+          cd toronto-shelter-analytics
+          Rscript analysis/R/generate_spike_json.R
+        env:
+          SPIKE_JSON_OUT: ${{ github.workspace }}/data/spike_detection.json
+
+      - name: Verify spike detection output
+        run: |
+          python -c "
+          import json
+          rows = json.load(open('data/spike_detection.json'))
+          series = sorted({r['series'] for r in rows})
+          spikes = sum(1 for r in rows if r['spike_flag'] != 'none')
+          print(f'spike_detection: {len(rows):,} rows, {spikes:,} spikes, series: {series}')
+          "
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
