@@ -17,6 +17,7 @@ twitter-card:
 //| echo: false
 daily_occ = FileAttachment("data/daily_occupancy.json").json()
 shelter_flow = FileAttachment("data/shelter_flow.json").json()
+bayesian_gender = FileAttachment("data/bayesian_gender.json").json()
 ```
 
 ```{=html}
@@ -282,7 +283,7 @@ latestDate = allDates[0]
 cityValidation = FileAttachment("data/city_validation.json").json().catch(() => null)
 ```
 
-BonQuery's version of this table adds one feature the City's page doesn't have: use the date selector below to browse any date from January 2021 to the present. The City's [Daily Shelter & Overnight Service Usage page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"} shows only its most recently published date, which doesn't always update on schedule. BonQuery pulls directly from City open data and is currently ahead of the City's page.
+BonQuery's version of this table adds one feature the City's page doesn't have: use the date selector below to browse any date from January 2021 to the present. The City's [Daily Shelter & Overnight Service Usage page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"} shows only its most recently published date, which doesn't always update on schedule.
 
 ## Daily Occupancy & Capacity for ${fmtDate(selectedDate)}
 
@@ -540,6 +541,36 @@ BonQuery's aggregated data is available for download from 2021 to present: [JSON
 
 :::
 
+---
+
+::: {.callout-note collapse="true"}
+## Historical Occupancy Spike Detection
+
+These spike-detection charts flag days when Toronto's shelter system accommodated a lot more people than its seasonal pattern and long-run trend would've predicted, not merely days that happened to be busy. Spikes are identified by removing two predictable forces (seasonality and long-run trend) with Seasonal-Trend decomposition using LOESS (STL) and measuring what is left over.
+
+The amber band marks moderate anomalies (2 MAD-SD above the expected value), the red band marks pronounced ones (3 MAD-SD). The analysis counts individuals accommodated rather than the occupancy rate, and both thresholds are calibrated against the system's own behaviour over the preceding two years. It is retrospective and descriptive, not predictive. Full methodology and caveats are on the linked page.
+
+::: {.mobile-dashboard-links}
+- [Historical Occupancy Spike Detection →](projects/spike-detection.html)
+:::
+
+::: {.desktop-dashboard-tabs}
+
+[Open in a new tab →](projects/spike-detection.html){target="_blank"}
+
+<iframe
+  src="projects/spike-detection.html"
+  width="100%"
+  height="2800"
+  style="border: 1px solid #ddd; border-radius: 4px;"
+  loading="lazy">
+</iframe>
+
+:::
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Analysis and charts by BonQuery.
+:::
+
 <!-- END SYNC -->
 
 ---
@@ -624,16 +655,23 @@ function _pLabel(t) {
   return p < 0.0001 ? "< 0.0001 ***" : p < 0.001 ? "< 0.001 **" : p < 0.05 ? p.toFixed(3) + " *" : p.toFixed(3)
 }
 
-// Bayesian Bayes Factor — BIC approximation (Wagenmakers 2007, Psych. Methods 12:4).
-// For a two-sample comparison: log_e(BF₁₀) ≈ (t² − ln n) / 2
-// where n = per-group sample size. Converts to log base 10 for display.
-// This is a rough approximation; with t >> 10 the BF is always overwhelming.
-_nMonths     = _n1
-_logBF_base10 = (_pw_mw.t**2 - Math.log(_nMonths)) / (2 * Math.LN10)
-
 _yearRange = _allFlow.length > 0
   ? _allFlow[_allFlow.length - 1].flow_date.slice(0, 4) + "–" + _latestFlow.flow_date.slice(0, 4)
   : ""
+
+// Minimum monthly share of men, used in the closing paragraph.
+// Math.floor ensures the displayed integer is a true lower bound: every
+// month on record had men's share above this number.
+_menShareSeries = _allFlow.map(d => d.gender_male / d.actively_homeless)
+_menShareMinPct = Math.floor(Math.min(..._menShareSeries) * 100)
+
+// Average monthly gap: men minus (women + transgender/NB/2S), full record.
+_gapAvg    = Math.round(_menMean - (_womenMean + _transMean))
+_gapAvgStr = _gapAvg.toLocaleString()
+
+// Earliest and latest years in the data, for the "on record (X to Y)" phrase.
+_recordStartYear = _allFlow.map(d => d.flow_date.slice(0, 4)).sort()[0]
+_recordEndYear   = _latestFlow.flow_date.slice(0, 4)
 ```
 
 ```{ojs}
@@ -642,7 +680,7 @@ html`<div class="crisis-hero">
   <div class="hero-number">${_ratio}×</div>
   <div class="hero-text">
     <div class="hero-label">more <strong>men</strong> than women are actively homeless in Toronto's shelter system</div>
-    <div class="hero-sub">${_menCount.toLocaleString()} men · ${_womenCount.toLocaleString()} women · ${_transCount.toLocaleString()} trans, non-binary, or two-spirit · ${_flowMonth}</div>
+    <div class="hero-sub"><strong>${_menCount.toLocaleString()} men</strong> · ${_womenCount.toLocaleString()} women · ${_transCount.toLocaleString()} transgender, non-binary, or two-spirit · ${_flowMonth}</div>
   </div>
 </div>`
 ```
@@ -657,7 +695,7 @@ _genderStats = [
 
 Plot.plot({
   width, height: 300, marginBottom: 36, marginLeft: 70, marginRight: 20,
-  title: `Mean monthly actively homeless count by gender — ${_yearRange} (${_nMonths} months)`,
+  title: `Mean monthly actively homeless count by gender — ${_yearRange} (${_n1} months)`,
   caption: "Error bars show 95% confidence intervals of the monthly mean. Source: City of Toronto Shelter System Flow dataset (open.toronto.ca).",
   x: {label: null, domain: _genderStats.map(d => d.label)},
   y: {label: "Mean individuals actively homeless / month", grid: true,
@@ -703,71 +741,80 @@ Plot.plot({
 ```{ojs}
 //| echo: false
 {
-  const pf = (t) => _pLabel(t)
-  const pairs = [
-    {comp: "Men vs Women",         t: _pw_mw.t, df: _pw_mw.df, note: false},
-    {comp: "Men vs Trans/NB/2S",   t: _pw_mt.t, df: _pw_mt.df, note: true},
-    {comp: "Women vs Trans/NB/2S", t: _pw_wt.t, df: _pw_wt.df, note: true}
+  // Bayesian results from brms model (pre-computed, saved in data/bayesian_gender.json)
+  const bg   = bayesian_gender
+  const rr   = bg.rate_ratios
+  const pd   = bg.pairwise_diffs
+  const diag = bg.diagnostics
+  const fmt1 = x => Number(x).toFixed(1)
+  const fmtN = x => Math.round(x).toLocaleString()
+
+  const bayesPairs = [
+    {comp: "Men vs Women",         rr: rr.men_vs_women,       diff: pd.men_vs_women,       note: false},
+    {comp: "Men vs Trans/NB/2S",   rr: rr.men_vs_transnb2s,   diff: pd.men_vs_transnb2s,   note: true},
+    {comp: "Women vs Trans/NB/2S", rr: rr.women_vs_transnb2s, diff: pd.women_vs_transnb2s, note: true}
   ]
-  const rows = pairs.map(p => html`<tr>
+  const bayesRows = bayesPairs.map(p => html`<tr>
     <td style="padding:3px 10px 3px 0">${p.comp}${p.note ? html`<sup> †</sup>` : ""}</td>
-    <td style="padding:3px 10px;text-align:right;font-variant-numeric:tabular-nums">${p.t.toFixed(1)}</td>
-    <td style="padding:3px 10px;text-align:right;font-variant-numeric:tabular-nums">${Math.round(p.df)}</td>
-    <td style="padding:3px 0;text-align:right;font-weight:${p.note?"400":"700"}">${pf(p.t)}</td>
+    <td style="padding:3px 10px;text-align:right;font-variant-numeric:tabular-nums">
+      ${fmt1(p.rr.median)}&times; (${fmt1(p.rr.hdi[0])}&ndash;${fmt1(p.rr.hdi[1])})
+    </td>
+    <td style="padding:3px 0;text-align:right;font-variant-numeric:tabular-nums;font-weight:${p.note?"400":"700"}">
+      ${fmtN(p.diff.median)} (${fmtN(p.diff.hdi[0])}&ndash;${fmtN(p.diff.hdi[1])})
+    </td>
   </tr>`)
 
   return html`<div style="font-size:0.81rem;color:#444;margin:0.6rem 0 0;line-height:1.6">
     <p style="margin:0 0 0.3rem">
-      <strong>Bayesian analysis — Men vs Women:</strong>
-      Using the BIC approximation (Wagenmakers 2007), the Bayes Factor
-      BF₁₀&nbsp;≈&nbsp;10<sup>${Math.round(_logBF_base10)}</sup> — evidence so overwhelming
-      it is far beyond the Jeffreys scale's highest category ("decisive," BF&nbsp;>&nbsp;100).
-      Under any reasonable prior, the posterior probability that the true mean monthly count
-      of men exceeds women is indistinguishable from 1.
+      <strong>Bayesian analysis (negative-binomial regression, fit with
+      <code>brms</code> ${bg.brms_version} on ${bg.n_months} months of data):</strong>
+      Weakly informative priors were used throughout.
+      Sampling diagnostics: R&#x0302;&nbsp;${diag.max_rhat},
+      ESS&nbsp;${diag.min_ess_bulk.toLocaleString()},
+      ${diag.n_divergent} divergent transitions.
     </p>
-    <div class="plain-eng">
-      <div class="pe-label">Plain English</div>
-      We examined ${_nMonths} consecutive months of shelter-system data and found the same
-      pattern throughout: men consistently accounted for more of Toronto's actively homeless
-      population than women. Statistically, the odds of this pattern appearing by chance are
-      astronomically small. <strong>Men are the largest and most consistently represented
-      group in the city's shelter system.</strong>
-    </div>
-    <p style="margin:0 0 0.3rem"><strong>All pairwise comparisons — each gender group tested
-      against the others, with the bar raised to account for running three tests at once:</strong></p>
-    <table style="border-collapse:collapse;width:100%;font-size:0.8rem;margin-bottom:0.5rem">
+    <table style="border-collapse:collapse;width:100%;font-size:0.8rem;margin-bottom:0.3rem">
       <thead><tr style="border-bottom:1px solid #ccc;color:#666">
         <th style="text-align:left;padding:3px 10px 3px 0;font-weight:600">Comparison</th>
-        <th style="text-align:right;padding:3px 10px;font-weight:600"><em>t</em></th>
-        <th style="text-align:right;padding:3px 10px;font-weight:600">df</th>
-        <th style="text-align:right;padding:3px 0;font-weight:600">Adj. <em>p</em></th>
+        <th style="text-align:right;padding:3px 10px;font-weight:600">Rate ratio (95% HDI)</th>
+        <th style="text-align:right;padding:3px 0;font-weight:600">Difference in count (95% HDI)</th>
       </tr></thead>
-      <tbody>${rows}</tbody>
+      <tbody>${bayesRows}</tbody>
     </table>
-    <p style="margin:0 0 0.3rem;color:#777">
-      *** Bonferroni-adjusted p&nbsp;<&nbsp;0.0001.
-      † The Trans/NB/2S group averages ~${Math.round(_transMean)} individuals per month —
+    <p style="margin:0 0 0.5rem;color:#777">
+      † The Trans/NB/2S group averages ~${Math.round(_transMean)} individuals per month,
       a small count that is also likely under-reported in administrative shelter records.
       Tests involving this group should be interpreted with caution.
     </p>
+    <p style="margin:0 0 0.3rem">
+      <strong>Men vs Women:</strong>
+      Men's expected monthly count is roughly
+      <strong>${fmt1(rr.men_vs_women.median)}&times; that of women</strong>
+      (95% HDI ${fmt1(rr.men_vs_women.hdi[0])}&ndash;${fmt1(rr.men_vs_women.hdi[1])}&times;),
+      an average gap of about
+      <strong>${fmtN(pd.men_vs_women.median)} people per month</strong>
+      (95% HDI ${fmtN(pd.men_vs_women.hdi[0])}&ndash;${fmtN(pd.men_vs_women.hdi[1])}).
+      Across a wide range of reasonable priors, the posterior probability that the true mean
+      monthly count of men exceeds women is indistinguishable from 1.
+    </p>
     <div class="plain-eng">
       <div class="pe-label">Plain English</div>
-      The table shows a clear pattern: men account for the largest share of Toronto's shelter
-      population, followed by women. Women are also represented at substantially higher levels
-      than the Transgender, Non-Binary, or Two-Spirit group. That last comparison, however,
-      should be treated cautiously. With only ~${Math.round(_transMean)} individuals per month
-      on average, the Transgender, Non-Binary, or Two-Spirit sample is small enough that these
-      records cannot reliably capture the broader experience of homelessness within that
-      community. What the data does show clearly is that men are disproportionately represented
-      in the shelter system, and by a wide margin.
+      A posterior probability indistinguishable from 1 means the estimated probability is
+      close to 100% that men's true monthly count exceeds women's. The 95% HDI also indicates
+      the gap is consistently large — men's running about ${fmt1(rr.men_vs_women.median)}&times;
+      women's, or roughly ${fmtN(pd.men_vs_women.median)} more people per month.
+      <strong>Men are the largest and most consistently over-represented group in the city's shelter system.</strong>
     </div>
   </div>`
 }
 ```
 
-Men have accounted for more than 60% of Toronto's actively homeless population every single month for at least the past three years — a gap of nearly 2,600 people that has barely moved as the total has risen and fallen. The pattern is not new, not subtle, and not hidden in the data. Yet it rarely makes headlines, and few of the city's public conversations about homelessness lead with it.
+```{ojs}
+//| echo: false
+md`Men have accounted for at least **${_menShareMinPct}%** of Toronto's actively homeless population every single month on record (${_recordStartYear} to ${_recordEndYear}). That figure is the **lowest single-month share of men observed across the entire data record**; in most months the share is higher. The average monthly gap between men and everyone else (women plus transgender, non-binary, and two-spirit individuals combined) is roughly **${_gapAvgStr} people**, and it has barely moved as the total has risen and fallen. The pattern is not new, not subtle, and not hidden in the data. Yet it rarely makes headlines, and few of the city's public conversations about homelessness lead with it.`
+```
 
-[Read the supporting analysis — Occupancy Spike Detection →](projects/spike-detection.qmd)
+[The impact on men is also highlighted here: Occupancy Spike Detection →](projects/spike-detection.qmd)
 
 :::
 

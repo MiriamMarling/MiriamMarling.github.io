@@ -1,0 +1,62 @@
+{
+  "fitted_at": "2026-05-19",
+  "brms_version": "2.23.0",
+  "n_months": 100,
+  "family": "negbinomial",
+  "poisson_defensible": false,
+  "shape_median": 36.2,
+  "shape_hdi": [30.1, 42.7],
+  "diagnostics": {
+    "max_rhat": 1.0002,
+    "min_ess_bulk": 10193,
+    "min_ess_tail": 10193,
+    "n_divergent": 0
+  },
+  "loo_compare": {
+    "winner": "negbinomial",
+    "elpd_diff": -6028.2,
+    "se_diff": 639
+  },
+  "group_means": {
+    "Men": {
+      "median": 5891,
+      "hdi": [5709, 6093]
+    },
+    "Women": {
+      "median": 3630,
+      "hdi": [3514, 3750]
+    },
+    "TransNB2S": {
+      "median": 127,
+      "hdi": [123, 132]
+    }
+  },
+  "pairwise_diffs": {
+    "men_vs_women": {
+      "median": 2260.5,
+      "hdi": [2034, 2488]
+    },
+    "men_vs_transnb2s": {
+      "median": 5763.6,
+      "hdi": [5577.9, 5962.6]
+    },
+    "women_vs_transnb2s": {
+      "median": 3502.9,
+      "hdi": [3390.8, 3627.6]
+    }
+  },
+  "rate_ratios": {
+    "men_vs_women": {
+      "median": 1.6,
+      "hdi": [1.5, 1.7]
+    },
+    "men_vs_transnb2s": {
+      "median": 46.4,
+      "hdi": [44.1, 48.7]
+    },
+    "women_vs_transnb2s": {
+      "median": 28.6,
+      "hdi": [27.2, 30]
+    }
+  }
+}

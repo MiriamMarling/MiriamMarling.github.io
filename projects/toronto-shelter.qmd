@@ -201,7 +201,7 @@ latestDate = allDates[0]
 cityValidation = FileAttachment("../data/city_validation.json").json().catch(() => null)
 ```
 
-BonQuery's version of this table adds one feature the City's page doesn't have: use the date selector below to browse any date from January 2021 to the present. The City's [Daily Shelter & Overnight Service Usage page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"} shows only its most recently published date, which doesn't always update on schedule. BonQuery pulls directly from City open data and is currently ahead of the City's page.
+BonQuery's version of this table adds one feature the City's page doesn't have: use the date selector below to browse any date from January 2021 to the present. The City's [Daily Shelter & Overnight Service Usage page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"} shows only its most recently published date, which doesn't always update on schedule.
 
 ## Daily Occupancy & Capacity for ${fmtDate(selectedDate)}
 
@@ -460,4 +460,34 @@ Contains information licensed under the [Open Government Licence – Toronto](ht
 
 BonQuery's aggregated data is available for download from 2021 to present: [JSON](https://bonquery.ca/data/daily_occupancy.json) · [CSV](https://bonquery.ca/data/daily_occupancy.csv)
 
+:::
+
+---
+
+::: {.callout-note collapse="true"}
+## Historical Occupancy Spike Detection
+
+These spike-detection charts flag days when Toronto's shelter system accommodated a lot more people than its seasonal pattern and long-run trend would've predicted, not merely days that happened to be busy. Spikes are identified by removing two predictable forces (seasonality and long-run trend) with Seasonal-Trend decomposition using LOESS (STL) and measuring what is left over.
+
+The amber band marks moderate anomalies (2 MAD-SD above the expected value), the red band marks pronounced ones (3 MAD-SD). The analysis counts individuals accommodated rather than the occupancy rate, and both thresholds are calibrated against the system's own behaviour over the preceding two years. It is retrospective and descriptive, not predictive. Full methodology and caveats are on the linked page.
+
+::: {.mobile-dashboard-links}
+- [Historical Occupancy Spike Detection →](spike-detection.html)
+:::
+
+::: {.desktop-dashboard-tabs}
+
+[Open in a new tab →](spike-detection.html){target="_blank"}
+
+<iframe
+  src="spike-detection.html"
+  width="100%"
+  height="2800"
+  style="border: 1px solid #ddd; border-radius: 4px;"
+  loading="lazy">
+</iframe>
+
+:::
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Analysis and charts by BonQuery.
 :::
