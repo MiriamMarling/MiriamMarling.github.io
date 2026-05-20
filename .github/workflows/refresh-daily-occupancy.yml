@@ -126,9 +126,11 @@ jobs:
       # Re-run analysis/R/generate_spike_json.R locally and commit to refresh it.
 
       - name: Set up Quarto
+        if: env.NEW_DATA == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Render and publish to GitHub Pages
+        if: env.NEW_DATA == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
