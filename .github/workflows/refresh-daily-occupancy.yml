@@ -134,3 +134,44 @@ jobs:
           target: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Email notification — workflow failed
+        if: failure()
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.mail.me.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[bonquery] Daily occupancy sync FAILED"
+          to: miriam@bonquery.ca
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            The refresh-daily-occupancy workflow failed.
+
+            Triggered by: ${{ github.event_name }}
+            Run log:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Open the run log to see which step failed.
+
+      - name: Email notification — new data published
+        if: success() && env.NEW_DATA == 'true'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.mail.me.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[bonquery] New daily occupancy data: ${{ env.LATEST_DATE }}"
+          to: miriam@bonquery.ca
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            New daily occupancy data was pulled from CKAN and published to bonquery.ca.
+
+            Latest date in dataset: ${{ env.LATEST_DATE }}
+            Triggered by:           ${{ github.event_name }}
+
+            Site:    https://bonquery.ca
+            Run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
