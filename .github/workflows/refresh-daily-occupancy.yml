@@ -1,9 +1,11 @@
 # Refresh daily occupancy data from the City of Toronto's CKAN open data
 # portal and republish the Quarto site.
 #
-# Runs every day at 08:00 UTC (4am EDT / 3am EST).
+# Runs every day at 09:00 UTC (5am EDT / 4am EST) and 11:00 UTC (7am EDT / 6am EST).
 # The City typically publishes the previous day's shelter occupancy figures
-# overnight; 08:00 UTC ensures the data is available before the pull runs.
+# overnight at ~08:00 UTC. The 09:00 UTC trigger gives a 1-hour buffer to avoid
+# a race condition where the pull starts before CKAN has fully published. The
+# 11:00 UTC trigger is a fallback in case CKAN publishes late or the first run fails.
 #
 # This workflow rebuilds the entire site, so it must generate ALL data files —
 # both shelter_flow.json (from OCI) and daily_occupancy.json (from CKAN).
@@ -17,7 +19,8 @@ name: Refresh daily occupancy and publish
 
 on:
   schedule:
-    - cron: '0 8 * * *'   # 08:00 UTC every day
+    - cron: '0 9 * * *'   # 09:00 UTC (5:00 AM EDT / 4:00 AM EST) — 1 hr after CKAN data drop
+    - cron: '0 11 * * *'  # 11:00 UTC (7:00 AM EDT / 6:00 AM EST) — fallback if first run misses
   workflow_dispatch:       # Allow manual triggering from the Actions tab
   push:
     branches: [main]       # Every push to main rebuilds and republishes
@@ -87,6 +90,37 @@ jobs:
           v = json.load(open('data/city_validation.json'))
           print(f'city_validation: city_date={v[\"city_date\"]}, passed={v[\"passed\"]}')
           "
+
+      - name: Detect new daily data
+        run: |
+          python3 -c "
+          import json, os
+          from pathlib import Path
+          rows = json.load(open('data/daily_occupancy.json'))
+          new_date = max(r['date'] for r in rows)
+          sentinel = Path('data/last_pull_date.txt')
+          old_date = sentinel.read_text().strip() if sentinel.exists() else '0000-00-00'
+          print(f'Previous known date: {old_date}')
+          print(f'Freshly pulled date: {new_date}')
+          if new_date > old_date:
+              sentinel.write_text(new_date + '\n')
+              with open(os.environ['GITHUB_ENV'], 'a') as f:
+                  f.write(f'NEW_DATA=true\nLATEST_DATE={new_date}\n')
+              print('New data detected — sentinel updated.')
+          else:
+              with open(os.environ['GITHUB_ENV'], 'a') as f:
+                  f.write('NEW_DATA=false\n')
+              print('No new data this run.')
+          "
+
+      - name: Commit sentinel if new data arrived
+        if: env.NEW_DATA == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/last_pull_date.txt
+          git commit -m "data: daily occupancy updated through ${{ env.LATEST_DATE }} [skip ci]"
+          git push origin main
 
       # spike_detection.json is committed to the repo (see .gitignore exception).
       # Re-run analysis/R/generate_spike_json.R locally and commit to refresh it.
