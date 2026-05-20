@@ -831,7 +831,7 @@ _spikeTopSector = (() => {
 })()
 
 _spikeTopSector === "men"
-  ? md`[The impact on men is also highlighted here: Occupancy Spike Detection →](projects/spike-detection.qmd)`
+  ? md`[The impact on men is also highlighted here: Occupancy Spike Detection →](projects/spike-detection.html)`
   : html``
 ```
 
