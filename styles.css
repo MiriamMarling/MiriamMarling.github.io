@@ -3,3 +3,13 @@
 /* Hide the rendered author/date block — footer carries attribution site-wide.
    The author: YAML field is kept intact for SEO and OpenGraph metadata. */
 .quarto-title-meta { display: none !important; }
+
+/* Style the "Charts ↓" / "Tables ↓" section headers in the Projects dropdown.
+   Bootstrap renders bare Quarto menu text entries as .dropdown-header elements. */
+.navbar .dropdown-menu .dropdown-header {
+  color: #2780e3;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  padding-top: 0.6rem;
+}

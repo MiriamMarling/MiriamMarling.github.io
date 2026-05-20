@@ -21,6 +21,7 @@ website:
           - href: projects/data-validation.qmd
             text: "Data Validation"
           - text: "---"
+          - text: "Charts ↓"
           - href: projects/historical-trends.qmd
             text: "Historical Trends"
           - href: projects/monthly-snapshot.qmd
@@ -29,6 +30,10 @@ website:
             text: "YTD Comparison"
           - href: projects/spike-detection.qmd
             text: "Occupancy Spike Detection"
+          - text: "---"
+          - text: "Tables ↓"
+          - href: index.qmd
+            text: "Daily Occupancy & Capacity"
       - href: about.qmd
         text: About
   page-footer:
