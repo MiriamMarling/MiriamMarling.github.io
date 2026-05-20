@@ -18,6 +18,7 @@ twitter-card:
 daily_occ = FileAttachment("data/daily_occupancy.json").json()
 shelter_flow = FileAttachment("data/shelter_flow.json").json()
 bayesian_gender = FileAttachment("data/bayesian_gender.json").json()
+spike_detection = FileAttachment("data/spike_detection.json").json()
 ```
 
 ```{=html}
@@ -814,7 +815,25 @@ Plot.plot({
 md`Men have accounted for at least **${_menShareMinPct}%** of Toronto's actively homeless population every single month on record (${_recordStartYear} to ${_recordEndYear}). That figure is the **lowest single-month share of men observed across the entire data record**; in most months the share is higher. The average monthly gap between men and everyone else (women plus transgender, non-binary, and two-spirit individuals combined) is roughly **${_gapAvgStr} people**, and it has barely moved as the total has risen and fallen. The pattern is not new, not subtle, and not hidden in the data. Yet it rarely makes headlines, and few of the city's public conversations about homelessness lead with it.`
 ```
 
-[The impact on men is also highlighted here: Occupancy Spike Detection →](projects/spike-detection.qmd)
+```{ojs}
+//| echo: false
+// Only render the cross-reference link while Men is still the top spike sector;
+// if the data ever shifts, the link auto-hides so it never contradicts the
+// findings on the spike-detection page.
+_spikeTopSector = (() => {
+  const sectors = ["men","women","mixed_adult","youth","families"]
+  const counts = sectors.map(s => ({
+    key: s,
+    n: spike_detection.filter(d => d.series === s && d.spike_flag !== "none").length
+  }))
+  counts.sort((a, b) => b.n - a.n)
+  return counts[0].key
+})()
+
+_spikeTopSector === "men"
+  ? md`[The impact on men is also highlighted here: Occupancy Spike Detection →](projects/spike-detection.qmd)`
+  : html``
+```
 
 :::
 

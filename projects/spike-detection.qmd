@@ -69,6 +69,29 @@ spikeData = data.map(d => ({
 
 ```{ojs}
 //| echo: false
+// Sector ranking — derives the most-affected sector from the data
+// so the heading, hero box, bar highlight, and commentary stay correct
+// even as new data shifts the ordering.
+_sectorLabels = ({men: "Men", women: "Women", mixed_adult: "Mixed Adult", youth: "Youth", families: "Families"})
+
+sectorRanked = ["men","women","mixed_adult","youth","families"].map(sec => {
+  const rows  = spikeData.filter(d => d.series === sec)
+  const sp    = rows.filter(d => d.spike_flag !== "none").length
+  const sp3   = rows.filter(d => d.spike_flag === "3mad").length
+  return { key: sec, label: _sectorLabels[sec], spikes: sp, spikes3: sp3 }
+}).sort((a, b) => b.spikes - a.spikes)
+
+topSec    = sectorRanked[0]
+secondSec = sectorRanked[1]
+
+// "nearly double" phrasing only when the top sector is at least 1.8x the next
+ratioPhrase = (secondSec.spikes > 0 && (topSec.spikes / secondSec.spikes) >= 1.8)
+  ? `more than any other, and nearly double the next highest`
+  : `more than any other sector`
+```
+
+```{ojs}
+//| echo: false
 // Window dropdown — controls x-axis zoom only, NOT decomposition
 windowOptions = [
   {label: "1 Month",  months: 1},
@@ -109,13 +132,13 @@ systemData = spikeData
   .filter(d => d.series === "system" && d.dateObj >= windowCutoff)
   .sort((a, b) => a.dateObj - b.dateObj)
 
-// Men gets its own full-width chart; remaining four go into the small-multiples grid
-menData = spikeData
-  .filter(d => d.series === "men" && d.dateObj >= windowCutoff)
+// The top sector gets its own full-width chart; remaining four go into the small-multiples grid
+heroSectorData = spikeData
+  .filter(d => d.series === topSec.key && d.dateObj >= windowCutoff)
   .sort((a, b) => a.dateObj - b.dateObj)
 
-sectorOrder = ["women", "mixed_adult", "youth", "families"]
-sectorLabels = ({women: "Women", mixed_adult: "Mixed Adult", youth: "Youth", families: "Families"})
+sectorOrder = ["men", "women", "mixed_adult", "youth", "families"].filter(s => s !== topSec.key)
+sectorLabels = _sectorLabels
 ```
 
 ```{ojs}
@@ -186,19 +209,22 @@ Plot.plot({
 })
 ```
 
-### Men's Sector — Most Affected
+```{ojs}
+//| echo: false
+html`<h3>${topSec.label}'s Sector Experienced the Most Spike Events</h3>`
+```
 
 ```{ojs}
 //| echo: false
 heroStats = {
   const sectors = ["men","women","mixed_adult","youth","families"]
-  const menRows = spikeData.filter(d => d.series === "men")
-  const menSpikes = menRows.filter(d => d.spike_flag !== "none").length
-  const menSevere = menRows.filter(d => d.spike_flag === "3mad").length
+  const topRows = spikeData.filter(d => d.series === topSec.key)
+  const topSpikes = topRows.filter(d => d.spike_flag !== "none").length
+  const topSevere = topRows.filter(d => d.spike_flag === "3mad").length
   const totalSpikes = spikeData.filter(d => sectors.includes(d.series) && d.spike_flag !== "none").length
-  const pct = Math.round(menSpikes / totalSpikes * 100)
+  const pct = Math.round(topSpikes / totalSpikes * 100)
   const startYear = spikeData.reduce((mn, d) => Math.min(mn, +d.date.slice(0,4)), 9999)
-  return {menSpikes, menSevere, totalSpikes, pct, startYear}
+  return {topSpikes, topSevere, totalSpikes, pct, startYear, topLabel: topSec.label}
 }
 ```
 
@@ -207,17 +233,15 @@ heroStats = {
 html`<div class="crisis-hero">
   <div class="hero-number">${heroStats.pct}%</div>
   <div class="hero-text">
-    <div class="hero-label">of all sector spike days in Toronto's shelter system occurred in the <strong>Men's sector</strong> — more than any other, and nearly double the next highest.</div>
-    <div class="hero-sub">${heroStats.menSpikes.toLocaleString()} of ${heroStats.totalSpikes.toLocaleString()} total spike days &nbsp;·&nbsp; ${heroStats.menSevere} were severe (3 MAD-SD) &nbsp;·&nbsp; ${heroStats.startYear}–present</div>
+    <div class="hero-label">of all sector spike days in Toronto's shelter system occurred in the <strong>${heroStats.topLabel}'s sector</strong> — ${ratioPhrase}.</div>
+    <div class="hero-sub">${heroStats.topSpikes.toLocaleString()} of ${heroStats.totalSpikes.toLocaleString()} total spike days &nbsp;·&nbsp; ${heroStats.topSevere} were severe (3 MAD-SD) &nbsp;·&nbsp; ${heroStats.startYear}–present</div>
   </div>
 </div>`
 ```
 
 ```{ojs}
 //| echo: false
-// Sector spike comparison — computed from live data
-_sectorLabels = ({men: "Men", women: "Women", mixed_adult: "Mixed Adult", youth: "Youth", families: "Families"})
-
+// Sector spike comparison — computed from live data; top sector highlighted dynamically
 sectorStats = ["men", "youth", "families", "women", "mixed_adult"].map(sec => {
   const rows = spikeData.filter(d => d.series === sec)
   const spikes = rows.filter(d => d.spike_flag !== "none").length
@@ -227,7 +251,7 @@ sectorStats = ["men", "youth", "families", "women", "mixed_adult"].map(sec => {
     spikes,
     spikes3,
     pctDays: spikes / rows.length * 100,
-    isMen: sec === "men"
+    isTop: sec === topSec.key
   }
 }).sort((a, b) => b.spikes - a.spikes)
 
@@ -238,16 +262,16 @@ Plot.plot({
   marks: [
     Plot.barX(sectorStats, {
       x: "pctDays", y: "label",
-      fill: d => d.isMen ? "#ff3b30" : "#4a6fa5",
-      fillOpacity: d => d.isMen ? 1 : 0.45,
+      fill: d => d.isTop ? "#ff3b30" : "#4a6fa5",
+      fillOpacity: d => d.isTop ? 1 : 0.45,
       sort: {y: "-x"}
     }),
     Plot.text(sectorStats, {
       x: "pctDays", y: "label",
       text: d => `${d.pctDays.toFixed(1)}%  (${d.spikes} days, ${d.spikes3} severe)`,
       dx: 8, textAnchor: "start", fontSize: 13,
-      fill: d => d.isMen ? "#ff3b30" : "#333",
-      fontWeight: d => d.isMen ? "700" : "400"
+      fill: d => d.isTop ? "#ff3b30" : "#333",
+      fontWeight: d => d.isTop ? "700" : "400"
     }),
     Plot.ruleX([0])
   ]
@@ -256,7 +280,9 @@ Plot.plot({
 
 ```{ojs}
 //| echo: false
-html`<p>Men are both the largest sector in Toronto's shelter system and the most frequently affected by occupancy spikes. Across ${heroStats.startYear}–present, ${heroStats.menSpikes.toLocaleString()} of the ${heroStats.totalSpikes.toLocaleString()} total sector spike days occurred in the Men's sector — ${heroStats.pct}%, more than any other sector by a significant margin. And unlike other sectors, Men's spike days skew toward the most severe band: ${heroStats.menSevere} of the ${heroStats.menSpikes.toLocaleString()} crossed the 3 MAD-SD threshold, compared to just ${heroStats.menSpikes - heroStats.menSevere} at the 2 MAD-SD level, indicating that Men's sector anomalies tend to be pronounced rather than subtle. This is consistent with a broader pattern in Toronto's homelessness data: men make up the majority of the city's chronically homeless population. When the system comes under pressure, the Men's sector shows it first and most sharply. That pattern is visible here.</p>`
+topSec.key === "men"
+  ? html`<p>Men are both the largest sector in Toronto's shelter system and the most frequently affected by occupancy spikes. Across ${heroStats.startYear}–present, ${heroStats.topSpikes.toLocaleString()} of the ${heroStats.totalSpikes.toLocaleString()} total sector spike days occurred in the Men's sector — ${heroStats.pct}%, more than any other sector by a significant margin. And unlike other sectors, Men's spike days skew toward the most severe band: ${heroStats.topSevere} of the ${heroStats.topSpikes.toLocaleString()} crossed the 3 MAD-SD threshold, compared to just ${heroStats.topSpikes - heroStats.topSevere} at the 2 MAD-SD level, indicating that Men's sector anomalies tend to be pronounced rather than subtle. This is consistent with a broader pattern in Toronto's homelessness data: men make up the majority of the city's chronically homeless population. When the system comes under pressure, the Men's sector shows it first and most sharply. That pattern is visible here.</p>`
+  : html`<p>The ${heroStats.topLabel} sector recorded the most occupancy spike days during ${heroStats.startYear}–present: ${heroStats.topSpikes.toLocaleString()} spike days, representing ${heroStats.pct}% of all sector spike days. ${heroStats.topSevere} of those crossed the more severe 3 MAD-SD threshold. The chart below shows the ${heroStats.topLabel} sector's full spike history.</p>`
 ```
 
 ```{ojs}
@@ -264,32 +290,32 @@ html`<p>Men are both the largest sector in Toronto's shelter system and the most
 Plot.plot({
   width, height: 400, marginLeft: 70,
   x: xAxis,
-  y: {label: "Men — individuals accommodated", grid: true, tickFormat: fmtN},
+  y: {label: `${topSec.label} — individuals accommodated`, grid: true, tickFormat: fmtN},
   marks: [
     showBands.includes("2 MAD-SD")
-      ? Plot.areaY(menData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
+      ? Plot.areaY(heroSectorData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
           fill: "#ff9500", fillOpacity: 0.20})
       : null,
     showBands.includes("3 MAD-SD")
-      ? Plot.areaY(menData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
+      ? Plot.areaY(heroSectorData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
           fill: "#ff3b30", fillOpacity: 0.15})
       : null,
-    Plot.line(menData, {x: "dateObj", y: "expected",
+    Plot.line(heroSectorData, {x: "dateObj", y: "expected",
       stroke: "#aaa", strokeWidth: 1.5, strokeDasharray: "4,3"}),
-    Plot.line(menData, {x: "dateObj", y: "observed",
+    Plot.line(heroSectorData, {x: "dateObj", y: "observed",
       stroke: "#0066cc", strokeWidth: 2}),
-    Plot.dot(menData.filter(d => d.spike_flag !== "none"), {
+    Plot.dot(heroSectorData.filter(d => d.spike_flag !== "none"), {
       x: "dateObj", y: "observed",
       fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
       r: 4,
       title: d => `${d.date}\n${d.observed.toLocaleString()} individuals\n${d.remainder_mad_sd.toFixed(1)} MAD-SD above expected`
     }),
-    Plot.tip(menData, Plot.pointerX({
+    Plot.tip(heroSectorData, Plot.pointerX({
       x: "dateObj", y: "observed",
       title: d => {
         const flag = d.spike_flag === "3mad" ? " ★ SPIKE (3 MAD-SD)"
                    : d.spike_flag === "2mad" ? " ▲ Spike (2 MAD-SD)" : ""
-        return `Men${flag}\n${d.date}\nObserved: ${d.observed.toLocaleString()}\nExpected: ${Math.round(d.expected).toLocaleString()}\nDeviation: ${d.remainder_mad_sd.toFixed(1)} MAD-SD`
+        return `${topSec.label}${flag}\n${d.date}\nObserved: ${d.observed.toLocaleString()}\nExpected: ${Math.round(d.expected).toLocaleString()}\nDeviation: ${d.remainder_mad_sd.toFixed(1)} MAD-SD`
       }
     }))
   ]
