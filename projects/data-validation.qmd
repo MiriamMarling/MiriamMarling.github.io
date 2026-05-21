@@ -14,7 +14,7 @@ twitter-card:
 
 This page is a transparency check. It places BonQuery's open-data figures for daily shelter occupancy directly beside the City of Toronto's published live-dashboard figures for the same date, and gives a precise account of every difference. BonQuery's table is built entirely from the City's own open data (CKAN export); the live dashboard draws on the City's internal operational system. Most figures match exactly. Where they don't, the reason is documented below — neither source is wrong; they answer slightly different questions.
 
-**Comparison as of May 14, 2026.** Unlike the hub-page table — which updates each time new CKAN data is pulled — this comparison page is a periodic artifact for a documented reference date. Refreshing it requires manually capturing a new City snapshot. The reference date is noted plainly so readers know exactly what is being compared.
+**Comparison reference date: May 14, 2026.** The City side of this table is a one-time snapshot captured from the live dashboard on May 14, which is no longer visible on the City's site.
 
 ---
 
@@ -208,20 +208,109 @@ compTable = {
 
 ### Emergency bed capacity (≈ mark)
 
-The ≈ mark appears in the **Unoccupied Beds**, **Actual Bed Capacity**, and **Occupancy Rate** cells for emergency bed programs (Mixed Adult, Men, Women, Youth emergency; and their totals). On May 14, 2026, the total gap was **62 beds** across those programs — 2.2% of the City's stated emergency bed capacity of 2,810. BonQuery's table now shows the funded figure inline next to the actual figure (in grey, parenthesised), so the gap is reconstructible from the BQ data alone: `funded − actual = offline`.
+The ≈ mark appears in the **Unoccupied Beds**, **Actual Bed Capacity**, and **Occupancy Rate** cells for emergency bed programs (Mixed Adult, Men, Women, Youth emergency; and their totals). BonQuery's table also shows the funded figure inline next to the actual figure (in grey, parenthesised), so the offline-bed count is reconstructible from the BonQuery data alone: `funded − actual = offline`.
 
-This is not an error in either source. It is a definitional difference between two City data products:
+This is not an error in either source — it reflects three different capacity definitions sitting side by side in the table above:
 
-- **CKAN open-data export** (`CAPACITY_ACTUAL_BED`): counts beds physically set up and bookable for service users on the date of recording. The CKAN data dictionary explicitly notes this excludes beds taken out of service for **maintenance, repair, or service users in self-isolation**.
-- **City's live dashboard** ("Actual Bed Capacity"): reports the funded capacity (`CAPACITY_FUNDING_BED`) — i.e., the contractually funded number of beds, including any that are currently offline.
+- **BonQuery's "Actual Bed Capacity"** (the figure under the BQ column): beds physically set up and bookable for service users on the date of recording. The CKAN data dictionary explicitly notes this excludes beds taken out of service for **maintenance, repair, or service users in self-isolation**.
+- **BonQuery's "(funded N)"** (shown in grey next to the actual figure): the contractually funded number of beds — what the program is committed by funding agreement to operate.
+- **City's "Actual Bed Capacity"** (the figure under the City column): reports a capacity figure that generally falls between BonQuery's Actual Bed Capacity and the funded figure, and is typically close to — but not identical to — the funded number. For at least one program type (Mixed Adult, Emergency), the City's dashboard figure does not align with either of the BonQuery definitions. The exact derivation of the City's "Actual Bed Capacity" on the live dashboard is not publicly documented.
 
 Offline beds aren't phantoms: each one is a real, contracted bed that the shelter operator has taken out of service for the day. The reasons documented in the CKAN data dictionary are maintenance, repair, and isolation; other reasons that have been reported publicly in Toronto's shelter system include staffing shortages and pest control. The operator records the offline status program-by-program; the City compiles and publishes the figures.
 
-Both figures are valid. They answer different questions: the City's "Actual Bed Capacity" reports what the system is funded to provide; BonQuery's `cap` column reports what was actually available that day. BonQuery uses the CKAN open-data definition because that is the published, reproducible figure; the funded figure is now shown alongside it for full reconciliation.
+BonQuery's "Actual Bed Capacity" column uses the CKAN open-data definition because that is the published, reproducible figure; the funded figure is shown alongside it for transparency.
+
+### Reconstructing the gap, program by program
+
+The breakdown below isolates the emergency bed programs row by row. For each program it shows the three capacity figures from the comparison table above and two computed gaps. The **City − BQ Gap** column shows how far the City's dashboard figure sits from BonQuery's Actual Bed Capacity — the discrepancy this page sets out to explain. The **Offline Beds** column shows the count of beds the program is funded to operate but has currently taken out of service (for maintenance, repair, isolation, staffing shortages, or pest control, as described above); it is computed as funded capacity minus Actual Bed Capacity.
+
+```{ojs}
+//| echo: false
+breakdownTable = {
+  const keys = ["men_emerg","wom_emerg","mix_emerg","yth_emerg","emerg_total","singles_total"]
+  const rows = keys.map(k => {
+    const b = bq(k)
+    const c = cr(k)
+    if (!b || !c) return null
+    const funded   = b.cap_funding
+    const cityGap  = (c.city_cap !== null && c.city_cap !== undefined && b.cap !== null) ? c.city_cap - b.cap : null
+    const offline  = (funded !== null && funded !== undefined && b.cap !== null) ? funded - b.cap : null
+    return {key: k, label: b.label, occ: b.occ, bq_cap: b.cap, city_cap: c.city_cap, funded, cityGap, offline}
+  }).filter(Boolean)
+
+  function signed(v) {
+    if (v === null || v === undefined) return "—"
+    if (v === 0) return "0"
+    return (v > 0 ? "+" : "") + (+v).toLocaleString()
+  }
+
+  return html`<table style="border-collapse:collapse;margin:1em 0;font-size:0.88em;width:100%;max-width:780px">
+    <thead>
+      <tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.95em">
+        <th style="padding:8px 10px;text-align:left">Program</th>
+        <th style="padding:8px 8px;text-align:right">Occupied Beds</th>
+        <th style="padding:8px 8px;text-align:right">Actual Bed Capacity<br><span style="font-weight:400;font-size:0.82em;color:#cfe0f7">BonQuery</span></th>
+        <th style="padding:8px 8px;text-align:right">Actual Bed Capacity<br><span style="font-weight:400;font-size:0.82em;color:#cfe0f7">City dashboard</span></th>
+        <th style="padding:8px 8px;text-align:right">Funded Capacity<br><span style="font-weight:400;font-size:0.82em;color:#cfe0f7">BonQuery</span></th>
+        <th style="padding:8px 8px;text-align:right">City − BQ Gap</th>
+        <th style="padding:8px 8px;text-align:right">Offline Beds</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(r => {
+        const isTotal = r.key === "emerg_total" || r.key === "singles_total"
+        const bg   = isTotal ? "#e8edf5" : "#fff"
+        const bold = isTotal ? "font-weight:600" : ""
+        const gapColor     = r.cityGap !== null && r.cityGap !== 0 ? "color:#b06000" : ""
+        const offlineColor = r.offline !== null && r.offline !== 0 ? "color:#b06000" : ""
+        return html`<tr style="background:${bg};${bold}">
+          <td style="padding:6px 10px">${r.label}</td>
+          <td style="padding:6px 8px;text-align:right">${n(r.occ)} <span style="color:#1a7a4a;font-weight:bold">✓</span></td>
+          <td style="padding:6px 8px;text-align:right">${n(r.bq_cap)}</td>
+          <td style="padding:6px 8px;text-align:right">${n(r.city_cap)}</td>
+          <td style="padding:6px 8px;text-align:right">${n(r.funded)}</td>
+          <td style="padding:6px 8px;text-align:right;${gapColor}">${signed(r.cityGap)}</td>
+          <td style="padding:6px 8px;text-align:right;${offlineColor}">${signed(r.offline)}</td>
+        </tr>`
+      })}
+    </tbody>
+  </table>`
+}
+```
+
+```{ojs}
+//| echo: false
+mixEmergAnomaly = {
+  const m = bq("mix_emerg")
+  const mc = cr("mix_emerg")
+  if (!m || !mc || mc.city_cap == null || m.cap == null || m.cap_funding == null) return md``
+  const city   = mc.city_cap
+  const actual = m.cap
+  const funded = m.cap_funding
+  // Build a short, factual call-out describing whichever shape the anomaly takes.
+  let sentence
+  if (city > funded) {
+    sentence = `The Mixed Adult Emergency row is notable: the City's dashboard shows **${n(city)}** beds, which is **${n(city - funded)}** above the funded capacity of **${n(funded)}**. This rules out a simple "the City reports funded capacity" explanation and suggests the live dashboard draws on an operational capacity definition that is not publicly documented.`
+  } else if (city < actual) {
+    sentence = `The Mixed Adult Emergency row is notable: the City's dashboard shows **${n(city)}** beds, which is **${n(actual - city)}** *below* BonQuery's Actual Bed Capacity of **${n(actual)}** (and **${n(funded - city)}** below the funded capacity of **${n(funded)}**). The City's figure does not align with either CKAN definition, and the exact derivation of the live dashboard's "Actual Bed Capacity" is not publicly documented.`
+  } else {
+    sentence = `The Mixed Adult Emergency row sits between the BonQuery Actual Bed Capacity (**${n(actual)}**) and the funded capacity (**${n(funded)}**) — the City reports **${n(city)}**. The exact derivation of the live dashboard's "Actual Bed Capacity" is not publicly documented.`
+  }
+  return md`${sentence}`
+}
+```
 
 ### Bridging & Triage programs (not published to open data)
 
 The City's live dashboard shows 29 people in Bridging & Triage programs on May 14, 2026. This program type is not present in the CKAN open-data export at all — the programs are tracked in the City's internal operational system but not published to the open data portal. BonQuery cannot reproduce this figure from open data, and the row is labelled accordingly in the table above.
+
+### Retroactive updates to open data
+
+The City of Toronto retroactively updates its CKAN open-data export. When BonQuery's automated pipeline pulls new data, it routinely detects that values for previously published dates have changed. The City does not publish a changelog or version history for these updates, so there is no public record of what was revised, when, or why.
+
+BonQuery's daily pipeline pulls the full CKAN export twice a day and republishes the site whenever any row changes — including retroactive revisions to dates already in the dataset. Whatever appears on BonQuery's side of the comparison reflects the most recent CKAN export; whatever appears on the City's side is the one-time snapshot taken from the live dashboard on the reference date noted above.
+
+One implication for this page: where the City has substantially revised a date's data after the City snapshot was taken, the **City − BQ Gap** in the breakdown table will widen and may flip sign. The Mixed Adult Emergency row is the clearest current example. Such gaps are driven primarily by retroactive CKAN revisions rather than by a definitional difference between the two data products — distinct from the funded-vs-actual gap, which is real operational data describing offline beds.
 
 ### The takeaway
 
