@@ -98,52 +98,58 @@ def pull_all():
 # ---------------------------------------------------------------------------
 
 def agg_rooms(rows):
-    ind = sum(to_float(r.get("SERVICE_USER_COUNT", 0)) for r in rows)
-    occ = sum(to_float(r.get("OCCUPIED_ROOMS", 0))     for r in rows)
-    cap = sum(to_float(r.get("CAPACITY_ACTUAL_ROOM", 0)) for r in rows)
+    ind         = sum(to_float(r.get("SERVICE_USER_COUNT", 0))    for r in rows)
+    occ         = sum(to_float(r.get("OCCUPIED_ROOMS", 0))        for r in rows)
+    cap         = sum(to_float(r.get("CAPACITY_ACTUAL_ROOM", 0))  for r in rows)
+    cap_funding = sum(to_float(r.get("CAPACITY_FUNDING_ROOM", 0)) for r in rows)
     unocc = cap - occ
     rate  = round(occ / cap * 100, 1) if cap > 0 else None
     return {"ind": int(ind), "occ": int(occ), "unocc": int(unocc),
-            "cap": int(cap), "rate": rate}
+            "cap": int(cap), "cap_funding": int(cap_funding), "rate": rate}
 
 
 def agg_beds(rows):
-    ind = sum(to_float(r.get("SERVICE_USER_COUNT", 0))  for r in rows)
-    occ = sum(to_float(r.get("OCCUPIED_BEDS", 0))       for r in rows)
-    cap = sum(to_float(r.get("CAPACITY_ACTUAL_BED", 0)) for r in rows)
+    ind         = sum(to_float(r.get("SERVICE_USER_COUNT", 0))   for r in rows)
+    occ         = sum(to_float(r.get("OCCUPIED_BEDS", 0))        for r in rows)
+    cap         = sum(to_float(r.get("CAPACITY_ACTUAL_BED", 0))  for r in rows)
+    cap_funding = sum(to_float(r.get("CAPACITY_FUNDING_BED", 0)) for r in rows)
     unocc = cap - occ
     rate  = round(occ / cap * 100, 1) if cap > 0 else None
     return {"ind": int(ind), "occ": int(occ), "unocc": int(unocc),
-            "cap": int(cap), "rate": rate}
+            "cap": int(cap), "cap_funding": int(cap_funding), "rate": rate}
 
 
 def rollup(*aggs):
-    ind = sum(a["ind"] for a in aggs)
-    occ = sum(a["occ"] for a in aggs)
-    cap = sum(a["cap"] for a in aggs)
-    unocc = cap - occ
-    rate  = round(occ / cap * 100, 1) if cap > 0 else None
-    return {"ind": ind, "occ": occ, "unocc": unocc, "cap": cap, "rate": rate}
+    ind         = sum(a["ind"] for a in aggs)
+    occ         = sum(a["occ"] for a in aggs)
+    cap         = sum(a["cap"] for a in aggs)
+    cap_funding = sum(a.get("cap_funding", 0) or 0 for a in aggs)
+    unocc       = cap - occ
+    rate        = round(occ / cap * 100, 1) if cap > 0 else None
+    return {"ind": ind, "occ": occ, "unocc": unocc,
+            "cap": cap, "cap_funding": cap_funding, "rate": rate}
 
 
 def null_agg(ind):
-    return {"ind": ind, "occ": None, "unocc": None, "cap": None, "rate": None}
+    return {"ind": ind, "occ": None, "unocc": None,
+            "cap": None, "cap_funding": None, "rate": None}
 
 
 def make_row(key, label, indent, is_total, section, col_type, g, dt):
     return {
-        "date":     dt,
-        "key":      key,
-        "label":    label,
-        "indent":   indent,
-        "is_total": is_total,
-        "section":  section,
-        "col_type": col_type,
-        "ind":      g["ind"],
-        "occ":      g["occ"],
-        "unocc":    g["unocc"],
-        "cap":      g["cap"],
-        "rate":     g["rate"],
+        "date":         dt,
+        "key":          key,
+        "label":        label,
+        "indent":       indent,
+        "is_total":     is_total,
+        "section":      section,
+        "col_type":     col_type,
+        "ind":          g["ind"],
+        "occ":          g["occ"],
+        "unocc":        g["unocc"],
+        "cap":          g["cap"],
+        "cap_funding":  g.get("cap_funding"),
+        "rate":         g["rate"],
     }
 
 
@@ -180,7 +186,8 @@ def aggregate_day(day_rows, dt):
     sng_beds       = agg_beds( [r for r in sng_hotel_all if r.get("CAPACITY_TYPE") == "Bed Based Capacity"])
     g_sng_hotel    = {"ind": sng_beds["ind"] + sng_rooms["ind"],
                       "occ": sng_rooms["occ"], "unocc": sng_rooms["unocc"],
-                      "cap": sng_rooms["cap"], "rate": sng_rooms["rate"]}
+                      "cap": sng_rooms["cap"], "cap_funding": sng_rooms["cap_funding"],
+                      "rate": sng_rooms["rate"]}
 
     g_mix_emerg = agg_beds([r for r in f
                             if r.get("SECTOR") == "Mixed Adult"

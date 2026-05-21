@@ -67,7 +67,7 @@ jobs:
           import csv, json
           from pathlib import Path
           rows = json.loads(Path('data/daily_occupancy.json').read_text())
-          fields = ['date', 'key', 'label', 'ind', 'occ', 'unocc', 'cap', 'rate', 'col_type', 'indent', 'is_total']
+          fields = ['date', 'key', 'label', 'ind', 'occ', 'unocc', 'cap', 'cap_funding', 'rate', 'col_type', 'indent', 'is_total']
           with open('data/daily_occupancy.csv', 'w', newline='') as f:
               w = csv.DictWriter(f, fieldnames=fields, extrasaction='ignore')
               w.writeheader()
