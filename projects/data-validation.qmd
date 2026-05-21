@@ -94,7 +94,7 @@ function compRow(key, bqRow, cityRow, opts = {}) {
       ${n(bqRow.unocc)} ${mark(bqRow.unocc, cityRow.city_unocc, true, key)}</td>
     <td style="padding:5px 8px;text-align:right;color:#888">${n(cityRow.city_unocc)}</td>
     <td style="padding:5px 8px;text-align:right">
-      ${n(bqRow.cap)} ${mark(bqRow.cap, cityRow.city_cap, true, key)}</td>
+      ${n(bqRow.cap)}${bqRow.cap_funding != null && bqRow.cap_funding !== bqRow.cap ? ` <span style="color:#888;font-size:0.85em">(funded ${n(bqRow.cap_funding)})</span>` : ""} ${mark(bqRow.cap, cityRow.city_cap, true, key)}</td>
     <td style="padding:5px 8px;text-align:right;color:#888">${n(cityRow.city_cap)}</td>
     <td style="padding:5px 8px;text-align:right">
       ${pct(bqRow.rate)} ${mark(bqRow.rate, cityRow.city_rate, true, key)}</td>
@@ -208,14 +208,16 @@ compTable = {
 
 ### Emergency bed capacity (≈ mark)
 
-The ≈ mark appears in the **Unoccupied Beds**, **Actual Bed Capacity**, and **Occupancy Rate** cells for emergency bed programs (Mixed Adult, Men, Women, Youth emergency; and their totals). On May 14, 2026, the total gap was **62 beds** across those programs — 2.2% of the City's stated emergency bed capacity of 2,810.
+The ≈ mark appears in the **Unoccupied Beds**, **Actual Bed Capacity**, and **Occupancy Rate** cells for emergency bed programs (Mixed Adult, Men, Women, Youth emergency; and their totals). On May 14, 2026, the total gap was **62 beds** across those programs — 2.2% of the City's stated emergency bed capacity of 2,810. BonQuery's table now shows the funded figure inline next to the actual figure (in grey, parenthesised), so the gap is reconstructible from the BQ data alone: `funded − actual = offline`.
 
 This is not an error in either source. It is a definitional difference between two City data products:
 
-- **CKAN open-data export** (`CAPACITY_ACTUAL_BED`): counts beds currently available for occupancy — that is, occupied beds plus available-but-empty beds. Beds that are temporarily offline (under maintenance, decommissioned for a period, etc.) are recorded separately in a `UNAVAILABLE_BEDS` column.
-- **City's live dashboard** ("Actual Bed Capacity"): appears to include some of those temporarily unavailable beds in its capacity figure.
+- **CKAN open-data export** (`CAPACITY_ACTUAL_BED`): counts beds physically set up and bookable for service users on the date of recording. The CKAN data dictionary explicitly notes this excludes beds taken out of service for **maintenance, repair, or service users in self-isolation**.
+- **City's live dashboard** ("Actual Bed Capacity"): reports the funded capacity (`CAPACITY_FUNDING_BED`) — i.e., the contractually funded number of beds, including any that are currently offline.
 
-Both figures are valid. They answer different questions. BonQuery's table uses the CKAN open-data definition because that is the published, reproducible data; the difference with the live dashboard is documented here for full transparency.
+Offline beds aren't phantoms: each one is a real, contracted bed that the shelter operator has taken out of service for the day. The reasons documented in the CKAN data dictionary are maintenance, repair, and isolation; other reasons that have been reported publicly in Toronto's shelter system include staffing shortages and pest control. The operator records the offline status program-by-program; the City compiles and publishes the figures.
+
+Both figures are valid. They answer different questions: the City's "Actual Bed Capacity" reports what the system is funded to provide; BonQuery's `cap` column reports what was actually available that day. BonQuery uses the CKAN open-data definition because that is the published, reproducible figure; the funded figure is now shown alongside it for full reconciliation.
 
 ### Bridging & Triage programs (not published to open data)
 
