@@ -11,6 +11,7 @@
 !/data/spike_detection.json
 !/data/bayesian_gender.json
 !/data/last_pull_date.txt
+!/data/last_pull_hash.txt
 
 # Claude Code instructions — local only
 CLAUDE.md

@@ -91,35 +91,54 @@ jobs:
           print(f'city_validation: city_date={v[\"city_date\"]}, passed={v[\"passed\"]}')
           "
 
-      - name: Detect new daily data
+      - name: Detect new or revised daily data
         run: |
           python3 -c "
-          import json, os
+          import hashlib, json, os
           from pathlib import Path
-          rows = json.load(open('data/daily_occupancy.json'))
+
+          json_path = Path('data/daily_occupancy.json')
+          rows = json.loads(json_path.read_text())
           new_date = max(r['date'] for r in rows)
-          sentinel = Path('data/last_pull_date.txt')
-          old_date = sentinel.read_text().strip() if sentinel.exists() else '0000-00-00'
-          print(f'Previous known date: {old_date}')
-          print(f'Freshly pulled date: {new_date}')
-          if new_date > old_date:
-              sentinel.write_text(new_date + '\n')
+          new_hash = hashlib.sha256(json_path.read_bytes()).hexdigest()
+
+          date_sentinel = Path('data/last_pull_date.txt')
+          hash_sentinel = Path('data/last_pull_hash.txt')
+          old_date = date_sentinel.read_text().strip() if date_sentinel.exists() else '0000-00-00'
+          old_hash = hash_sentinel.read_text().strip() if hash_sentinel.exists() else ''
+
+          new_day      = new_date > old_date
+          content_diff = new_hash != old_hash
+
+          print(f'Previous date / hash : {old_date} / {old_hash[:12] or \"(none)\"}')
+          print(f'Current  date / hash : {new_date} / {new_hash[:12]}')
+          print(f'  new day arrived?     {new_day}')
+          print(f'  content changed?     {content_diff}')
+
+          if new_day or content_diff:
+              date_sentinel.write_text(new_date + '\n')
+              hash_sentinel.write_text(new_hash + '\n')
+              reason = 'new-day' if new_day else 'content-revision'
               with open(os.environ['GITHUB_ENV'], 'a') as f:
-                  f.write(f'NEW_DATA=true\nLATEST_DATE={new_date}\n')
-              print('New data detected — sentinel updated.')
+                  f.write(f'NEW_DATA=true\nLATEST_DATE={new_date}\nREBUILD_REASON={reason}\n')
+              print(f'Republish triggered: {reason}')
           else:
               with open(os.environ['GITHUB_ENV'], 'a') as f:
                   f.write('NEW_DATA=false\n')
-              print('No new data this run.')
+              print('No change; skipping publish.')
           "
 
-      - name: Commit sentinel if new data arrived
+      - name: Commit sentinels if new data or revision detected
         if: env.NEW_DATA == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/last_pull_date.txt
-          git commit -m "data: daily occupancy updated through ${{ env.LATEST_DATE }} [skip ci]"
+          git add data/last_pull_date.txt data/last_pull_hash.txt
+          if [ "${{ env.REBUILD_REASON }}" = "new-day" ]; then
+            git commit -m "data: daily occupancy updated through ${{ env.LATEST_DATE }} [skip ci]"
+          else
+            git commit -m "data: daily occupancy revised retroactively (latest date still ${{ env.LATEST_DATE }}) [skip ci]"
+          fi
           git push origin main
 
       # spike_detection.json is committed to the repo (see .gitignore exception).
@@ -173,6 +192,7 @@ jobs:
             New daily occupancy data was pulled from CKAN and published to bonquery.ca.
 
             Latest date in dataset: ${{ env.LATEST_DATE }}
+            Trigger reason:         ${{ env.REBUILD_REASON }}
             Triggered by:           ${{ github.event_name }}
 
             Site:    https://bonquery.ca
