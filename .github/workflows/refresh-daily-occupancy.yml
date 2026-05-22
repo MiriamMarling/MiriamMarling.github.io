@@ -58,8 +58,122 @@ jobs:
         run: python scripts/generate_data.py
 
       # daily_occupancy.json — daily shelter occupancy from CKAN (no secrets needed).
+      # Side effect: also writes data/snapshots/raw_<UTC-timestamp>.json.gz containing
+      # the full raw CKAN rows (pre-aggregation). Used by the data-drift investigation.
       - name: Pull daily occupancy data from CKAN
         run: python scripts/generate_daily_occupancy.py
+
+      # ---- CKAN data-drift tracking ----
+      # Downloads the most-recent prior raw snapshot (from the latest previous workflow
+      # run that uploaded one), runs the diff against today's snapshot, and uploads both
+      # the new snapshot and the diff report as artifacts.
+      #
+      # GitHub artifact retention defaults to 90 days. To keep snapshots longer, raise
+      # the repo setting at: Settings → Actions → General → "Artifact and log retention".
+      # For indefinite retention, archive snapshots to an external store.
+      - name: Download previous CKAN raw snapshot (for drift diff)
+        id: prev_snapshot
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          name: ckan-raw-snapshot
+          path: data/snapshots
+          search_artifacts: true
+          if_no_artifact_found: warn
+        continue-on-error: true
+
+      - name: Diff CKAN snapshots (previous vs current)
+        if: steps.prev_snapshot.outputs.found_artifact == 'true'
+        run: python scripts/diff_ckan_snapshots.py
+        continue-on-error: true
+
+      - name: Upload CKAN raw snapshot (latest)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckan-raw-snapshot
+          path: data/snapshots/raw_*.json.gz
+          overwrite: true
+
+      - name: Upload CKAN drift report
+        if: steps.prev_snapshot.outputs.found_artifact == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckan-drift-report-${{ github.run_id }}
+          path: data/ckan_drift_report.json
+          if-no-files-found: warn
+
+      # Read the drift report and decide whether a retroactive revision was detected.
+      # Forward-only additions (new days being published) are NOT a revision; the
+      # email below only fires when actual rows in historical dates were changed
+      # or removed.
+      - name: Detect retroactive revision in drift report
+        if: steps.prev_snapshot.outputs.found_artifact == 'true'
+        id: drift_check
+        run: |
+          python3 -c "
+          import json, os
+          from pathlib import Path
+
+          report_path = Path('data/ckan_drift_report.json')
+          if not report_path.exists():
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write('has_revision=false\n')
+              print('No drift report present; skipping revision notification.')
+              raise SystemExit(0)
+
+          report  = json.loads(report_path.read_text())
+          summary = report['summary']
+          by_date = report['by_date']
+
+          revised_dates = sorted(
+              d for d, info in by_date.items()
+              if info.get('changed') or info.get('removed')
+          )
+          has_revision = bool(revised_dates)
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'has_revision={\"true\" if has_revision else \"false\"}\n')
+              f.write(f'n_changed={summary[\"rows_changed\"]}\n')
+              f.write(f'n_removed={summary[\"rows_removed\"]}\n')
+              f.write(f'n_revised_dates={len(revised_dates)}\n')
+              f.write(f'revised_dates={\", \".join(revised_dates) if revised_dates else \"(none)\"}\n')
+              f.write(f'old_pulled_at={report[\"old_snapshot\"].get(\"pulled_at\", \"?\")}\n')
+              f.write(f'new_pulled_at={report[\"new_snapshot\"].get(\"pulled_at\", \"?\")}\n')
+
+          print(f'has_revision    : {has_revision}')
+          print(f'rows changed    : {summary[\"rows_changed\"]}')
+          print(f'rows removed    : {summary[\"rows_removed\"]}')
+          print(f'dates revised   : {len(revised_dates)} ({revised_dates if revised_dates else \"(none)\"})')
+          "
+
+      - name: Email notification — CKAN retroactive revision detected
+        if: steps.drift_check.outputs.has_revision == 'true'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.mail.me.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[bonquery] CKAN retroactive revision detected — ${{ steps.drift_check.outputs.n_changed }} programs changed across ${{ steps.drift_check.outputs.n_revised_dates }} dates"
+          to: miriam@bonquery.ca
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            A retroactive revision to CKAN's daily shelter occupancy data was
+            detected on the latest pull. Historical dates that had already been
+            published in a previous CKAN release have changed values in this pull.
+
+            Triggered by: ${{ github.event_name }}
+            Pulled at:    ${{ steps.drift_check.outputs.new_pulled_at }}
+            Compared to:  ${{ steps.drift_check.outputs.old_pulled_at }}
+
+            Dates with revisions: ${{ steps.drift_check.outputs.revised_dates }}
+
+            Programs changed:     ${{ steps.drift_check.outputs.n_changed }}
+            Programs removed:     ${{ steps.drift_check.outputs.n_removed }}
+
+            Full drift report is attached to the workflow run as artifact
+            `ckan-drift-report-${{ github.run_id }}`:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       - name: Convert daily occupancy JSON to CSV
         run: |

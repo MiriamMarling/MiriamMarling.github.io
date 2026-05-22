@@ -32,7 +32,7 @@ website:
             text: "Occupancy Spike Detection"
           - text: "---"
           - text: "Tables ↓"
-          - href: index.qmd
+          - href: projects/daily-occupancy.qmd
             text: "Daily Occupancy & Capacity"
       - href: about.qmd
         text: About

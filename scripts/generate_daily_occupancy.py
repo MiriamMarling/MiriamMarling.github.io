@@ -12,13 +12,14 @@ Date: 2026
 """
 
 import csv
+import gzip
 import io
 import json
 import re
 import ssl
 import urllib.request
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 # Permissive SSL context — needed on macOS where Python's CA bundle can be
@@ -30,9 +31,12 @@ _SSL_CTX.verify_mode = ssl.CERT_NONE
 
 CKAN_BASE  = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
 PKG_ID     = "daily-shelter-overnight-service-occupancy-capacity"
-OUT_DIR    = Path(__file__).parent.parent / "data"
-OUT_JSON   = OUT_DIR / "daily_occupancy.json"
-REF_JSON   = OUT_DIR / "city_reference_2026-05-14.json"
+OUT_DIR       = Path(__file__).parent.parent / "data"
+OUT_JSON      = OUT_DIR / "daily_occupancy.json"
+REF_JSON      = OUT_DIR / "city_reference_2026-05-14.json"
+SNAPSHOTS_DIR = OUT_DIR / "snapshots"
+
+SCHEMA_VERSION = 1
 
 TEMP_PROG  = "Temporary Programs"
 EMERG_TYPES = {"Shelter", "Top Bunk Contingency Space",
@@ -314,6 +318,35 @@ CITY_REF = [
 
 
 # ---------------------------------------------------------------------------
+# Raw snapshot archival
+# ---------------------------------------------------------------------------
+
+def write_snapshot(raw_rows, pulled_at=None):
+    """Archive the raw CKAN rows (pre-aggregation) as gzipped JSON.
+
+    Used by the data-drift investigation to diff successive pulls and identify
+    which programs (PROGRAM_ID + OCCUPANCY_DATE) were added, removed, or had
+    their values revised between releases.
+    """
+    SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
+    pulled_at = pulled_at or datetime.now(timezone.utc)
+    stamp = pulled_at.strftime("%Y-%m-%dT%H%M%SZ")
+    path = SNAPSHOTS_DIR / f"raw_{stamp}.json.gz"
+    payload = {
+        "schema_version": SCHEMA_VERSION,
+        "pulled_at":      pulled_at.isoformat().replace("+00:00", "Z"),
+        "source":         "ckan-datastore-dump",
+        "package_id":     PKG_ID,
+        "row_count":      len(raw_rows),
+        "rows":           raw_rows,
+    }
+    with gzip.open(path, "wt", encoding="utf-8") as f:
+        json.dump(payload, f, separators=(",", ":"))
+    print(f"Snapshot: {path} ({path.stat().st_size / 1e6:.1f} MB, {len(raw_rows):,} rows)")
+    return path
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -321,6 +354,7 @@ if __name__ == "__main__":
     OUT_DIR.mkdir(exist_ok=True)
 
     raw = pull_all()
+    write_snapshot(raw)
 
     # Group rows by date
     by_date = defaultdict(list)

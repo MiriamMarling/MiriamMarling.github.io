@@ -1,190 +1,12 @@
 ---
-title: "Inside Toronto's Shelter System"
-subtitle: "Daily occupancy and monthly flow data from the City of Toronto — open, interactive, validated"
-description: "Toronto shelter system data — daily occupancy and capacity, monthly system flow, validated against the City of Toronto's open data. Interactive tables with date selectors."
-author: "Miriam Marling"
-open-graph:
-  title: "Inside Toronto's Shelter System"
-  description: "Toronto shelter system data — daily occupancy and capacity, monthly system flow, validated against the City of Toronto's open data. Interactive tables with date selectors."
-  site_name: "BonQuery — Data for the Greater Good"
-twitter-card:
-  card-style: summary
-  title: "Inside Toronto's Shelter System"
-  description: "Toronto shelter system data — daily occupancy and capacity, monthly system flow, validated against the City of Toronto's open data. Interactive tables with date selectors."
+title: "Daily Occupancy & Capacity"
+description: "Daily shelter occupancy and capacity for Toronto's shelter system, updated every day from the City of Toronto's open data."
 ---
 
 ```{ojs}
 //| echo: false
 daily_occ = FileAttachment("../data/daily_occupancy.json").json()
 ```
-
-This page is a hub for Toronto shelter system datasets sourced from the City of Toronto's open data portal. Each section covers one dataset — use the headings to jump to what you need.
-
-::: {.callout-note collapse="true"}
-## Monthly Shelter System Flow
-
-Toronto publishes monthly data on its taxed shelter system, and the
-City's own dashboards do a good job presenting the headline numbers.
-This section goes a step further: interactive filters on every chart, a
-clear note on what the data captures and what it leaves out, and
-findings that usually stay buried in technical documentation.
-
-The data covers every month from January 2018 to the most recent
-published month, sourced directly from the [City of Toronto's Shelter
-System Flow dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/).
-New data loads automatically each month, usually around the 15th,
-after the City publishes the prior month's figures.
-
-### The dashboards
-
-::: {.mobile-dashboard-links}
-Open each dashboard directly in your browser — they're built for
-interactive use and work best full-screen on a phone.
-
-- [Monthly Snapshot →](monthly-snapshot.html)
-- [Year-to-Date Comparison →](ytd-comparison.html)
-- [Historical Trends →](historical-trends.html)
-:::
-
-::: {.desktop-dashboard-tabs}
-
-The three tabs below show different views of the data, with interactive
-filters on every chart.
-
-::: {.panel-tabset}
-
-#### Monthly Snapshot
-
-A point-in-time view of the shelter system for any month from January
-2018 forward. Use the date filter at the top to change months.
-
-[Open in a new tab →](monthly-snapshot.html){target="_blank"}
-
-<iframe
-  src="monthly-snapshot.html"
-  width="100%"
-  height="2800"
-  style="border: 1px solid #ddd; border-radius: 4px;"
-  loading="lazy">
-</iframe>
-
-#### Year-to-Date Comparison
-
-Compares the current year's cumulative figures against the same period
-the prior year. Useful for seeing whether the system is on track to
-exceed, match, or fall below last year.
-
-[Open in a new tab →](ytd-comparison.html){target="_blank"}
-
-<iframe
-  src="ytd-comparison.html"
-  width="100%"
-  height="900"
-  style="border: 1px solid #ddd; border-radius: 4px;"
-  loading="lazy">
-</iframe>
-
-#### Historical Trends
-
-Multi-year time series for the headline metrics, with filters for
-population group, year, and month. Useful for spotting long-term
-patterns or seasonal trends.
-
-[Open in a new tab →](historical-trends.html){target="_blank"}
-
-<iframe
-  src="historical-trends.html"
-  width="100%"
-  height="3800"
-  style="border: 1px solid #ddd; border-radius: 4px;"
-  loading="lazy">
-</iframe>
-
-:::
-
-:::
-
-```{=html}
-<style>
-.mobile-dashboard-links { display: none !important; }
-.desktop-dashboard-tabs { display: block; }
-@media (max-width: 768px) {
-  .desktop-dashboard-tabs iframe {
-    width: 100vw !important;
-    margin-left: calc(50% - 50vw) !important;
-    border: none !important;
-    border-radius: 0 !important;
-  }
-}
-</style>
-```
-
-### How to read this data
-
-These numbers reflect the shelter *system*, not all homelessness. The
-data captures people who used a City-funded overnight service at
-least once in the past three months. It doesn't include people
-sleeping outside, in shelters that aren't City-funded, or staying
-temporarily with friends or family. The City [estimates](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/)
-that roughly 18% of people experiencing absolute homelessness in
-Toronto aren't reflected in these numbers. Trends here reflect
-changes in the shelter system specifically — not in total homelessness
-in the city.
-
-### Key terms
-
-The dashboards use a few terms that have specific meanings worth
-knowing before you read the charts.
-
-**Actively homeless.** A person who has used City-funded shelter
-services at least once in the past three months and hasn't been
-recorded as moving to permanent housing. This is the headline number
-on every dashboard. Because it looks back three months, the count
-includes people who may not be in shelter on any given night.
-
-**Chronic homelessness.** The federal definition: someone who has
-spent at least 180 nights in shelter over the past year, or at least
-546 nights over the past three years. A person can meet this
-definition while still actively in the shelter system — they don't
-need to have left and returned.
-
-**Inflow categories** (people entering the shelter system this month):
-
-- **Newly Identified.** People entering the shelter system for the
-  first time. One exception for the "Chronic" group: in that row,
-  this column counts people who became chronically homeless during
-  the reporting month, regardless of how long they'd already been
-  using the shelter system.
-- **Returned from Permanent Housing.** People who previously moved
-  to permanent housing and have come back to the shelter system.
-- **Returned to Shelter.** People who were in the system, didn't
-  use it for at least three months, and have now returned.
-
-**Outflow categories** (people leaving the shelter system this month):
-
-- **Moved to Permanent Housing.** People who left the shelter system
-  for permanent housing.
-- **Became Inactive.** People who haven't used shelter services in
-  the past three months, including the reporting month.
-
-Definitions are based on the [City of Toronto's Shelter System Flow
-Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/).
-
-[Read all data findings →](about-the-data.qmd)
-
-### Data source
-
-All data comes from the City of Toronto's [Shelter System Flow
-dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/),
-published monthly on the City's open data portal.
-
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
-
-:::
-
----
-
-::: {.callout-note collapse="true" title="Daily Occupancy & Capacity"}
 
 ```{ojs}
 //| echo: false
@@ -198,8 +20,6 @@ function fmtDate(s) {
 
 allDates = [...new Set(daily_occ.map(r => r.date))].sort().reverse()
 latestDate = allDates[0]
-// cityValidation = FileAttachment("../data/city_validation.json").json().catch(() => null)
-// ^ Banner hidden — re-enable after capacity reconciliation is complete
 ```
 
 BonQuery's version of this table adds two features the City's page doesn't have. The **date selector** below lets you browse any date from January 2021 to the present; the City's [Daily Shelter & Overnight Service Usage page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"} shows only its most recently published date. The **Offline** column (calculated as `funded − actual`) flags beds, rooms, or spaces temporarily out of service — see the [data validation page](data-validation.html){target="_blank"} for what these are and why they matter.
@@ -297,11 +117,7 @@ validationBanner = {
       </details>
     </div>`
   }
-  // ── City-vs-BonQuery banner hidden ────────────────────────────────────────
-  // Bridging & Triage (29 ppl) and known capacity differences cause the
-  // current validator to always fail. Re-enable after the capacity
-  // reconciliation analysis so we can show a clean ✓ / * / status that
-  // distinguishes documented structural differences from genuine discrepancies.
+
   return html``
 }
 ```
@@ -377,9 +193,6 @@ function summaryHeader() {
 dailyTable = {
   const s = (key) => dayRows.find(r => r.key === key)
 
-  // Two rows the City shows at the top of the summary section.
-  // "Total People Accommodated" = our All Shelter total (Bridging & Triage excluded).
-  // "Bridging & Triage" is not published to CKAN open data — shown greyed.
   const allShelterInd = s("all_shelter") ? s("all_shelter").ind : null
   const totalAccomRow = `<tr style="background:#e8edf5;font-weight:600">
     <td style="padding:5px 10px">Total People Accommodated †</td>
@@ -446,35 +259,3 @@ This table reproduces the City of Toronto's Daily Shelter & Overnight Service Us
 Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca).
 
 BonQuery's aggregated data is available for download from 2021 to present: [JSON](https://bonquery.ca/data/daily_occupancy.json) · [CSV](https://bonquery.ca/data/daily_occupancy.csv)
-
-:::
-
----
-
-::: {.callout-note collapse="true"}
-## Historical Occupancy Spike Detection
-
-These spike-detection charts flag days when Toronto's shelter system accommodated a lot more people than its seasonal pattern and long-run trend would've predicted, not merely days that happened to be busy. Spikes are identified by removing two predictable forces (seasonality and long-run trend) with Seasonal-Trend decomposition using LOESS (STL) and measuring what is left over.
-
-The amber band marks moderate anomalies (2 MAD-SD above the expected value), the red band marks pronounced ones (3 MAD-SD). The analysis counts individuals accommodated rather than the occupancy rate, and both thresholds are calibrated against the system's own behaviour over the preceding two years. It is retrospective and descriptive, not predictive. Full methodology and caveats are on the linked page.
-
-::: {.mobile-dashboard-links}
-- [Historical Occupancy Spike Detection →](spike-detection.html)
-:::
-
-::: {.desktop-dashboard-tabs}
-
-[Open in a new tab →](spike-detection.html){target="_blank"}
-
-<iframe
-  src="spike-detection.html"
-  width="100%"
-  height="2800"
-  style="border: 1px solid #ddd; border-radius: 4px;"
-  loading="lazy">
-</iframe>
-
-:::
-
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Analysis and charts by BonQuery.
-:::

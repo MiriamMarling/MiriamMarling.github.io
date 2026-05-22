@@ -286,7 +286,7 @@ latestDate = allDates[0]
 //   reconciled City vs BonQuery comparisons after the capacity analysis lands.
 ```
 
-BonQuery's version of this table adds one feature the City's page doesn't have: use the date selector below to browse any date from January 2021 to the present. The City's [Daily Shelter & Overnight Service Usage page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"} shows only its most recently published date, which doesn't always update on schedule.
+BonQuery's version of this table adds two features the City's page doesn't have. The **date selector** below lets you browse any date from January 2021 to the present; the City's [Daily Shelter & Overnight Service Usage page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"} shows only its most recently published date. The **Offline** column (calculated as `funded − actual`) flags beds, rooms, or spaces temporarily out of service — see the [data validation page](projects/data-validation.html){target="_blank"} for what these are and why they matter.
 
 ## Daily Occupancy & Capacity for ${fmtDate(selectedDate)}
 
@@ -442,6 +442,16 @@ dayRows = daily_occ.filter(r => r.date === selectedDate)
 function n(v) { return v !== null && v !== undefined ? v.toLocaleString() : "—" }
 function pct(v) { return v !== null && v !== undefined ? v.toFixed(1) + "%" : "—" }
 
+function offlineCell(r) {
+  if (r.cap === null || r.cap === undefined) return `<td></td>`
+  if (r.cap_funding === null || r.cap_funding === undefined) return `<td></td>`
+  const offline = r.cap_funding - r.cap
+  if (offline <= 0) {
+    return `<td style="padding:5px 10px;text-align:right">${offline.toLocaleString()}</td>`
+  }
+  return `<td style="padding:5px 10px;text-align:right;color:#cc0000;font-weight:700">${offline.toLocaleString()}</td>`
+}
+
 function tableRow(r, col1Label) {
   const pad = (r.indent ?? 0) * 16
   const bold = r.is_total ? "font-weight:600" : ""
@@ -450,7 +460,7 @@ function tableRow(r, col1Label) {
     return `<tr style="background:${bg}">
       <td style="padding:5px 10px 5px ${pad}px;${bold}">${r.label}</td>
       <td style="padding:5px 10px;text-align:right;${bold}">${n(r.ind)}</td>
-      <td></td><td></td><td></td><td></td>
+      <td></td><td></td><td></td><td></td><td></td>
     </tr>`
   }
   return `<tr style="background:${bg}">
@@ -459,17 +469,19 @@ function tableRow(r, col1Label) {
     <td style="padding:5px 10px;text-align:right">${n(r.occ)}</td>
     <td style="padding:5px 10px;text-align:right">${n(r.unocc)}</td>
     <td style="padding:5px 10px;text-align:right">${n(r.cap)}</td>
+    ${offlineCell(r)}
     <td style="padding:5px 10px;text-align:right">${pct(r.rate)}</td>
   </tr>`
 }
 
-function sectionHeader(label, col1, col2, col3) {
+function sectionHeader(label, col1, col2, col3, col4) {
   return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
     <td style="padding:7px 10px">${label}</td>
     <td style="padding:7px 10px;text-align:right">Individuals</td>
     <td style="padding:7px 10px;text-align:right">${col1}</td>
     <td style="padding:7px 10px;text-align:right">${col2}</td>
     <td style="padding:7px 10px;text-align:right">${col3}</td>
+    <td style="padding:7px 10px;text-align:right">${col4}</td>
     <td style="padding:7px 10px;text-align:right">Occupancy Rate</td>
   </tr>`
 }
@@ -478,7 +490,7 @@ function summaryHeader() {
   return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
     <td style="padding:7px 10px">Occupancy Summary</td>
     <td style="padding:7px 10px;text-align:right">Individuals</td>
-    <td colspan="4"></td>
+    <td colspan="5"></td>
   </tr>`
 }
 
@@ -489,12 +501,12 @@ dailyTable = {
   const totalAccomRow = `<tr style="background:#e8edf5;font-weight:600">
     <td style="padding:5px 10px">Total People Accommodated †</td>
     <td style="padding:5px 10px;text-align:right">${n(allShelterInd)}</td>
-    <td></td><td></td><td></td><td></td>
+    <td></td><td></td><td></td><td></td><td></td>
   </tr>`
   const bridgingRow = `<tr style="background:#f5f5f5;color:#999;font-style:italic">
     <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
     <td style="padding:5px 10px;text-align:right;font-size:0.85em">Not published to open data</td>
-    <td></td><td></td><td></td><td></td>
+    <td></td><td></td><td></td><td></td><td></td>
   </tr>`
 
   const summaryKeys = ["all_shelter","room_based","singles_sector","singles_shelter","allied_summ","temp_summ","iso_summ"]
@@ -511,13 +523,13 @@ dailyTable = {
       ${bridgingRow}
       ${summaryKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
 
-      ${sectionHeader("Shelter Programs, Room-Based", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity")}
+      ${sectionHeader("Shelter Programs, Room-Based", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity", "Offline Rooms")}
       ${roomKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
 
-      ${sectionHeader("Shelter Programs, Bed-Based", "Occupied Beds", "Unoccupied Beds", "Actual Bed Capacity")}
+      ${sectionHeader("Shelter Programs, Bed-Based", "Occupied Beds", "Unoccupied Beds", "Actual Bed Capacity", "Offline Beds")}
       ${bedKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
 
-      ${sectionHeader("Allied Services", "Occupied Spaces", "Unoccupied Spaces", "Actual Space Capacity")}
+      ${sectionHeader("Allied Services", "Occupied Spaces", "Unoccupied Spaces", "Actual Space Capacity", "Offline Spaces")}
       ${alliedKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
 
       <tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
@@ -526,14 +538,15 @@ dailyTable = {
         <td style="padding:7px 10px;text-align:right">Occupied Beds/Spaces</td>
         <td style="padding:7px 10px;text-align:right">Unoccupied</td>
         <td style="padding:7px 10px;text-align:right">Actual Capacity</td>
+        <td style="padding:7px 10px;text-align:right">Offline Beds/Spaces</td>
         <td style="padding:7px 10px;text-align:right">Occupancy Rate</td>
       </tr>
       ${s("temp_resp") ? tableRow(s("temp_resp")) : ""}
 
-      ${sectionHeader("Temporary Programs, Room/Unit-Based", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity")}
+      ${sectionHeader("Temporary Programs, Room/Unit-Based", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity", "Offline Rooms")}
       ${s("hotels") ? tableRow(s("hotels")) : ""}
 
-      ${sectionHeader("Temporary Isolation/Recovery Programs", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity")}
+      ${sectionHeader("Temporary Isolation/Recovery Programs", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity", "Offline Rooms")}
       ${s("iso") ? tableRow(s("iso")) : ""}
     </table>
     <p style="font-size:0.8em;color:#666;margin:4px 0 0">
@@ -545,7 +558,7 @@ dailyTable = {
 }
 ```
 
-This table reproduces the City of Toronto's Daily Shelter & Overnight Service Usage report using the City's open data. Two known differences from the City's live dashboard: it does not include Bridging & Triage programs, which are not published to open data (29 people on May 14, 2026); and for emergency programs, "Actual Bed Capacity" counts beds currently available for use and excludes beds temporarily offline, which the City's live dashboard includes. Occupancy and individual counts match the City's figures exactly. A full side-by-side comparison is available on the [data validation page](projects/data-validation.html){target="_blank"}.
+This table reproduces the City of Toronto's Daily Shelter & Overnight Service Usage report using the City's open data. It does not include Bridging & Triage programs, which are not published to open data. Some figures shown on the City's live dashboard cannot be reproduced from the CKAN export. A full side-by-side comparison is available on the [data validation page](projects/data-validation.html){target="_blank"}.
 
 Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca).
 
