@@ -1,6 +1,6 @@
 # BonQuery
 
-BonQuery breathes life into humanitarian-related data — turning numbers that sit unread on government open-data portals into clear, useful analysis for the people who can do something about the issues behind them.
+BonQuery breathes life into humanitarian-related data — turning numbers that sit unread on government open-data portals into clear, useful analyses for the people who can do something about the issues behind them.
 
 We use publicly available data to investigate urgent humanitarian issues, starting with Toronto’s shelter system. The work is open, reproducible, and built for journalists, researchers, advocates, policymakers, and anyone paying attention.
 
