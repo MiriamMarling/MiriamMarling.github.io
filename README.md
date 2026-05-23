@@ -7,4 +7,6 @@ We use publicly available data to investigate urgent humanitarian issues, starti
 Live site: https://bonquery.ca  
 About: https://bonquery.ca/about.html
 
+**Note:** This repository contains only the front-end website files, aggregated chart data, and rendering configurations for BonQuery.ca. The raw data pipelines, backend processing, and primary analysis scripts are currently kept in a separate, private repository
+
 Website built with the help of [Claude Code](https://claude.com/product/claude-code).
