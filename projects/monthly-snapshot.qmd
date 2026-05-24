@@ -63,6 +63,18 @@ reportingMonthOptions = data
   })
 ```
 
+Toronto publishes monthly data on its taxed shelter system, and the
+City's own dashboards do a good job presenting the headline numbers.
+This section goes a step further: interactive filters on every chart, a
+clear note on what the data captures and what it leaves out, and
+findings that usually stay buried in technical documentation.
+
+The data covers every month from January 2018 to the most recent
+published month, sourced directly from the [City of Toronto's Shelter
+System Flow dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/).
+New data loads automatically each month, usually around the 15th,
+after the City publishes the prior month's figures.
+
 ```{ojs}
 //| echo: false
 viewof reportingDate = Inputs.select(reportingMonthOptions, {
@@ -94,7 +106,7 @@ reportingMonth = +reportingDate.value.slice(5, 7)
 ```{ojs}
 //| echo: false
 html`<div class="kpi-hero">
-  <div class="kpi-label">People Actively Homeless</div>
+  <div class="kpi-label">People actively homeless in the last 3 months</div>
   <div class="kpi-value">${activelyHomeless.toLocaleString()}</div>
 </div>`
 ```
@@ -458,3 +470,64 @@ genderSnapMax = d3.max(genderSnapshotData, d => d.pct) || 1
 ---
 
 *This dashboard is also available as an [Oracle APEX dashboard](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/monthly-snapshot){target="_blank"} built on the same database — useful if you want to see how the same data renders in Oracle's native low-code platform, or if you're curious about the SQL and APEX configuration behind it.*
+
+### How to read this data
+
+These numbers reflect the shelter *system*, not all homelessness. The
+data captures people who used a City-funded overnight service at
+least once in the past three months. It doesn't include people
+sleeping outside, in shelters that aren't City-funded, or staying
+temporarily with friends or family. The City [estimates](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/)
+that roughly 18% of people experiencing absolute homelessness in
+Toronto aren't reflected in these numbers. Trends here reflect
+changes in the shelter system specifically — not in total homelessness
+in the city.
+
+### Key terms
+
+The dashboards use a few terms that have specific meanings worth
+knowing before you read the charts.
+
+**Actively homeless.** A person who has used City-funded shelter
+services at least once in the past three months and hasn't been
+recorded as moving to permanent housing. This is the headline number
+on every dashboard. Because it looks back three months, the count
+includes people who may not be in shelter on any given night.
+
+**Chronic homelessness.** The federal definition: someone who has
+spent at least 180 nights in shelter over the past year, or at least
+546 nights over the past three years. A person can meet this
+definition while still actively in the shelter system — they don't
+need to have left and returned.
+
+**Inflow categories** (people entering the shelter system this month):
+
+- **Newly Identified.** People entering the shelter system for the
+  first time. One exception for the "Chronic" group: in that row,
+  this column counts people who became chronically homeless during
+  the reporting month, regardless of how long they'd already been
+  using the shelter system.
+- **Returned from Permanent Housing.** People who previously moved
+  to permanent housing and have come back to the shelter system.
+- **Returned to Shelter.** People who were in the system, didn't
+  use it for at least three months, and have now returned.
+
+**Outflow categories** (people leaving the shelter system this month):
+
+- **Moved to Permanent Housing.** People who left the shelter system
+  for permanent housing.
+- **Became Inactive.** People who haven't used shelter services in
+  the past three months, including the reporting month.
+
+Definitions are based on the [City of Toronto's Shelter System Flow
+Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/).
+
+[Read all data findings →](about-the-data.html)
+
+### Data source
+
+All data comes from the City of Toronto's [Shelter System Flow
+dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/),
+published monthly on the City's open data portal.
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).

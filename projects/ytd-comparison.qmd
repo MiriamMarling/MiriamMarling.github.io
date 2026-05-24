@@ -1,16 +1,16 @@
 ---
 title: "YTD Comparison"
 subtitle: "Toronto Shelter System — year-to-date cumulative trends"
-description: "Year-to-date comparison of Toronto's shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates."
+description: "Year-to-date (YTD) comparison of Toronto's shelter system — see whether the YTD selected in the dropdown is tracking above or below prior years on the inflow/outflow categories: Newly Identified and Moved to Permanent Housing."
 author: "Miriam Marling"
 open-graph:
   title: "YTD Comparison — Toronto Shelter System"
-  description: "Year-to-date comparison of Toronto's shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates."
+  description: "Year-to-date (YTD) comparison of Toronto's shelter system — see whether the YTD selected in the dropdown is tracking above or below prior years on the inflow/outflow categories: Newly Identified and Moved to Permanent Housing."
   site_name: "BonQuery — Data for the Greater Good"
 twitter-card:
   card-style: summary
   title: "YTD Comparison — Toronto Shelter System"
-  description: "Year-to-date comparison of Toronto's shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates."
+  description: "Year-to-date (YTD) comparison of Toronto's shelter system — see whether the YTD selected in the dropdown is tracking above or below prior years on the inflow/outflow categories: Newly Identified and Moved to Permanent Housing."
 format:
   html:
     page-layout: full
@@ -175,3 +175,31 @@ Plot.plot({
 ---
 
 *This dashboard is also available as an [Oracle APEX dashboard](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/ytd-comparison){target="_blank"} built on the same database — useful if you want to see how the same data renders in Oracle's native low-code platform, or if you're curious about the SQL and APEX configuration behind it.*
+
+### Key terms
+
+**Inflow categories** (people entering the shelter system this month):
+
+- **Newly Identified.** People entering the shelter system for the
+  first time. One exception for the "Chronic" group: in that row,
+  this column counts people who became chronically homeless during
+  the reporting month, regardless of how long they'd already been
+  using the shelter system.
+
+**Outflow categories** (people leaving the shelter system this month):
+
+- **Moved to Permanent Housing.** People who left the shelter system
+  for permanent housing.
+
+Definitions are based on the [City of Toronto's Shelter System Flow
+Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/).
+
+[Read all data findings →](about-the-data.html)
+
+### Data source
+
+All data comes from the City of Toronto's [Shelter System Flow
+dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/),
+published monthly on the City's open data portal.
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
