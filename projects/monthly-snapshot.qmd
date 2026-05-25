@@ -23,9 +23,10 @@ format:
         .cell-output-display svg .tick text { font-size: 13px; }
         /* KPI card layout */
         .kpi-hero { text-align: center; padding: 1.5rem 0 1rem; }
+        .kpi-hero .kpi-box { display: inline-block; background: #E8E8E8; padding: 1rem 2.5rem; border-radius: 0.5rem; max-width: 100%; }
         .kpi-hero .kpi-label { font-size: 0.9rem; font-weight: 500; color: #666; margin-bottom: 0.5rem; }
-        .kpi-hero .kpi-value { display: inline-block; font-size: 2.5rem; font-weight: 700;
-          color: #333; background: #E8E8E8; padding: 1rem 2.5rem; border-radius: 0.5rem; }
+        .kpi-hero .kpi-value { font-size: 2.5rem; font-weight: 700; color: #333; }
+        @media (min-width: 769px) { .kpi-hero .kpi-label { white-space: nowrap; } }
         .kpi-row { display: flex; gap: 1.5rem; margin: 0.5rem 0 1.5rem; flex-wrap: wrap; }
         .kpi-card { flex: 1; min-width: 180px; border-radius: 0.5rem; padding: 1.25rem 1.5rem; text-align: center; }
         .kpi-card .kpi-label { font-size: 0.85rem; font-weight: 500; color: #555; margin-bottom: 0.4rem; }
@@ -106,8 +107,10 @@ reportingMonth = +reportingDate.value.slice(5, 7)
 ```{ojs}
 //| echo: false
 html`<div class="kpi-hero">
-  <div class="kpi-label">People actively homeless in the last 3 months</div>
-  <div class="kpi-value">${activelyHomeless.toLocaleString()}</div>
+  <div class="kpi-box">
+    <div class="kpi-label">People actively homeless in the last 3 months</div>
+    <div class="kpi-value">${activelyHomeless.toLocaleString()}</div>
+  </div>
 </div>`
 ```
 
