@@ -1,0 +1,69 @@
+# PR render check — verifies that quarto render succeeds on pull requests
+# targeting main before any code reaches the published site.
+#
+# This workflow is a strict subset of refresh-daily-occupancy.yml: it replicates
+# the environment setup and data-generation steps, then runs quarto render and
+# stops. It does NOT publish to gh-pages, commit anything, send email, or fire
+# repository_dispatch events.
+#
+# Relationship to refresh-daily-occupancy.yml:
+#   The setup steps (Python, pip install, generate_data.py, generate_daily_occupancy.py,
+#   quarto-actions/setup) are duplicated here rather than extracted into a shared
+#   composite action, to avoid any risk of modifying the production pipeline.
+#   If the production workflow's setup steps change, update this file to match.
+#
+# Author: Miriam Marling <miriam@BonQuery.ca>
+
+name: PR render check
+
+on:
+  pull_request:
+    branches: [main]       # Run on every PR targeting main
+  workflow_dispatch:       # Allow manual test runs from the Actions tab
+
+# Read-only — this workflow never pushes or deploys anything.
+permissions:
+  contents: read
+
+jobs:
+  render-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install oracledb requests beautifulsoup4
+
+      # Generates data/shelter_flow.json — required by monthly-snapshot.qmd,
+      # ytd-comparison.qmd, and historical-trends.qmd via FileAttachment.
+      # Secrets are available for same-repo PRs; not available for fork PRs
+      # (but this is a solo project — all PRs come from the same repo).
+      - name: Generate shelter flow data (OCI)
+        env:
+          OCI_DSN: ${{ secrets.OCI_DSN }}
+          OCI_DB_USER: ${{ secrets.OCI_DB_USER }}
+          OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
+        run: python scripts/generate_data.py
+
+      # Generates data/daily_occupancy.json — required by every daily-occupancy
+      # page via FileAttachment. No secrets needed; CKAN is a public API.
+      - name: Generate daily occupancy data (CKAN)
+        run: python scripts/generate_daily_occupancy.py
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      # Render the full site to _site/. Fails (exit ≠ 0) on broken .qmd
+      # cross-references, missing FileAttachment targets, OJS syntax errors,
+      # or malformed Observable Plot code. Does not deploy anything.
+      - name: Render site
+        run: quarto render
