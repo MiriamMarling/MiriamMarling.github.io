@@ -19,8 +19,10 @@ name: Refresh daily occupancy and publish
 
 on:
   schedule:
-    - cron: '0 9 * * *'   # 09:00 UTC (5:00 AM EDT / 4:00 AM EST) — 1 hr after CKAN data drop
-    - cron: '0 11 * * *'  # 11:00 UTC (7:00 AM EDT / 6:00 AM EST) — fallback if first run misses
+    - cron: '0 10 * * *'  # 10:00 UTC (6:00 AM EDT / 5:00 AM EST) — primary, ~2 hrs after CKAN data drop
+    - cron: '0 12 * * *'  # 12:00 UTC (8:00 AM EDT / 7:00 AM EST) — fallback if first run misses
+    - cron: '0 14 * * *'  # 14:00 UTC (10:00 AM EDT / 9:00 AM EST) — late-publish fallback
+    - cron: '0 16 * * *'  # 16:00 UTC (12:00 PM EDT / 11:00 AM EST) — very-late-publish fallback
   workflow_dispatch:       # Allow manual triggering from the Actions tab
   push:
     branches: [main]       # Every push to main rebuilds and republishes
@@ -255,8 +257,20 @@ jobs:
           fi
           git push origin main
 
-      # spike_detection.json is committed to the repo (see .gitignore exception).
-      # Re-run analysis/R/generate_spike_json.R locally and commit to refresh it.
+      # Notify the sibling repo to regenerate spike_detection.json immediately.
+      # The refresh-spike-detection.yml workflow in toronto-shelter-analytics
+      # listens for this event and runs generate_spike_json.R only when needed.
+      # Its built-in staleness check exits fast if the JSON is already current.
+      - name: Notify spike-detection workflow (sibling repo)
+        if: env.NEW_DATA == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.SPIKE_DISPATCH_PAT }}
+        run: |
+          gh api -X POST \
+            repos/MiriamMarling/toronto-shelter-analytics/dispatches \
+            -f event_type=daily-occupancy-updated \
+            -f "client_payload[latest_date]=${{ env.LATEST_DATE }}" \
+            -f "client_payload[reason]=${{ env.REBUILD_REASON }}"
 
       - name: Set up Quarto
         if: env.NEW_DATA == 'true' || github.event_name != 'schedule'
