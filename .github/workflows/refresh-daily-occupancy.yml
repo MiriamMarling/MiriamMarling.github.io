@@ -255,6 +255,7 @@ jobs:
           else
             git commit -m "data: daily occupancy revised retroactively (latest date still ${{ env.LATEST_DATE }}) [skip ci]"
           fi
+          git pull --rebase origin main  # sync if a concurrent run already pushed
           git push origin main
 
       # Notify the sibling repo to regenerate spike_detection.json immediately.
