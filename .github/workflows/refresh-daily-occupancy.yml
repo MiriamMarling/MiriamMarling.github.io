@@ -149,7 +149,7 @@ jobs:
 
       - name: Email notification — CKAN retroactive revision detected
         if: steps.drift_check.outputs.has_revision == 'true'
-        uses: dawidd6/action-send-mail@v4
+        uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.mail.me.com
           server_port: 587
@@ -286,7 +286,7 @@ jobs:
 
       - name: Email notification — workflow failed
         if: failure()
-        uses: dawidd6/action-send-mail@v4
+        uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.mail.me.com
           server_port: 587
@@ -306,7 +306,7 @@ jobs:
 
       - name: Email notification — new data published
         if: success() && env.NEW_DATA == 'true'
-        uses: dawidd6/action-send-mail@v4
+        uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.mail.me.com
           server_port: 587
