@@ -524,6 +524,39 @@ The amber band marks moderate anomalies (2 MAD-SD above the expected value), the
 Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Analysis and charts by BonQuery.
 :::
 
+---
+
+::: {.callout-note collapse="true"}
+## Shelter System Requests for Referrals
+
+Monthly average daily calls to Toronto's 24/7 shelter referral line — calls referred
+to a shelter space, unmatched individual callers, and total calls handled — with
+interactive date controls. Replicates and extends the City's
+[Shelter System Requests for Referrals](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/)
+page. Data sourced from two separate CKAN resources (call wrap-up codes and service
+queue); see the page for important caveats on combining the two series.
+
+::: {.mobile-dashboard-links}
+- [Shelter System Requests for Referrals →](projects/central-intake.html)
+:::
+
+::: {.desktop-dashboard-tabs}
+
+[Open in a new tab →](projects/central-intake.html){target="_blank"}
+
+<iframe
+  src="projects/central-intake.html"
+  width="100%"
+  height="4200"
+  style="border: 1px solid #ddd; border-radius: 4px;"
+  loading="lazy">
+</iframe>
+
+:::
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Central Intake Calls](https://open.toronto.ca/dataset/central-intake-calls/). Analysis and charts by BonQuery.
+:::
+
 <!-- END SYNC -->
 
 ---

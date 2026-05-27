@@ -1,0 +1,430 @@
+---
+title: "Shelter System Requests for Referrals"
+subtitle: "Toronto Central Intake Calls — monthly averages"
+description: "Monthly average daily calls to Toronto's Central Intake shelter referral line, sourced from the City of Toronto's open data portal."
+author: "Miriam Marling"
+open-graph:
+  title: "Shelter System Requests for Referrals — Toronto Central Intake"
+  description: "Monthly average daily calls to Toronto's Central Intake shelter referral line, sourced from the City of Toronto's open data portal."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Shelter System Requests for Referrals — Toronto Central Intake"
+  description: "Monthly average daily calls to Toronto's Central Intake shelter referral line, sourced from the City of Toronto's open data portal."
+format:
+  html:
+    page-layout: full
+    toc: false
+    include-in-header:
+      text: |
+        <style>
+        .quarto-container, .container-fluid, .container { max-width: none !important; }
+        .cell-output-display { max-width: none !important; overflow: visible !important; }
+        /* Tick labels (values along each axis) */
+        .cell-output-display svg .tick text { font-size: 13px; }
+        /* Axis labels ("Avg. daily calls" etc.) — boosted from Observable's 10px default */
+        .cell-output-display svg text:not(.tick text) { font-size: 14px; font-weight: 500; }
+        @media (min-width: 769px) { .mobile-page-nav { display: none !important; } }
+        @media (max-width: 768px) {
+          .mobile-page-nav { display: block; padding: 1rem 0; margin-top: 1.5rem;
+            border-top: 1px solid #dee2e6; }
+          .mobile-page-nav p { font-weight: 600; margin-bottom: 0.5rem; }
+        }
+        </style>
+---
+
+Toronto Central Intake is the City's 24/7 phone line connecting people in need of
+emergency shelter with available shelter spaces. When someone needs a bed, they call
+Central Intake, where staff assess the request and refer callers to available spaces
+across the shelter system. It is the primary, though not the only, referral pathway
+into Toronto's emergency shelter system. Streets to Homes outreach workers also make
+direct referrals outside of Central Intake.
+
+This page replicates three of the four charts on the City's [Shelter System Requests
+for Referrals page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/).
+The fourth — average nightly shelter occupancy — is excluded because the City's CKAN
+daily occupancy export omits Bridging and Triage programs, producing values
+systematically below the City's published figures. BonQuery publishes nightly
+occupancy separately on the [Daily Occupancy & Capacity page](/projects/daily-occupancy.html);
+a monthly estimate of the Bridging and Triage gap is on the
+[Central Intake Validation page](/projects/data-validation-central-intake.html).
+
+BonQuery's version adds interactive controls the City's static charts don't have. The
+toggle below switches between the City replication view (April 2024 onward, matching
+the City's published table) and a custom date range covering the full dataset back to
+November 2020. An optional checkbox adds ±2 standard-error bars for readers who want
+to see within-month variability — the bars represent the uncertainty around each
+monthly average given the daily variation within that month.
+
+```{ojs}
+//| echo: false
+data = FileAttachment("../data/central_intake.json").json()
+```
+
+```{ojs}
+//| echo: false
+MONTH_ABB = ["","Jan","Feb","Mar","Apr","May","Jun",
+             "Jul","Aug","Sep","Oct","Nov","Dec"]
+
+// City replication range: April 2024 onward (matches the City's published table)
+cityRange = data.monthly
+  .filter(d => d.year > 2024 || (d.year === 2024 && d.month >= 4))
+  .sort((a, b) => a.year * 100 + a.month - (b.year * 100 + b.month))
+
+// Ordered domain for city replication x-axis
+xDomain = cityRange.map(d => d.month_label)
+
+// Year-start labels only — one tick mark per calendar year, no rotation
+xYearLabels = (() => {
+  const seen = new Set()
+  const first = []
+  xDomain.forEach(l => {
+    const yr = l.slice(-4)
+    if (!seen.has(yr)) { seen.add(yr); first.push(l) }
+  })
+  return first  // ["Apr 2024", "Jan 2025", "Jan 2026"]
+})()
+
+xTickFormat = l => xYearLabels.includes(l) ? l.slice(-4) : ""
+
+// All available months for the range-selector dropdowns (full dataset)
+allMonthOpts = data.monthly
+  .map(d => ({
+    key: `${d.year}-${String(d.month).padStart(2, "0")}`,
+    label: d.month_label
+  }))
+  .sort((a, b) => a.key.localeCompare(b.key))
+```
+
+```{ojs}
+//| echo: false
+// Unified control bar — radio, range dropdowns (conditional), SE checkbox.
+// All state is exposed as controls.viewMode / .startKey / .endKey / .showSE.
+viewof controls = {
+  const jan2025 = allMonthOpts.find(o => o.key === "2025-01") ?? allMonthOpts[0]
+  const last     = allMonthOpts.at(-1)
+
+  // --- individual inputs ---
+  const modeInput = Inputs.radio(
+    ["City replication", "Custom range"],
+    {value: "City replication"}
+  )
+  const startInput = Inputs.select(allMonthOpts, {
+    label: "From",
+    format: o => o.label,
+    value: jan2025
+  })
+  const endInput = Inputs.select(allMonthOpts, {
+    label: "To",
+    format: o => o.label,
+    value: last
+  })
+  const seInput = Inputs.checkbox(
+    ["Show ±2 SE bars (for technical readers)"],
+    {value: []}   // unchecked by default
+  )
+
+  // Range dropdowns sit in a flex span; hidden until Custom range is chosen
+  const rangeSpan = html`<span style="display:none;gap:12px;align-items:flex-end">
+    ${startInput}${endInput}
+  </span>`
+
+  // Assemble the full control bar
+  const bar = html`<div style="background:#f4f6f8;border:1px solid #dee2e6;
+      border-radius:6px;padding:10px 16px;margin-bottom:16px;
+      display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap">
+    ${modeInput}
+    ${rangeSpan}
+    <div>
+      ${seInput}
+      <small style="color:#666;font-size:0.82em;display:block;margin-top:2px;max-width:340px">
+        Standard error of the monthly mean, computed from daily values within
+        each month. ±2 SE approximates a 95% confidence band.
+      </small>
+    </div>
+  </div>`
+
+  // Compute current state as a plain object
+  const getValue = () => ({
+    viewMode: modeInput.value,
+    startKey: startInput.value.key,
+    endKey:   endInput.value.key,
+    showSE:   seInput.value.length > 0
+  })
+
+  bar.value = getValue()
+
+  // Re-evaluate on any input change; toggle range visibility on mode change
+  const fire = () => {
+    rangeSpan.style.display =
+      modeInput.value === "Custom range" ? "inline-flex" : "none"
+    bar.value = getValue()
+    bar.dispatchEvent(new Event("input", {bubbles: true}))
+  }
+
+  modeInput.addEventListener("input",  fire)
+  startInput.addEventListener("input", fire)
+  endInput.addEventListener("input",   fire)
+  seInput.addEventListener("input",    fire)
+
+  return bar
+}
+```
+
+```{ojs}
+//| echo: false
+// Reactive data + axis config — recalculates whenever controls changes.
+
+// Filter the monthly data to the active window
+activeRange = {
+  if (controls.viewMode === "City replication") return cityRange
+
+  const {startKey, endKey} = controls
+  if (startKey > endKey) return []   // guard: start after end
+
+  return data.monthly
+    .filter(d => {
+      const k = `${d.year}-${String(d.month).padStart(2, "0")}`
+      return k >= startKey && k <= endKey
+    })
+    .sort((a, b) => a.year * 100 + a.month - (b.year * 100 + b.month))
+}
+
+// Ordered x domain for the current view
+activeDomain = activeRange.map(d => d.month_label)
+
+// Year-start ticks for the active range — first occurrence of each year
+activeYearTicks = (() => {
+  const seen = new Set(), first = []
+  activeDomain.forEach(l => {
+    const yr = l.slice(-4)
+    if (!seen.has(yr)) { seen.add(yr); first.push(l) }
+  })
+  return first
+})()
+
+// x-axis: year-only ticks in both modes, no rotation.
+// Avoids label overlap regardless of range width or screen size.
+activeX = controls.viewMode === "City replication"
+  ? {
+      domain:     xDomain,
+      ticks:      xYearLabels,
+      tickSize:   10,
+      tickFormat: xTickFormat,
+      tickRotate: 0,
+      label:      null
+    }
+  : {
+      domain:     activeDomain,
+      ticks:      activeYearTicks,
+      tickSize:   10,
+      tickFormat: l => l.slice(-4),   // "Jan 2025" -> "2025"
+      tickRotate: 0,
+      label:      null
+    }
+
+activeMarginBottom = 40   // no rotated labels in either mode
+```
+
+<p style="font-size:0.88em;color:#555;margin:0 0 4px">
+Tap or hover any bar to see the month, year, and average value.
+</p>
+
+```{ojs}
+//| echo: false
+// Chart 1 — Calls referred to a shelter space (wrap-up Code 1A)
+{
+  if (activeRange.length === 0)
+    return html`<p style="padding:1rem;color:#888;font-style:italic">
+      ⚠ "From" month must be before "To" month.</p>`
+
+  return Plot.plot({
+    title: "Calls Referred to a Shelter Space",
+    width,
+    marginTop: 40,
+    marginBottom: activeMarginBottom,
+    marginLeft: 55,
+    x: activeX,
+    y: {grid: true, label: "Avg. daily calls"},
+    marks: [
+      Plot.barY(activeRange, {
+        x: "month_label",
+        y: "referred_mean",
+        fill: "#5BA75B",
+        tip: true
+      }),
+      // Capless ±2 SE error bars — only rendered when SE toggle is on
+      ...(controls.showSE ? [Plot.ruleX(activeRange, {
+        x:           "month_label",
+        y1:          d => d.referred_se != null
+                       ? d.referred_mean - 2 * d.referred_se : null,
+        y2:          d => d.referred_se != null
+                       ? d.referred_mean + 2 * d.referred_se : null,
+        stroke:      "#333",
+        strokeWidth: 1.5
+      })] : [])
+    ]
+  })
+}
+```
+
+```{ojs}
+//| echo: false
+// Chart 2 — Unmatched individual callers (Service Queue data)
+{
+  if (activeRange.length === 0)
+    return html`<p style="padding:1rem;color:#888;font-style:italic">
+      ⚠ "From" month must be before "To" month.</p>`
+
+  return Plot.plot({
+    title: "Unmatched Individual Callers",
+    width,
+    marginTop: 40,
+    marginBottom: activeMarginBottom,
+    marginLeft: 55,
+    x: activeX,
+    y: {grid: true, label: "Avg. daily callers"},
+    marks: [
+      Plot.barY(activeRange, {
+        x: "month_label",
+        y: "unmatched_mean",
+        fill: "#FF2D55",
+        tip: true
+      }),
+      ...(controls.showSE ? [Plot.ruleX(activeRange, {
+        x:           "month_label",
+        y1:          d => d.unmatched_se != null
+                       ? d.unmatched_mean - 2 * d.unmatched_se : null,
+        y2:          d => d.unmatched_se != null
+                       ? d.unmatched_mean + 2 * d.unmatched_se : null,
+        stroke:      "#333",
+        strokeWidth: 1.5
+      })] : [])
+    ]
+  })
+}
+```
+
+```{ojs}
+//| echo: false
+// Chart 3 — Total calls handled (all wrap-up codes combined)
+{
+  if (activeRange.length === 0)
+    return html`<p style="padding:1rem;color:#888;font-style:italic">
+      ⚠ "From" month must be before "To" month.</p>`
+
+  return Plot.plot({
+    title: "Calls Handled",
+    width,
+    marginTop: 40,
+    marginBottom: activeMarginBottom,
+    marginLeft: 55,
+    x: activeX,
+    y: {grid: true, label: "Avg. daily calls"},
+    marks: [
+      Plot.barY(activeRange, {
+        x: "month_label",
+        y: "handled_mean",
+        fill: "#4A90D9",
+        tip: true
+      }),
+      ...(controls.showSE ? [Plot.ruleX(activeRange, {
+        x:           "month_label",
+        y1:          d => d.handled_se != null
+                       ? d.handled_mean - 2 * d.handled_se : null,
+        y2:          d => d.handled_se != null
+                       ? d.handled_mean + 2 * d.handled_se : null,
+        stroke:      "#333",
+        strokeWidth: 1.5
+      })] : [])
+    ]
+  })
+}
+```
+
+The table below shows the same monthly averages as the City's published table on the
+Shelter System Requests for Referrals page, computed independently by BonQuery from
+the daily values in the City's CKAN open data export.
+
+```{ojs}
+//| echo: false
+// Data table — always shows the full City replication window (cityRange),
+// regardless of the custom range selection above.
+
+// Shared style builders
+thStyle = (extra = "") =>
+  `border-bottom:2px solid #ccc;padding:6px 10px;text-align:center;` +
+  `background:#e8edf5;${extra}`
+
+html`<table style="width:100%;border-collapse:collapse;font-size:0.9em">
+  <thead>
+    <tr>
+      <th style="${thStyle()}">Year</th>
+      <th style="${thStyle()}">Month</th>
+      <th colspan="3" style="${thStyle()}">Average daily</th>
+    </tr>
+    <tr>
+      <th style="${thStyle()}"></th>
+      <th style="${thStyle()}"></th>
+      <th style="${thStyle()}">Calls referred to a shelter space [1]</th>
+      <th style="${thStyle()}">Unmatched individual callers [2]</th>
+      <th style="${thStyle()}">Calls handled [3]</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${cityRange.map((d, i) => {
+      // Jan rows mark a new year — same shade as headers; bold
+      const bg = d.month === 1
+        ? "#e8edf5"
+        : (i % 2 === 0 ? "#fff" : "#f8f9fa")
+      const fw = d.month === 1 ? "font-weight:600;" : ""
+      const td = () =>
+        `padding:5px 10px;border-bottom:1px solid #eee;` +
+        `text-align:center;background:${bg};${fw}`
+      return html`<tr>
+        <td style="${td()}">${d.year}</td>
+        <td style="${td()}">${MONTH_ABB[d.month]}</td>
+        <td style="${td()}">
+          ${d.referred_mean  != null ? d.referred_mean.toFixed(1)              : "—"}
+        </td>
+        <td style="${td()}">
+          ${d.unmatched_mean != null ? d.unmatched_mean.toFixed(1)             : "—"}
+        </td>
+        <td style="${td()}">
+          ${d.handled_mean   != null ? Math.round(d.handled_mean).toLocaleString() : "—"}
+        </td>
+      </tr>`
+    })}
+  </tbody>
+</table>`
+```
+
+[1] Source: Central Intake Call Wrap-Up Codes — Code 1A (Referral to a Sleeping/Resting Space).\
+[2] Source: Central Intake Service Queue Data — Unmatched callers.\
+[3] Source: Central Intake Call Wrap-Up Codes — Total calls handled.
+
+### Notes on the Data
+
+This page draws on two resources from the City's [Central Intake Calls open data
+package](https://open.toronto.ca/dataset/central-intake-calls/). The Call Wrap-Up 
+Codes dataset is a call-centre record tracking daily call outcomes by type: each
+call answered by a caseworker is assigned one of 13 wrap-up codes. The chart titled 
+"Calls referred to a shelter space" uses Code 1A (referral to a sleeping or resting 
+space); "Calls handled" uses the total calls handled field. The Service Queue dataset 
+comes from Toronto's Shelter Management Information System (SMIS) and records how many 
+unique individuals or couples remain unmatched to a shelter bed at the end of each day 
+(4 a.m.). Because the two datasets come from different source systems, track different 
+units (calls vs. individuals), and cover different populations, the City's own 
+documentation states they cannot be combined.
+
+### Data source
+
+All data comes from the City of Toronto's [Central Intake
+Calls](https://open.toronto.ca/dataset/central-intake-calls/)
+dataset, published monthly on the City's open data portal.
+Monthly averages are computed by BonQuery from the daily values
+in the dataset's two resources: the Call Wrap-Up Codes Data and
+the Central Intake Service Queue Data.
+
+Contains information licensed under the [Open Government
+Licence – Toronto](https://open.toronto.ca/open-data-licence/).

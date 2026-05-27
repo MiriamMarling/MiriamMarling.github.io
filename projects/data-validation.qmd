@@ -1,6 +1,6 @@
 ---
-title: "Validating BonQuery's Data Against the City of Toronto"
-description: "A transparency check comparing BonQuery's Toronto shelter occupancy figures against the City of Toronto's live dashboard, with a full account of known data differences."
+title: "Daily Occupancy & Capacity Data Validation"
+subtitle: "A transparency check comparing BonQuery's Toronto shelter occupancy figures against the City of Toronto's live dashboard, with a full account of known data differences."
 author: "Miriam Marling"
 open-graph:
   title: "Validating BonQuery's Data Against the City of Toronto"

@@ -1,0 +1,299 @@
+---
+title: "Central Intake Data Validation"
+subtitle: "BonQuery computed values vs. City of Toronto published figures"
+description: "Validation of BonQuery's Central Intake call statistics against the City of Toronto's published Shelter System Requests for Referrals table, plus a monthly estimate of the Bridging and Triage population absent from the CKAN export."
+author: "Miriam Marling"
+open-graph:
+  title: "Central Intake Data Validation — BonQuery"
+  description: "Validation of BonQuery's Central Intake call statistics against the City of Toronto's published Shelter System Requests for Referrals table."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Central Intake Data Validation — BonQuery"
+  description: "Validation of BonQuery's Central Intake call statistics against the City of Toronto's published Shelter System Requests for Referrals table."
+---
+
+This page validates BonQuery's computed monthly averages for the three Central Intake
+metrics against the City of Toronto's published
+[Shelter System Requests for Referrals](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/)
+table (reference snapshot: 2026-05-25, covering April 2024 – April 2026). It also
+quantifies the monthly gap between BonQuery's CKAN-based nightly occupancy and the
+City's published figure — the gap represents the Bridging and Triage programs that
+are tracked in the City's operational system but not published to open data.
+
+---
+
+## Validation: Calls referred, Unmatched callers, Calls handled
+
+Tolerance applied: ±0.1 for Referred and Unmatched (City publishes one decimal place);
+±1 for Handled (City publishes integers).
+
+```{ojs}
+//| echo: false
+ci = FileAttachment("../data/central_intake.json").json()
+```
+
+```{ojs}
+//| echo: false
+// City's published values — source: Shelter System Requests for Referrals page,
+// snapshot 2026-05-25.  Fields: year, month, referred, unmatched, handled, occupancy.
+cityRef = [
+  {year:2024, month:4,  referred:5.7,  unmatched:224.5, handled:991,  occupancy:9734},
+  {year:2024, month:5,  referred:7.3,  unmatched:220.2, handled:993,  occupancy:9936},
+  {year:2024, month:6,  referred:5.2,  unmatched:231.1, handled:955,  occupancy:9850},
+  {year:2024, month:7,  referred:6.2,  unmatched:235.7, handled:978,  occupancy:9815},
+  {year:2024, month:8,  referred:7.3,  unmatched:233.0, handled:987,  occupancy:9713},
+  {year:2024, month:9,  referred:7.1,  unmatched:223.0, handled:936,  occupancy:9615},
+  {year:2024, month:10, referred:5.2,  unmatched:225.1, handled:929,  occupancy:9603},
+  {year:2024, month:11, referred:16.0, unmatched:191.6, handled:799,  occupancy:9623},
+  {year:2024, month:12, referred:25.9, unmatched:114.1, handled:604,  occupancy:9911},
+  {year:2025, month:1,  referred:38.3, unmatched:89.0,  handled:577,  occupancy:10228},
+  {year:2025, month:2,  referred:32.4, unmatched:101.0, handled:553,  occupancy:10150},
+  {year:2025, month:3,  referred:22.6, unmatched:135.9, handled:628,  occupancy:9778},
+  {year:2025, month:4,  referred:9.9,  unmatched:156.6, handled:708,  occupancy:9447},
+  {year:2025, month:5,  referred:12.7, unmatched:148.7, handled:614,  occupancy:9181},
+  {year:2025, month:6,  referred:15.8, unmatched:117.3, handled:509,  occupancy:9065},
+  {year:2025, month:7,  referred:22.5, unmatched:95.7,  handled:500,  occupancy:8900},
+  {year:2025, month:8,  referred:16.1, unmatched:119.8, handled:561,  occupancy:8765},
+  {year:2025, month:9,  referred:13.9, unmatched:148.5, handled:627,  occupancy:8649},
+  {year:2025, month:10, referred:12.9, unmatched:154.8, handled:653,  occupancy:8697},
+  {year:2025, month:11, referred:21.7, unmatched:122.2, handled:596,  occupancy:8742},
+  {year:2025, month:12, referred:42.4, unmatched:39.4,  handled:414,  occupancy:9035},
+  {year:2026, month:1,  referred:55.1, unmatched:30.4,  handled:440,  occupancy:9217},
+  {year:2026, month:2,  referred:39.3, unmatched:32.8,  handled:421,  occupancy:9206},
+  {year:2026, month:3,  referred:35.4, unmatched:50.5,  handled:446,  occupancy:8742},
+  {year:2026, month:4,  referred:20.0, unmatched:85.6,  handled:496,  occupancy:8391}
+]
+
+MONTH_ABB = ["","Jan","Feb","Mar","Apr","May","Jun",
+             "Jul","Aug","Sep","Oct","Nov","Dec"]
+
+// Index BonQuery monthly data by year+month for O(1) lookup
+bqIndex = {
+  const idx = new Map()
+  ci.monthly.forEach(r => idx.set(r.year * 100 + r.month, r))
+  return idx
+}
+
+// Pass/fail helpers
+passRef  = (bq, city) => bq != null && Math.abs(bq - city) <= 0.10
+passUnm  = (bq, city) => bq != null && Math.abs(bq - city) <= 0.10
+passHdl  = (bq, city) => bq != null && Math.abs(bq - city) <= 1.0
+
+// Rendered pass/fail mark
+mark = (pass, bqVal) =>
+  bqVal == null
+    ? `<span style="color:#999">—</span>`
+    : pass
+      ? `<span style="color:#1a7a4a;font-weight:700">✓</span>`
+      : `<span style="color:#cc0000;font-weight:700">✗</span>`
+
+// Assemble one row of the validation table
+function valRow(c, i) {
+  const bq  = bqIndex.get(c.year * 100 + c.month)
+  const br  = bq ? bq.referred_mean  : null
+  const bu  = bq ? bq.unmatched_mean : null
+  const bh  = bq ? bq.handled_mean   : null
+  const pr  = passRef(br, c.referred)
+  const pu  = passUnm(bu, c.unmatched)
+  const ph  = passHdl(bh, c.handled)
+
+  const bg = i % 2 === 0 ? "#fff" : "#f8f9fa"
+  const td = `padding:5px 9px;text-align:center;border-bottom:1px solid #eee`
+  const tdb = td + ";border-left:2px solid #d0d8e8"  // metric group divider in body
+
+  return html`<tr style="background:${bg}">
+    <td style="${td}">${c.year}</td>
+    <td style="${td}">${MONTH_ABB[c.month]}</td>
+    <td style="${tdb}">${br != null ? br.toFixed(1) : "—"}</td>
+    <td style="${td}">${c.referred.toFixed(1)}</td>
+    <td style="${td}">${mark(pr, br)}</td>
+    <td style="${tdb}">${bu != null ? bu.toFixed(1) : "—"}</td>
+    <td style="${td}">${c.unmatched.toFixed(1)}</td>
+    <td style="${td}">${mark(pu, bu)}</td>
+    <td style="${tdb}">${bh != null ? Math.round(bh).toLocaleString() : "—"}</td>
+    <td style="${td}">${c.handled.toLocaleString()}</td>
+    <td style="${td}">${mark(ph, bh)}</td>
+  </tr>`
+}
+
+// Count pass/fails across all 25 months
+valSummary = {
+  let ref_p=0, unm_p=0, hdl_p=0, ref_f=0, unm_f=0, hdl_f=0
+  cityRef.forEach(c => {
+    const bq = bqIndex.get(c.year * 100 + c.month)
+    const br = bq ? bq.referred_mean  : null
+    const bu = bq ? bq.unmatched_mean : null
+    const bh = bq ? bq.handled_mean   : null
+    if (br != null) { passRef(br,c.referred) ? ref_p++ : ref_f++ }
+    if (bu != null) { passUnm(bu,c.unmatched) ? unm_p++ : unm_f++ }
+    if (bh != null) { passHdl(bh,c.handled)  ? hdl_p++ : hdl_f++ }
+  })
+  return {ref_p, ref_f, unm_p, unm_f, hdl_p, hdl_f}
+}
+```
+
+```{ojs}
+//| echo: false
+// Summary counts banner — rendered before the table
+html`<p style="font-size:0.9em;margin:0 0 10px">
+  <strong>Pass / fail (25 months):</strong>
+  Referred ${valSummary.ref_p}/25 ✓
+  &nbsp;·&nbsp;
+  Unmatched ${valSummary.unm_p}/25 ✓
+  &nbsp;·&nbsp;
+  Handled ${valSummary.hdl_p}/25 ✓
+</p>`
+```
+
+```{ojs}
+//| echo: false
+// Validation table — one row per month, three metric triplets (BQ | City | ✓✗).
+// Background/color applied per-<th> to survive Quarto Bootstrap's <thead> overrides.
+{
+  const H = `background:#1a3c6b;color:#fff;font-weight:600;font-size:0.82em;padding:6px 9px;text-align:center`
+  const HB = H + ";border-left:2px solid #4a7ab5"  // metric group divider
+
+  return html`<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:0.88em">
+  <thead>
+    <tr>
+      <th style="${H}">Year</th>
+      <th style="${H}">Month</th>
+      <th style="${HB}">Referred BQ</th>
+      <th style="${H}">Referred City</th>
+      <th style="${H}"> </th>
+      <th style="${HB}">Unmatched BQ</th>
+      <th style="${H}">Unmatched City</th>
+      <th style="${H}"> </th>
+      <th style="${HB}">Handled BQ</th>
+      <th style="${H}">Handled City</th>
+      <th style="${H}"> </th>
+    </tr>
+  </thead>
+  <tbody>
+    ${cityRef.map((c, i) => valRow(c, i))}
+  </tbody>
+</table>
+</div>`
+}
+```
+
+### Failures
+
+```{ojs}
+//| echo: false
+// List only the rows that failed at least one metric
+{
+  const failures = cityRef.flatMap(c => {
+    const bq = bqIndex.get(c.year * 100 + c.month)
+    const br = bq ? bq.referred_mean  : null
+    const bu = bq ? bq.unmatched_mean : null
+    const bh = bq ? bq.handled_mean   : null
+    const out = []
+    if (br != null && !passRef(br, c.referred))
+      out.push(`${MONTH_ABB[c.month]} ${c.year} — Referred: BonQuery ${br.toFixed(1)} vs City ${c.referred.toFixed(1)} (diff ${(br - c.referred).toFixed(2)})`)
+    if (bu != null && !passUnm(bu, c.unmatched))
+      out.push(`${MONTH_ABB[c.month]} ${c.year} — Unmatched: BonQuery ${bu.toFixed(1)} vs City ${c.unmatched.toFixed(1)} (diff ${(bu - c.unmatched).toFixed(2)})`)
+    if (bh != null && !passHdl(bh, c.handled))
+      out.push(`${MONTH_ABB[c.month]} ${c.year} — Handled: BonQuery ${Math.round(bh).toLocaleString()} vs City ${c.handled.toLocaleString()} (diff ${(bh - c.handled).toFixed(1)})`)
+    return out
+  })
+
+  if (failures.length === 0)
+    return html`<p style="color:#1a7a4a">All cells pass.</p>`
+
+  return html`<ul style="font-size:0.9em">
+    ${failures.map(f => html`<li>${f}</li>`)}
+  </ul>`
+}
+```
+
+**May 2024: Total calls handled.** BonQuery's computed monthly average (976.6 calls/day)
+falls 16.4 calls/day below the City's published value (993). BonQuery's extract covers
+all 31 days with no zeros or nulls, ruling out missing data as the cause. This points
+to a scope difference in the CKAN extract for that month — possibly a program or call
+type the City includes in its published figure but which is absent from the open data
+resource. All other months match within ±0.5, consistent with the City rounding to
+integers.
+
+**Nov 2024: Unmatched callers.** BonQuery 191.4 vs City 191.6 (diff −0.2). Just
+outside the ±0.1 tolerance; likely a rounding difference in how the City computes
+its published monthly average.
+
+---
+
+## Estimated Bridging & Triage population (not in CKAN export)
+
+The City's published nightly occupancy figure includes programs tracked in its
+operational system that are not published to open data (Bridging and Triage programs).
+BonQuery's occupancy is computed from the CKAN export only. The gap below — City minus
+BonQuery — is an estimate of the Bridging and Triage population for each month. It is
+not a validation failure; it is an expected structural difference between the two data
+sources.
+
+```{ojs}
+//| echo: false
+// Occupancy gap table — City published vs BonQuery CKAN, with the gap highlighted
+{
+  const H  = `background:#1a3c6b;color:#fff;font-weight:600;font-size:0.82em;padding:6px 9px;text-align:center`
+
+  return html`<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:0.88em">
+  <thead>
+    <tr>
+      <th style="${H}">Year</th>
+      <th style="${H}">Month</th>
+      <th style="${H}">BonQuery (CKAN)</th>
+      <th style="${H}">City published</th>
+      <th style="${H}">Gap (City − BonQuery)</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${cityRef.map((c, i) => {
+      const bq  = bqIndex.get(c.year * 100 + c.month)
+      const bo  = bq ? bq.occupancy_mean : null
+      const gap = bo != null ? c.occupancy - bo : null
+
+      const bg = i % 2 === 0 ? "#fff" : "#f8f9fa"
+      const td = `padding:5px 9px;text-align:center;border-bottom:1px solid #eee`
+
+      // Shade the gap cell — deeper orange for larger gaps
+      const gapStyle = gap == null ? td
+        : gap > 200 ? td + ";background:#ffe4cc;font-weight:700"
+        : gap > 80  ? td + ";background:#fff3e6"
+        : td
+
+      return html`<tr style="background:${bg}">
+        <td style="${td}">${c.year}</td>
+        <td style="${td}">${MONTH_ABB[c.month]}</td>
+        <td style="${td}">${bo != null ? bo.toFixed(1) : "—"}</td>
+        <td style="${td}">${c.occupancy.toLocaleString()}</td>
+        <td style="${gapStyle}">${gap != null ? gap.toFixed(1) : "—"}</td>
+      </tr>`
+    })}
+  </tbody>
+</table>
+</div>`
+}
+```
+
+Larger gaps in late 2024 through early 2025 coincide with the peak of the winter
+shelter emergency response, when Bridging and Triage programs are likely operating
+at higher capacity. Smaller gaps in summer months are consistent with reduced
+emergency-response activity.
+
+### Data source
+
+All data comes from the City of Toronto's [Central Intake
+Calls](https://open.toronto.ca/dataset/central-intake-calls/)
+dataset and the [Daily Shelter & Overnight Service Occupancy &
+Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/)
+dataset, published on the City's open data portal. City reference
+values are from the
+[Shelter System Requests for Referrals](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/)
+page, snapshot 2026-05-25.
+
+Contains information licensed under the [Open Government
+Licence – Toronto](https://open.toronto.ca/open-data-licence/).
+

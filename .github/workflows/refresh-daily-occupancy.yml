@@ -59,6 +59,13 @@ jobs:
           OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
         run: python scripts/generate_data.py
 
+      # central_intake.json — Central Intake call wrap-up codes and service queue data
+      # from CKAN (no secrets needed). Required by central-intake.qmd.
+      # Data changes only monthly but must be regenerated on every site build
+      # because data/ is gitignored.
+      - name: Pull Central Intake data from CKAN
+        run: python scripts/generate_central_intake.py
+
       # daily_occupancy.json — daily shelter occupancy from CKAN (no secrets needed).
       # Side effect: also writes data/snapshots/raw_<UTC-timestamp>.json.gz containing
       # the full raw CKAN rows (pre-aggregation). Used by the data-drift investigation.
@@ -196,7 +203,8 @@ jobs:
 
       - name: Verify output
         run: |
-          ls -lh data/shelter_flow.json data/daily_occupancy.json data/city_validation.json
+          ls -lh data/shelter_flow.json data/daily_occupancy.json \
+                 data/city_validation.json data/central_intake.json
           python -c "
           import json
           rows = json.load(open('data/daily_occupancy.json'))
@@ -205,6 +213,9 @@ jobs:
           print(f'shelter_flow: {len(json.load(open(\"data/shelter_flow.json\"))):,} rows')
           v = json.load(open('data/city_validation.json'))
           print(f'city_validation: city_date={v[\"city_date\"]}, passed={v[\"passed\"]}')
+          ci = json.load(open('data/central_intake.json'))
+          months = ci.get('monthly', [])
+          print(f'central_intake: {len(months)} monthly rows')
           "
 
       - name: Detect new or revised daily data

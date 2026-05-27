@@ -19,7 +19,9 @@ website:
           - href: projects/about-the-data.qmd
             text: "About the Data"
           - href: projects/data-validation.qmd
-            text: "Data Validation"
+            text: "Occupancy Validation"
+          - href: projects/data-validation-central-intake.qmd
+            text: "Central Intake Validation"
           - text: "---"
           - text: "Charts ↓"
           - href: projects/historical-trends.qmd
@@ -28,6 +30,8 @@ website:
             text: "Monthly Snapshot"
           - href: projects/ytd-comparison.qmd
             text: "YTD Comparison"
+          - href: projects/central-intake.qmd
+            text: "Shelter System Requests for Referrals"
           - href: projects/spike-detection.qmd
             text: "Occupancy Spike Detection"
           - text: "---"
