@@ -59,18 +59,20 @@ jobs:
           OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
         run: python scripts/generate_data.py
 
+      # daily_occupancy.json — daily shelter occupancy from CKAN (no secrets needed).
+      # Side effect: also writes data/snapshots/raw_<UTC-timestamp>.json.gz containing
+      # the full raw CKAN rows (pre-aggregation). Used by the data-drift investigation.
+      # Must run BEFORE generate_central_intake.py, which reads daily_occupancy.json
+      # to compute monthly occupancy buckets.
+      - name: Pull daily occupancy data from CKAN
+        run: python scripts/generate_daily_occupancy.py
+
       # central_intake.json — Central Intake call wrap-up codes and service queue data
       # from CKAN (no secrets needed). Required by central-intake.qmd.
       # Data changes only monthly but must be regenerated on every site build
       # because data/ is gitignored.
       - name: Pull Central Intake data from CKAN
         run: python scripts/generate_central_intake.py
-
-      # daily_occupancy.json — daily shelter occupancy from CKAN (no secrets needed).
-      # Side effect: also writes data/snapshots/raw_<UTC-timestamp>.json.gz containing
-      # the full raw CKAN rows (pre-aggregation). Used by the data-drift investigation.
-      - name: Pull daily occupancy data from CKAN
-        run: python scripts/generate_daily_occupancy.py
 
       # ---- CKAN data-drift tracking ----
       # Downloads the most-recent prior raw snapshot (from the latest previous workflow
