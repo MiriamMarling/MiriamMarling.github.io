@@ -168,8 +168,8 @@ Plot.plot({
 ::: {.mobile-page-nav}
 **Explore other dashboards:**
 
-- [Historical Trends](historical-trends.html)
-- [Monthly Snapshot](monthly-snapshot.html)
+- [Historical Trends](historical-trends.html){target="_blank"}
+- [Monthly Snapshot](monthly-snapshot.html){target="_blank"}
 :::
 
 ---
@@ -192,14 +192,14 @@ Plot.plot({
   for permanent housing.
 
 Definitions are based on the [City of Toronto's Shelter System Flow
-Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/).
+Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}.
 
-[Read all data findings →](about-the-data.html)
+[Read all data findings →](about-the-data.html){target="_blank"}
 
 ### Data source
 
 All data comes from the City of Toronto's [Shelter System Flow
-dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/),
+dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/){target="_blank"},
 published monthly on the City's open data portal.
 
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.

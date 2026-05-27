@@ -41,13 +41,13 @@ into Toronto's emergency shelter system. Streets to Homes outreach workers also 
 direct referrals outside of Central Intake.
 
 This page replicates three of the four charts on the City's [Shelter System Requests
-for Referrals page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/).
+for Referrals page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/){target="_blank"}.
 The fourth — average nightly shelter occupancy — is excluded because the City's CKAN
 daily occupancy export omits Bridging and Triage programs, producing values
 systematically below the City's published figures. BonQuery publishes nightly
-occupancy separately on the [Daily Occupancy & Capacity page](/projects/daily-occupancy.html);
+occupancy separately on the [Daily Occupancy & Capacity page](/projects/daily-occupancy.html){target="_blank"};
 a monthly estimate of the Bridging and Triage gap is on the
-[Central Intake Validation page](/projects/data-validation-central-intake.html).
+[Central Intake Validation page](/projects/data-validation-central-intake.html){target="_blank"}.
 
 BonQuery's version adds interactive controls the City's static charts don't have. The
 toggle below switches between the City replication view (April 2024 onward, matching
@@ -406,7 +406,7 @@ html`<table style="width:100%;border-collapse:collapse;font-size:0.9em">
 ### Notes on the Data
 
 This page draws on two resources from the City's [Central Intake Calls open data
-package](https://open.toronto.ca/dataset/central-intake-calls/). The Call Wrap-Up 
+package](https://open.toronto.ca/dataset/central-intake-calls/){target="_blank"}. The Call Wrap-Up 
 Codes dataset is a call-centre record tracking daily call outcomes by type: each
 call answered by a caseworker is assigned one of 13 wrap-up codes. The chart titled 
 "Calls referred to a shelter space" uses Code 1A (referral to a sleeping or resting 
@@ -420,11 +420,11 @@ documentation states they cannot be combined.
 ### Data source
 
 All data comes from the City of Toronto's [Central Intake
-Calls](https://open.toronto.ca/dataset/central-intake-calls/)
+Calls](https://open.toronto.ca/dataset/central-intake-calls/){target="_blank"}
 dataset, published monthly on the City's open data portal.
 Monthly averages are computed by BonQuery from the daily values
 in the dataset's two resources: the Call Wrap-Up Codes Data and
 the Central Intake Service Queue Data.
 
 Contains information licensed under the [Open Government
-Licence – Toronto](https://open.toronto.ca/open-data-licence/).
+Licence – Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.

@@ -417,7 +417,7 @@ Inputs.table(spikeSearch, {
 ---
 
 > Contains information licensed under the
-> [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
+> [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.
 > Source: City of Toronto Open Data —
-> [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/).
-> Analysis by [BonQuery](https://bonquery.ca).
+> [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/){target="_blank"}.
+> Analysis by [BonQuery](https://bonquery.ca){target="_blank"}.

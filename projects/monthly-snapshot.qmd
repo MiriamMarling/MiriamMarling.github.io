@@ -72,7 +72,7 @@ findings that usually stay buried in technical documentation.
 
 The data covers every month from January 2018 to the most recent
 published month, sourced directly from the [City of Toronto's Shelter
-System Flow dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/).
+System Flow dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/){target="_blank"}.
 New data loads automatically each month, usually around the 15th,
 after the City publishes the prior month's figures.
 
@@ -466,8 +466,8 @@ genderSnapMax = d3.max(genderSnapshotData, d => d.pct) || 1
 ::: {.mobile-page-nav}
 **Explore other dashboards:**
 
-- [Historical Trends](historical-trends.html)
-- [YTD Comparison](ytd-comparison.html)
+- [Historical Trends](historical-trends.html){target="_blank"}
+- [YTD Comparison](ytd-comparison.html){target="_blank"}
 :::
 
 ---
@@ -480,7 +480,7 @@ These numbers reflect the shelter *system*, not all homelessness. The
 data captures people who used a City-funded overnight service at
 least once in the past three months. It doesn't include people
 sleeping outside, in shelters that aren't City-funded, or staying
-temporarily with friends or family. The City [estimates](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/)
+temporarily with friends or family. The City [estimates](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}
 that roughly 18% of people experiencing absolute homelessness in
 Toronto aren't reflected in these numbers. Trends here reflect
 changes in the shelter system specifically — not in total homelessness
@@ -523,14 +523,14 @@ need to have left and returned.
   the past three months, including the reporting month.
 
 Definitions are based on the [City of Toronto's Shelter System Flow
-Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/).
+Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}.
 
-[Read all data findings →](about-the-data.html)
+[Read all data findings →](about-the-data.html){target="_blank"}
 
 ### Data source
 
 All data comes from the City of Toronto's [Shelter System Flow
-dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/),
+dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/){target="_blank"},
 published monthly on the City's open data portal.
 
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.
