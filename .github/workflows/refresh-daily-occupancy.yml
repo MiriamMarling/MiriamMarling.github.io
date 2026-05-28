@@ -215,9 +215,9 @@ jobs:
         run: |
           if [ -f data/city_audit_summary.md ]; then
             {
-              echo 'CITY_AUDIT_SUMMARY<<__EOF__'
+              echo 'CITY_AUDIT_SUMMARY<<EOF'
               cat data/city_audit_summary.md
-              echo '__EOF__'
+              echo 'EOF'
             } >> "$GITHUB_ENV"
           else
             echo 'CITY_AUDIT_SUMMARY=(audit summary not available)' >> "$GITHUB_ENV"
