@@ -9,10 +9,11 @@ from bs4 import BeautifulSoup
 
 CITY_URL = "https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/"
 
-DATA_DIR = Path(__file__).parent.parent / "data"
-OCCUPANCY_FILE = DATA_DIR / "daily_occupancy.json"
-OUTPUT_FILE    = DATA_DIR / "city_validation.json"
-BRIDGING_FILE  = DATA_DIR / "city_bridging_triage.json"
+DATA_DIR          = Path(__file__).parent.parent / "data"
+OCCUPANCY_FILE    = DATA_DIR / "daily_occupancy.json"
+OUTPUT_FILE       = DATA_DIR / "city_validation.json"
+BRIDGING_FILE     = DATA_DIR / "city_bridging_triage.json"
+CITY_TABLE_FILE   = DATA_DIR / "city_daily_table.json"
 
 # Maps exact City table label text → BonQuery key.
 # Only rows where the City label is stable and maps cleanly to a BonQuery key.
@@ -51,6 +52,38 @@ MONTH_NAMES = {
     "September": 9, "October": 10, "November": 11, "December": 12,
 }
 
+# section / col_type metadata for every key in LABEL_TO_KEY.
+# Derived from data/city_reference_2026-05-14.json; used by
+# extract_city_table_full() to keep output schema stable across scrapes.
+KEY_META = {
+    "all_shelter":    {"section": "summary",       "col_type": "summary"},
+    "room_based":     {"section": "summary",       "col_type": "summary"},
+    "singles_sector": {"section": "summary",       "col_type": "summary"},
+    "fam_total":      {"section": "room_based",    "col_type": "room"},
+    "fam_emerg":      {"section": "room_based",    "col_type": "room"},
+    "fam_trans_r":    {"section": "room_based",    "col_type": "room"},
+    "fam_hotel":      {"section": "room_based",    "col_type": "room"},
+    "sng_hotel":      {"section": "room_based",    "col_type": "room"},
+    "singles_total":  {"section": "bed_based",     "col_type": "bed"},
+    "emerg_total":    {"section": "bed_based",     "col_type": "bed"},
+    "mix_emerg":      {"section": "bed_based",     "col_type": "bed"},
+    "men_emerg":      {"section": "bed_based",     "col_type": "bed"},
+    "wom_emerg":      {"section": "bed_based",     "col_type": "bed"},
+    "yth_emerg":      {"section": "bed_based",     "col_type": "bed"},
+    "trans_total":    {"section": "bed_based",     "col_type": "bed"},
+    "mix_trans":      {"section": "bed_based",     "col_type": "bed"},
+    "fam_trans_b":    {"section": "bed_based",     "col_type": "bed"},
+    "men_trans":      {"section": "bed_based",     "col_type": "bed"},
+    "wom_trans":      {"section": "bed_based",     "col_type": "bed"},
+    "yth_trans":      {"section": "bed_based",     "col_type": "bed"},
+    "allied_total":   {"section": "allied",        "col_type": "bed"},
+    "respites":       {"section": "allied",        "col_type": "bed"},
+    "dropin":         {"section": "allied",        "col_type": "bed"},
+    "temp_resp":      {"section": "temp_bed",      "col_type": "bed"},
+    "hotels":         {"section": "temp_room",     "col_type": "room"},
+    "iso":            {"section": "iso_recovery",  "col_type": "room"},
+}
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xhtml+xml;q=0.9,*/*;q=0.8",
@@ -87,6 +120,17 @@ def parse_number(text):
     cleaned = re.sub(r"[,\s]", "", text.strip())
     try:
         return int(cleaned)
+    except ValueError:
+        return None
+
+
+def parse_rate(text):
+    """Parse a percentage string like '95.5%' or '95.5' → float, or None."""
+    cleaned = re.sub(r"[%\s,]", "", text.strip())
+    if not cleaned or cleaned in ("—", "-", "N/A", "n/a"):
+        return None
+    try:
+        return float(cleaned)
     except ValueError:
         return None
 
@@ -237,6 +281,133 @@ def update_bridging_file(new_entries, checked_at):
     return entries
 
 
+def extract_city_table_full(soup):
+    """Extract all columns from the City table for every date section on the page.
+
+    Follows the same document-order walk as extract_bridging_triage so it
+    handles pages with multiple date tables (weekend catch-ups).
+
+    City table column order: label | individuals | occupied | unoccupied |
+    actual capacity | occupancy rate.  Summary rows (e.g. "All Shelter
+    Programs, Total") typically omit occ/unocc/cap/rate — parse_number /
+    parse_rate will return None for those cells.
+
+    Returns a dict keyed by ISO date string:
+        {"2026-05-28": [
+            {"key": "...", "label": "...", "section": "...",
+             "col_type": "...", "city_ind": N, "city_occ": N|None,
+             "city_unocc": N|None, "city_cap": N|None,
+             "city_rate": F|None},
+            ...
+        ]}
+    """
+    results = {}
+    current_date = None
+    current_rows = []
+    seen_keys: set = set()
+
+    def flush():
+        if current_date and current_rows:
+            results[current_date] = list(current_rows)
+
+    for tag in soup.find_all(True):
+        text = tag.get_text(strip=True)
+
+        m = DATE_PAT.search(text)
+        if m and tag.name not in ("table", "tbody", "tr", "td", "th"):
+            new_date = parse_date_str(m.group(1), m.group(2))
+            if new_date and new_date != current_date:
+                flush()
+                current_date = new_date
+                current_rows = []
+                seen_keys = set()
+            continue
+
+        if tag.name != "td":
+            continue
+
+        label = text
+        if label not in LABEL_TO_KEY:
+            continue
+
+        key = LABEL_TO_KEY[label]
+        if key in seen_keys:
+            continue  # deduplicate within a date section
+
+        row = tag.find_parent("tr")
+        if not row:
+            continue
+        cells = row.find_all("td")
+
+        def cell_text(idx):
+            return cells[idx].get_text(strip=True) if len(cells) > idx else ""
+
+        meta = KEY_META.get(key, {"section": "unknown", "col_type": "unknown"})
+        current_rows.append({
+            "key":        key,
+            "label":      label,
+            "section":    meta["section"],
+            "col_type":   meta["col_type"],
+            "city_ind":   parse_number(cell_text(1)),
+            "city_occ":   parse_number(cell_text(2)),
+            "city_unocc": parse_number(cell_text(3)),
+            "city_cap":   parse_number(cell_text(4)),
+            "city_rate":  parse_rate(cell_text(5)),
+        })
+        seen_keys.add(key)
+
+    flush()
+    return results
+
+
+def update_city_table_file(new_entries):
+    """Accumulate full-table scrapes into a single city_daily_table.json.
+
+    File format mirrors city_bridging_triage.json:
+    {
+      "note": "...",
+      "first_captured": "YYYY-MM-DD",
+      "entries": {"YYYY-MM-DD": [array of row dicts], ...}
+    }
+    New dates are added; existing dates are overwritten with fresh values.
+    """
+    if CITY_TABLE_FILE.exists():
+        try:
+            existing = json.loads(CITY_TABLE_FILE.read_text())
+        except Exception:
+            existing = {}
+    else:
+        existing = {}
+
+    entries = existing.get("entries", {})
+    first = existing.get("first_captured")
+
+    for date_str, rows in new_entries.items():
+        entries[date_str] = rows
+        if first is None or date_str < first:
+            first = date_str
+
+    payload = {
+        "note": (
+            "Full City of Toronto shelter census table scraped daily from "
+            "toronto.ca/shelter-census. Each entry is an array of rows keyed "
+            "by BonQuery sector key, matching the schema of "
+            "city_reference_2026-05-14.json (key, label, section, col_type, "
+            "city_ind, city_occ, city_unocc, city_cap, city_rate). Available "
+            f"from {first} onward. Days where the City did not publish a table "
+            "(weekends, holidays) will be absent unless the City retroactively "
+            "posts catch-up tables on a subsequent day."
+        ),
+        "first_captured": first,
+        "entries": dict(sorted(entries.items())),
+    }
+    CITY_TABLE_FILE.write_text(json.dumps(payload, indent=2))
+    print(
+        f"city_daily_table.json: {len(new_entries)} new date(s) "
+        f"({', '.join(sorted(new_entries))}); total={len(entries)}"
+    )
+
+
 def main():
     bonquery_latest_date = get_bonquery_latest_date()
 
@@ -264,6 +435,13 @@ def main():
         update_bridging_file(bt_entries, checked_at)
     else:
         print("city_bridging_triage.json: no B&T rows found on page today")
+
+    # ── Full table snapshot — all columns for every date section ─────────────
+    table_entries = extract_city_table_full(soup)
+    if table_entries:
+        update_city_table_file(table_entries)
+    else:
+        print("city_daily_table.json: no table rows found on page today")
 
     # ── Parse primary date heading (for validation) ───────────────────────────
     city_date = extract_city_date(soup)

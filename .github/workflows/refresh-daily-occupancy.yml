@@ -203,6 +203,26 @@ jobs:
       - name: Validate against City of Toronto shelter census page
         run: python scripts/validate_city_page.py
 
+      # Audit the City's full table against our published figures.
+      # Runs after both validate_city_page.py (which writes city_daily_table.json)
+      # and generate_daily_occupancy.py (which writes daily_occupancy.json).
+      # continue-on-error so a parse failure doesn't abort the site rebuild.
+      - name: Audit City table vs our published data
+        run: python scripts/audit_city_scrape.py
+        continue-on-error: true
+
+      - name: Capture audit summary for email
+        run: |
+          if [ -f data/city_audit_summary.md ]; then
+            {
+              echo 'CITY_AUDIT_SUMMARY<<__EOF__'
+              cat data/city_audit_summary.md
+              echo '__EOF__'
+            } >> "$GITHUB_ENV"
+          else
+            echo 'CITY_AUDIT_SUMMARY=(audit summary not available)' >> "$GITHUB_ENV"
+          fi
+
       - name: Verify output
         run: |
           ls -lh data/shelter_flow.json data/daily_occupancy.json \
@@ -265,6 +285,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/last_pull_date.txt data/last_pull_hash.txt
           git add data/city_bridging_triage.json 2>/dev/null || true
+          git add data/city_daily_table.json data/city_audit_report.json 2>/dev/null || true
           if [ "${{ env.REBUILD_REASON }}" = "new-day" ]; then
             git commit -m "data: daily occupancy updated through ${{ env.LATEST_DATE }} [skip ci]"
           else
@@ -341,3 +362,6 @@ jobs:
 
             Site:    https://bonquery.ca
             Run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ---
+            ${{ env.CITY_AUDIT_SUMMARY }}
