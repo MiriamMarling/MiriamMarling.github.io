@@ -13,6 +13,8 @@
 !/data/last_pull_date.txt
 !/data/last_pull_hash.txt
 
+# Claude Code — local session data and project memory
+.claude/
 # Claude Code instructions — local only
 CLAUDE.md
 
