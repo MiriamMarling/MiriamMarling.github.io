@@ -221,6 +221,57 @@ jobs:
             echo 'CITY_AUDIT_SUMMARY=(audit summary not available)' >> "$GITHUB_ENV"
           fi
 
+      - name: Check audit report for mismatches
+        id: audit_check
+        run: |
+          python3 -c "
+          import json, os, sys
+          from pathlib import Path
+
+          report_path = Path('data/city_audit_report.json')
+          if not report_path.exists():
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write('has_mismatches=false\nmismatch_count=0\ncity_date=\n')
+              print('No audit report found; skipping mismatch check.')
+              sys.exit(0)
+
+          r = json.loads(report_path.read_text())
+          n         = r.get('mismatch_count', 0)
+          city_date = r.get('city_date') or '(unknown)'
+          passed    = r.get('passed')
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'has_mismatches={\"true\" if n > 0 else \"false\"}\n')
+              f.write(f'mismatch_count={n}\n')
+              f.write(f'city_date={city_date}\n')
+
+          print(f'Audit: {n} mismatch(es) for {city_date} (passed={passed})')
+          "
+        continue-on-error: true
+
+      - name: Email notification — City audit mismatches found
+        if: steps.audit_check.outputs.has_mismatches == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.mail.me.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[bonquery] City audit: ${{ steps.audit_check.outputs.mismatch_count }} mismatch(es) for ${{ steps.audit_check.outputs.city_date }}"
+          to: miriam@bonquery.ca
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            The City of Toronto shelter census page reports figures that differ
+            from our published daily_occupancy.json.
+
+            Date compared:    ${{ steps.audit_check.outputs.city_date }}
+            Mismatches found: ${{ steps.audit_check.outputs.mismatch_count }}
+
+            ${{ env.CITY_AUDIT_SUMMARY }}
+
+            Run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
       - name: Verify output
         run: |
           ls -lh data/shelter_flow.json data/daily_occupancy.json \
