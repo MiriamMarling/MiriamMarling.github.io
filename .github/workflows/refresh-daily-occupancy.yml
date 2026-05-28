@@ -214,11 +214,9 @@ jobs:
       - name: Capture audit summary for email
         run: |
           if [ -f data/city_audit_summary.md ]; then
-            {
-              echo 'CITY_AUDIT_SUMMARY<<EOF'
-              cat data/city_audit_summary.md
-              echo 'EOF'
-            } >> "$GITHUB_ENV"
+            printf '%s\n' 'CITY_AUDIT_SUMMARY<<EOF' >> "$GITHUB_ENV"
+            cat data/city_audit_summary.md >> "$GITHUB_ENV"
+            printf '\nEOF\n' >> "$GITHUB_ENV"
           else
             echo 'CITY_AUDIT_SUMMARY=(audit summary not available)' >> "$GITHUB_ENV"
           fi

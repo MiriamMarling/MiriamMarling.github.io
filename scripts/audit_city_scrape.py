@@ -242,7 +242,7 @@ def main():
     # ── Markdown summary ──────────────────────────────────────────────────────
     md = build_markdown(city_date, our_date, city_rows, mismatches, generated_at)
     print(md)
-    SUMMARY_FILE.write_text(md)
+    SUMMARY_FILE.write_text(md + "\n")  # trailing newline keeps EOF on its own line
 
     # ── JSON report ───────────────────────────────────────────────────────────
     report = {
