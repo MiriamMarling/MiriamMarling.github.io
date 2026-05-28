@@ -11,7 +11,8 @@ CITY_URL = "https://www.toronto.ca/city-government/data-research-maps/research-r
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 OCCUPANCY_FILE = DATA_DIR / "daily_occupancy.json"
-OUTPUT_FILE = DATA_DIR / "city_validation.json"
+OUTPUT_FILE    = DATA_DIR / "city_validation.json"
+BRIDGING_FILE  = DATA_DIR / "city_bridging_triage.json"
 
 # Maps exact City table label text → BonQuery key.
 # Only rows where the City label is stable and maps cleanly to a BonQuery key.
@@ -56,6 +57,8 @@ HEADERS = {
     "Accept-Language": "en-CA,en;q=0.9",
 }
 
+DATE_PAT = re.compile(r"Daily Occupancy\s*&\s*Capacity for\s+(\w+)\s+(\d+)")
+
 
 def get_bonquery_latest_date():
     """Return the most recent date string in daily_occupancy.json, or None."""
@@ -88,27 +91,31 @@ def parse_number(text):
         return None
 
 
+def parse_date_str(month_str, day_str):
+    """Convert 'May', '26' → '2026-05-26'. Returns None if unrecognised."""
+    month = MONTH_NAMES.get(month_str)
+    if not month:
+        return None
+    year = datetime.now(timezone.utc).year
+    return f"{year}-{month:02d}-{int(day_str):02d}"
+
+
 def extract_city_date(soup):
-    # The date lives in a <div data-type="toggle"> accordion trigger, not a heading.
-    # BeautifulSoup decodes &amp; → & automatically before the regex sees it.
-    pattern = re.compile(r"Daily Occupancy\s*&\s*Capacity for\s+(\w+)\s+(\d+)")
+    """Return the FIRST date string found on the page (for validation logic)."""
     for tag in soup.find_all(True):
-        m = pattern.search(tag.get_text(strip=True))
+        m = DATE_PAT.search(tag.get_text(strip=True))
         if m:
-            month = MONTH_NAMES.get(m.group(1))
-            if month:
-                year = datetime.now(timezone.utc).year
-                return f"{year}-{month:02d}-{int(m.group(2)):02d}"
+            return parse_date_str(m.group(1), m.group(2))
     return None
 
 
 def extract_city_values(soup):
+    """Return {key: individuals_int} for all rows matching LABEL_TO_KEY."""
     city_values = {}
     for td in soup.find_all("td"):
         label = td.get_text(strip=True)
         if label in LABEL_TO_KEY:
             key = LABEL_TO_KEY[label]
-            # The individuals value is the first numeric sibling td in the same row
             row = td.find_parent("tr")
             if not row:
                 continue
@@ -120,6 +127,116 @@ def extract_city_values(soup):
     return city_values
 
 
+def _row_individual(td):
+    """Given a <td> label cell, return the integer value in the next cell."""
+    row = td.find_parent("tr")
+    if not row:
+        return None
+    cells = row.find_all("td")
+    if len(cells) >= 2:
+        return parse_number(cells[1].get_text(strip=True))
+    return None
+
+
+def extract_bridging_triage(soup):
+    """Extract Bridging & Triage and Total People Accommodated for every date
+    table on the page. The City sometimes publishes multiple tables on one page
+    to make up for weekends/holidays.
+
+    Returns a dict keyed by ISO date string:
+        {"2026-05-26": {"bridging_triage": 30, "total_people": 7948}, ...}
+
+    Only entries where at least bridging_triage was found are included.
+    """
+    results = {}
+
+    # Walk every element in document order, tracking the current date section.
+    # A new date section begins whenever we hit a tag whose text matches
+    # DATE_PAT.  Within each section, the first "Bridging & Triage Programs"
+    # and "Total People Accommodated" <td> cells give the values.
+    current_date = None
+    bt_val = None
+    tp_val = None
+
+    def flush():
+        if current_date and bt_val is not None:
+            results[current_date] = {
+                "bridging_triage": bt_val,
+                "total_people": tp_val,
+            }
+
+    for tag in soup.find_all(True):
+        text = tag.get_text(strip=True)
+
+        # Check if this tag opens a new date section
+        m = DATE_PAT.search(text)
+        if m and tag.name not in ("table", "tbody", "tr", "td", "th"):
+            new_date = parse_date_str(m.group(1), m.group(2))
+            if new_date and new_date != current_date:
+                flush()
+                current_date = new_date
+                bt_val = None
+                tp_val = None
+            continue
+
+        if tag.name != "td":
+            continue
+
+        if bt_val is None and text == "Bridging & Triage Programs":
+            bt_val = _row_individual(tag)
+
+        if tp_val is None and text == "Total People Accommodated":
+            tp_val = _row_individual(tag)
+
+    flush()
+    return results
+
+
+def update_bridging_file(new_entries, checked_at):
+    """Load-update-write city_bridging_triage.json with new_entries.
+
+    File format:
+    {
+      "note": "...",
+      "first_captured": "YYYY-MM-DD",
+      "entries": {"YYYY-MM-DD": {"bridging_triage": N, "total_people": N}, ...}
+    }
+    """
+    if BRIDGING_FILE.exists():
+        try:
+            existing = json.loads(BRIDGING_FILE.read_text())
+        except Exception:
+            existing = {}
+    else:
+        existing = {}
+
+    entries = existing.get("entries", {})
+    first = existing.get("first_captured")
+
+    for date_str, vals in new_entries.items():
+        entries[date_str] = vals
+        if first is None or date_str < first:
+            first = date_str
+
+    payload = {
+        "note": (
+            "Bridging & Triage Programs and Total People Accommodated are not "
+            "published to the City of Toronto open data (CKAN) export. These "
+            "figures are scraped daily from the City's shelter census page "
+            "(toronto.ca/shelter-census) when the City posts them. Data is "
+            f"available from {first} onward. Days where the City did not "
+            "publish a table (weekends, holidays) will be absent unless the "
+            "City retroactively posts catch-up tables on a subsequent day."
+        ),
+        "first_captured": first,
+        "entries": dict(sorted(entries.items())),
+    }
+    BRIDGING_FILE.write_text(json.dumps(payload, indent=2))
+    print(f"city_bridging_triage.json: {len(new_entries)} new entries "
+          f"({', '.join(sorted(new_entries))}); total={len(entries)}")
+    return entries
+
+
 def main():
     bonquery_latest_date = get_bonquery_latest_date()
 
@@ -128,28 +245,36 @@ def main():
         resp = requests.get(CITY_URL, timeout=30, headers=HEADERS)
         resp.raise_for_status()
     except Exception as exc:
-        # city_reachable: false — network/HTTP failure
         write_result(
             city_reachable=False,
             passed=False,
             city_date=None,
             bonquery_latest_date=bonquery_latest_date,
-            mismatches=[{"label": "City page fetch failed", "key": None, "city": None, "bonquery": str(exc)}],
+            mismatches=[{"label": "City page fetch failed", "key": None,
+                         "city": None, "bonquery": str(exc)}],
         )
         sys.exit(0)
 
     soup = BeautifulSoup(resp.text, "html.parser")
 
-    # ── Parse date heading ────────────────────────────────────────────────────
+    # ── Bridging & Triage — capture for every date table on the page ─────────
+    checked_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    bt_entries = extract_bridging_triage(soup)
+    if bt_entries:
+        update_bridging_file(bt_entries, checked_at)
+    else:
+        print("city_bridging_triage.json: no B&T rows found on page today")
+
+    # ── Parse primary date heading (for validation) ───────────────────────────
     city_date = extract_city_date(soup)
     if not city_date:
-        # city_reachable: false — page loaded but date could not be parsed
         write_result(
             city_reachable=False,
             passed=False,
             city_date=None,
             bonquery_latest_date=bonquery_latest_date,
-            mismatches=[{"label": "City page date not found", "key": None, "city": None, "bonquery": "Could not parse date heading"}],
+            mismatches=[{"label": "City page date not found", "key": None,
+                         "city": None, "bonquery": "Could not parse date heading"}],
         )
         sys.exit(0)
 
@@ -162,7 +287,8 @@ def main():
             passed=False,
             city_date=city_date,
             bonquery_latest_date=bonquery_latest_date,
-            mismatches=[{"label": "City table parse failed", "key": None, "city": None, "bonquery": "No table rows matched expected labels"}],
+            mismatches=[{"label": "City table parse failed", "key": None,
+                         "city": None, "bonquery": "No table rows matched expected labels"}],
         )
         sys.exit(0)
 
@@ -175,7 +301,9 @@ def main():
             passed=False,
             city_date=city_date,
             bonquery_latest_date=bonquery_latest_date,
-            mismatches=[{"label": "No BonQuery data for City date", "key": None, "city": None, "bonquery": f"No rows found for {city_date}"}],
+            mismatches=[{"label": "No BonQuery data for City date", "key": None,
+                         "city": None,
+                         "bonquery": f"No rows found for {city_date}"}],
         )
         sys.exit(0)
 
@@ -189,7 +317,8 @@ def main():
         if bq_val is None:
             continue
         if city_val != bq_val:
-            mismatches.append({"label": label, "key": key, "city": city_val, "bonquery": bq_val})
+            mismatches.append({"label": label, "key": key,
+                               "city": city_val, "bonquery": bq_val})
 
     write_result(
         city_reachable=True,

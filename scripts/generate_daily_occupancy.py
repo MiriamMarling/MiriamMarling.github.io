@@ -199,13 +199,13 @@ def aggregate_day(day_rows, dt):
                             and r.get("OVERNIGHT_SERVICE_TYPE") in EMERG_TYPES
                             and r.get("CAPACITY_TYPE") == "Bed Based Capacity"])
     g_men_emerg = agg_beds(flt(SECTOR="Men",   PROGRAM_MODEL="Emergency",
-                               OVERNIGHT_SERVICE_TYPE="Shelter",
+                               OVERNIGHT_SERVICE_TYPE=EMERG_TYPES,
                                CAPACITY_TYPE="Bed Based Capacity"))
     g_wom_emerg = agg_beds(flt(SECTOR="Women", PROGRAM_MODEL="Emergency",
-                               OVERNIGHT_SERVICE_TYPE="Shelter",
+                               OVERNIGHT_SERVICE_TYPE=EMERG_TYPES,
                                CAPACITY_TYPE="Bed Based Capacity"))
     g_yth_emerg = agg_beds(flt(SECTOR="Youth", PROGRAM_MODEL="Emergency",
-                               OVERNIGHT_SERVICE_TYPE="Shelter",
+                               OVERNIGHT_SERVICE_TYPE=EMERG_TYPES,
                                CAPACITY_TYPE="Bed Based Capacity"))
 
     g_mix_trans  = agg_beds(flt(SECTOR="Mixed Adult", PROGRAM_MODEL="Transitional",

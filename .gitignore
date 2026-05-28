@@ -12,6 +12,9 @@
 !/data/bayesian_gender.json
 !/data/last_pull_date.txt
 !/data/last_pull_hash.txt
+# Bridging & Triage scraped daily from City census page — committed to main
+# so each CI run can accumulate entries from previous runs.
+!/data/city_bridging_triage.json
 
 # Claude Code — local session data and project memory
 .claude/

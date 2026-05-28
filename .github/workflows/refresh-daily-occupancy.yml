@@ -206,7 +206,8 @@ jobs:
       - name: Verify output
         run: |
           ls -lh data/shelter_flow.json data/daily_occupancy.json \
-                 data/city_validation.json data/central_intake.json
+                 data/city_validation.json data/central_intake.json \
+                 data/city_bridging_triage.json 2>/dev/null || true
           python -c "
           import json
           rows = json.load(open('data/daily_occupancy.json'))
@@ -263,6 +264,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/last_pull_date.txt data/last_pull_hash.txt
+          git add data/city_bridging_triage.json 2>/dev/null || true
           if [ "${{ env.REBUILD_REASON }}" = "new-day" ]; then
             git commit -m "data: daily occupancy updated through ${{ env.LATEST_DATE }} [skip ci]"
           else
