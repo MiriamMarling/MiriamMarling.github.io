@@ -28,5 +28,9 @@ DailyOccupancy_gh_sync.md
 # The R script itself runs locally; no CI invokes it.
 scripts/bayesian_gender_brms.R
 
+# Python bytecode
+__pycache__/
+*.pyc
+
 # macOS
 .DS_Store
