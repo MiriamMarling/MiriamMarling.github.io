@@ -16,6 +16,7 @@ twitter-card:
 ```{ojs}
 //| echo: false
 daily_occ = FileAttachment("data/daily_occupancy.json").json()
+bt_data   = FileAttachment("data/city_bridging_triage.json").json()
 shelter_flow = FileAttachment("data/shelter_flow.json").json()
 bayesian_gender = FileAttachment("data/bayesian_gender.json").json()
 spike_detection = FileAttachment("data/spike_detection.json").json()
@@ -426,16 +427,32 @@ dailyTable = {
   const s = (key) => dayRows.find(r => r.key === key)
 
   const allShelterInd = s("all_shelter") ? s("all_shelter").ind : null
+  const btEntry  = bt_data && bt_data.entries ? bt_data.entries[selectedDate] : null
+  const btInd    = btEntry ? btEntry.bridging_triage : null
+  const btStart  = bt_data && bt_data.first_captured
+    ? bt_data.first_captured
+    : "the date scraping began"
+  const totalInd = (allShelterInd !== null && btInd !== null)
+    ? allShelterInd + btInd
+    : allShelterInd
+
   const totalAccomRow = `<tr style="background:#e8edf5;font-weight:600">
     <td style="padding:5px 10px">Total People Accommodated †</td>
-    <td style="padding:5px 10px;text-align:right">${n(allShelterInd)}</td>
+    <td style="padding:5px 10px;text-align:right">${n(totalInd)}</td>
     <td></td><td></td><td></td><td></td><td></td>
   </tr>`
-  const bridgingRow = `<tr style="background:#f5f5f5;color:#999;font-style:italic">
-    <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
-    <td style="padding:5px 10px;text-align:right;font-size:0.85em">Not published to open data</td>
-    <td></td><td></td><td></td><td></td><td></td>
-  </tr>`
+  const bridgingRow = btInd !== null
+    ? `<tr style="background:#f5f5f5">
+        <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
+        <td style="padding:5px 10px;text-align:right">${n(btInd)}</td>
+        <td></td><td></td><td></td><td></td><td></td>
+       </tr>`
+    : `<tr style="background:#f5f5f5;color:#999;font-style:italic">
+        <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
+        <td style="padding:5px 10px;text-align:right;font-size:0.85em"
+          >Not available for this date</td>
+        <td></td><td></td><td></td><td></td><td></td>
+       </tr>`
 
   const summaryKeys = ["all_shelter","room_based","singles_sector","singles_shelter","allied_summ","temp_summ","iso_summ"]
   const roomKeys    = ["fam_total","fam_emerg","fam_trans_r","fam_hotel","sng_hotel"]
@@ -478,15 +495,19 @@ dailyTable = {
       ${s("iso") ? tableRow(s("iso")) : ""}
     </table>
     <p style="font-size:0.8em;color:#666;margin:4px 0 0">
-      † Total People Accommodated excludes Bridging &amp; Triage programs,
-      which are tracked in the City's operational system but not published
-      to open data.
+      † Total People Accommodated = All Shelter Programs + Bridging &amp; Triage Programs.
+      Bridging &amp; Triage figures are not published to the City of Toronto open data (CKAN)
+      export. BonQuery scrapes them daily from the City's shelter census page when the City
+      posts the table; data is available from ${btStart} onward.
+      On days when the City has not yet published (weekends, holidays, or publication delays),
+      the Bridging &amp; Triage row will show "Not available for this date" and the Total
+      will reflect All Shelter Programs only.
     </p>
     </div>`
 }
 ```
 
-This table reproduces the City of Toronto's Daily Shelter & Overnight Service Usage report using the City's open data. It does not include Bridging & Triage programs, which are not published to open data. Some figures shown on the City's live dashboard cannot be reproduced from the CKAN export. A full side-by-side comparison is available on the [data validation page](projects/data-validation.html){target="_blank"}.
+This table reproduces the City of Toronto's Daily Shelter & Overnight Service Usage report using the City's open data. The **All Shelter Programs** subtotal and all breakdown rows are derived from the CKAN open data export. **Bridging & Triage Programs** are tracked in the City's operational system but not published to open data; BonQuery scrapes this figure daily from the City's shelter census page and displays it where available. The **Total People Accommodated** figure equals All Shelter Programs + Bridging & Triage when both are available. Some capacity and unoccupied-bed figures may differ slightly from the City's live dashboard due to offline-bed reporting differences between the CKAN export and the City's operational system. A full side-by-side comparison is available on the [data validation page](projects/data-validation.html){target="_blank"}.
 
 Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Aggregated by [BonQuery](https://bonquery.ca).
 

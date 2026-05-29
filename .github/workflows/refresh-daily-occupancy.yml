@@ -327,6 +327,21 @@ jobs:
               print('No change; skipping publish.')
           "
 
+      - name: Detect new Bridging & Triage entries
+        run: |
+          if git diff --quiet HEAD -- data/city_bridging_triage.json 2>/dev/null; then
+            echo "city_bridging_triage.json unchanged"
+            echo "BT_CHANGED=false" >> "$GITHUB_ENV"
+          else
+            echo "city_bridging_triage.json has new entries"
+            echo "BT_CHANGED=true" >> "$GITHUB_ENV"
+            if [ "$NEW_DATA" != "true" ]; then
+              LATEST=$(python3 -c "import json; rows=json.load(open('data/daily_occupancy.json')); print(max(r['date'] for r in rows))")
+              echo "LATEST_DATE=$LATEST" >> "$GITHUB_ENV"
+              echo "REBUILD_REASON=bridging-triage-update" >> "$GITHUB_ENV"
+            fi
+          fi
+
       - name: Commit sentinels if new data or revision detected
         if: env.NEW_DATA == 'true'
         run: |
@@ -341,6 +356,16 @@ jobs:
             git commit -m "data: daily occupancy revised retroactively (latest date still ${{ env.LATEST_DATE }}) [skip ci]"
           fi
           git pull --rebase origin main  # sync if a concurrent run already pushed
+          git push origin main
+
+      - name: Commit Bridging & Triage data if changed independently
+        if: env.BT_CHANGED == 'true' && env.NEW_DATA != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/city_bridging_triage.json
+          git commit -m "data: bridging & triage entries updated [skip ci]"
+          git pull --rebase origin main
           git push origin main
 
       # Notify the sibling repo to regenerate spike_detection.json immediately.
@@ -359,11 +384,11 @@ jobs:
             -f "client_payload[reason]=${{ env.REBUILD_REASON }}"
 
       - name: Set up Quarto
-        if: env.NEW_DATA == 'true' || github.event_name != 'schedule'
+        if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Render and publish to GitHub Pages
-        if: env.NEW_DATA == 'true' || github.event_name != 'schedule'
+        if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
@@ -391,7 +416,7 @@ jobs:
             Open the run log to see which step failed.
 
       - name: Email notification — new data published
-        if: success() && env.NEW_DATA == 'true'
+        if: success() && (env.NEW_DATA == 'true' || env.BT_CHANGED == 'true')
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.mail.me.com
