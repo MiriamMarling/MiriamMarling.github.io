@@ -157,11 +157,18 @@ def run_audit(city_date, city_rows, our_rows):
     return mismatches
 
 
-def build_markdown(city_date, our_date, city_rows, mismatches, generated_at):
+def build_markdown(city_date, our_date, city_rows, mismatches, generated_at,
+                   skipped=False):
     """Return a markdown summary string."""
-    n_rows     = len(city_rows)
+    n_rows       = len(city_rows)
     n_mismatches = len(mismatches)
-    status     = "✅ all clear" if n_mismatches == 0 else f"⚠️ {n_mismatches} mismatch(es)"
+
+    if skipped:
+        status = f"⚠️ Skipped — no BonQuery data for {city_date}"
+    elif n_mismatches == 0:
+        status = "✅ all clear"
+    else:
+        status = f"⚠️ {n_mismatches} mismatch(es)"
 
     lines = [
         f"## City vs BonQuery Audit — {city_date}",
@@ -169,12 +176,18 @@ def build_markdown(city_date, our_date, city_rows, mismatches, generated_at):
         f"**Status:** {status}  ",
         f"**City scrape date:** {city_date}  ",
         f"**Our latest date:** {our_date or '(unknown)'}  ",
-        f"**Sectors compared:** {n_rows}  ",
+        f"**Sectors compared:** {0 if skipped else n_rows}  ",
         f"**Generated:** {generated_at}",
         "",
     ]
 
-    if n_mismatches == 0:
+    if skipped:
+        lines.append(
+            "Audit skipped: the City has published figures for this date but "
+            "our `daily_occupancy.json` does not yet contain it. "
+            "Re-run after the next CKAN refresh."
+        )
+    elif n_mismatches == 0:
         lines.append("All sectors and columns match the City's published figures.")
     else:
         lines += [
@@ -219,45 +232,76 @@ def main():
         sys.exit(0)
 
     our_rows = load_our_rows(city_date)
-    our_date = city_date if our_rows else None
+    audit_date = city_date  # the date actually compared
+    skipped    = False
 
     if not our_rows:
-        # Try the most recent date we have
+        # Fall back to the most recent date present in both the city table and our data.
         try:
-            all_rows = json.loads(OCCUPANCY_FILE.read_text())
-            dates = sorted({r["date"] for r in all_rows if r.get("date")}, reverse=True)
-            our_date = dates[0] if dates else None
+            payload   = json.loads(CITY_TABLE_FILE.read_text())
+            city_dates = sorted(payload.get("entries", {}).keys(), reverse=True)
+            all_rows  = json.loads(OCCUPANCY_FILE.read_text())
+            our_dates = sorted({r["date"] for r in all_rows if r.get("date")}, reverse=True)
+            our_date_set = set(our_dates)
+            fallback = next((d for d in city_dates if d in our_date_set), None)
         except Exception:
-            our_date = None
-        print(
-            f"No rows in daily_occupancy.json for {city_date}. "
-            f"Our latest date: {our_date}. Audit skipped.",
-            file=sys.stderr,
-        )
+            fallback = None
+
+        if fallback:
+            print(
+                f"No rows in daily_occupancy.json for {city_date} (city latest). "
+                f"Falling back to {fallback} for comparison.",
+                file=sys.stderr,
+            )
+            _, city_rows = load_city_table(fallback)
+            our_rows   = load_our_rows(fallback)
+            audit_date = fallback
+        else:
+            our_dates_sorted = []
+            try:
+                all_rows = json.loads(OCCUPANCY_FILE.read_text())
+                our_dates_sorted = sorted(
+                    {r["date"] for r in all_rows if r.get("date")}, reverse=True
+                )
+            except Exception:
+                pass
+            our_date = our_dates_sorted[0] if our_dates_sorted else None
+            print(
+                f"No rows in daily_occupancy.json for {city_date}. "
+                f"Our latest date: {our_date}. No shared date found; audit skipped.",
+                file=sys.stderr,
+            )
+            skipped = True
+
+    our_date = audit_date if our_rows else None
 
     generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    mismatches   = run_audit(city_date, city_rows, our_rows) if our_rows else []
-    passed       = len(mismatches) == 0 if our_rows else None
+    mismatches   = run_audit(audit_date, city_rows, our_rows) if our_rows else []
+    passed       = len(mismatches) == 0 if not skipped else None
 
     # ── Markdown summary ──────────────────────────────────────────────────────
-    md = build_markdown(city_date, our_date, city_rows, mismatches, generated_at)
+    md = build_markdown(
+        audit_date, our_date, city_rows, mismatches, generated_at, skipped=skipped
+    )
     print(md)
     SUMMARY_FILE.write_text(md + "\n")  # trailing newline keeps EOF on its own line
 
     # ── JSON report ───────────────────────────────────────────────────────────
     report = {
-        "generated_at":   generated_at,
-        "city_date":      city_date,
-        "our_date":       our_date,
-        "sectors_compared": len(city_rows),
-        "passed":         passed,
-        "mismatch_count": len(mismatches),
-        "mismatches":     mismatches,
+        "generated_at":     generated_at,
+        "city_date":        city_date,
+        "audit_date":       audit_date,
+        "our_date":         our_date,
+        "sectors_compared": 0 if skipped else len(city_rows),
+        "passed":           passed,
+        "skipped":          skipped,
+        "mismatch_count":   len(mismatches),
+        "mismatches":       mismatches,
     }
     REPORT_FILE.write_text(json.dumps(report, indent=2))
     print(
         f"\ncity_audit_report.json: {len(mismatches)} mismatch(es) "
-        f"for {city_date} ({len(city_rows)} sectors compared)"
+        f"for {audit_date} ({report['sectors_compared']} sectors compared)"
     )
 
 
