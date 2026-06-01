@@ -133,6 +133,11 @@ viewof selectedDate = Inputs.select(allDates, {
 
 ```{ojs}
 //| echo: false
+html`<p style="font-size:0.85em;color:#666;margin-top:0.25em">Latest available from City of Toronto Open Data: <strong>${fmtDate(latestDate)}</strong>.</p>`
+```
+
+```{ojs}
+//| echo: false
 // ── Table rendering ───────────────────────────────────────────────────────
 dayRows = daily_occ.filter(r => r.date === selectedDate)
 

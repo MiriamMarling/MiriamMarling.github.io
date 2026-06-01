@@ -13,3 +13,13 @@
   letter-spacing: 0.02em;
   padding-top: 0.6rem;
 }
+
+/* Callout accent colours for the four dataset sections */
+div.callout-note.bq-green.callout  { border-left-color: #28a062 !important; }
+div.callout-note.bq-green > .callout-header { background-color: rgba(40, 160, 98, 0.13) !important; }
+
+div.callout-note.bq-orange.callout { border-left-color: #d97706 !important; }
+div.callout-note.bq-orange > .callout-header { background-color: rgba(217, 119, 6, 0.13) !important; }
+
+div.callout-note.bq-purple.callout { border-left-color: #7c3fbf !important; }
+div.callout-note.bq-purple > .callout-header { background-color: rgba(124, 63, 191, 0.13) !important; }

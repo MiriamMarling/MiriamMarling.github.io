@@ -196,7 +196,7 @@ patterns or seasonal trends.
 
 ---
 
-::: {.callout-note collapse="true" title="Daily Occupancy & Capacity"}
+::: {.callout-note .bq-green collapse="true" title="Daily Occupancy & Capacity"}
 
 ```{ojs}
 //| echo: false
@@ -365,6 +365,11 @@ viewof selectedDate = Inputs.select(allDates, {
 
 ```{ojs}
 //| echo: false
+html`<p style="font-size:0.85em;color:#666;margin-top:0.25em">Latest available from City of Toronto Open Data: <strong>${fmtDate(latestDate)}</strong>.</p>`
+```
+
+```{ojs}
+//| echo: false
 // ── Table rendering ───────────────────────────────────────────────────────
 dayRows = daily_occ.filter(r => r.date === selectedDate)
 
@@ -517,7 +522,7 @@ BonQuery's aggregated data is available for download from 2021 to present: [JSON
 
 ---
 
-::: {.callout-note collapse="true"}
+::: {.callout-note .bq-orange collapse="true"}
 ## Historical Occupancy Spike Detection
 
 These spike-detection charts flag days when Toronto's shelter system accommodated a lot more people than its seasonal pattern and long-run trend would've predicted, not merely days that happened to be busy. Spikes are identified by removing two predictable forces (seasonality and long-run trend) with Seasonal-Trend decomposition using LOESS (STL) and measuring what is left over.
@@ -547,7 +552,7 @@ Contains information licensed under the [Open Government Licence – Toronto](ht
 
 ---
 
-::: {.callout-note collapse="true"}
+::: {.callout-note .bq-purple collapse="true"}
 ## Shelter System Requests for Referrals
 
 Monthly average daily calls to Toronto's 24/7 shelter referral line — calls referred
