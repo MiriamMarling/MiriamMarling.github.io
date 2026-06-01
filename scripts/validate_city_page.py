@@ -44,6 +44,7 @@ LABEL_TO_KEY = {
     "24-Hour Temporary Response Sites":       "temp_resp",
     "Hotels":                                 "hotels",
     "Isolation/Recovery Programs Combined Total": "iso",
+    "Temporary Programs, Total":                 "temp_summ",
 }
 
 MONTH_NAMES = {
@@ -82,6 +83,7 @@ KEY_META = {
     "temp_resp":      {"section": "temp_bed",      "col_type": "bed"},
     "hotels":         {"section": "temp_room",     "col_type": "room"},
     "iso":            {"section": "iso_recovery",  "col_type": "room"},
+    "temp_summ":      {"section": "temp_summary",  "col_type": "summary"},
 }
 
 HEADERS = {

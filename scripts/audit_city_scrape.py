@@ -62,7 +62,7 @@ def fmt(value, col_name):
     """Human-readable value with commas for large numbers."""
     if value is None:
         return "—"
-    if col_name == "city_rate":
+    if col_name in ("city_rate", "rate"):
         return f"{value:.1f}%"
     try:
         return f"{int(value):,}"
