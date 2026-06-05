@@ -1,0 +1,135 @@
+<script>
+// ── Mobile language toggle ────────────────────────────────────────────────
+// Uses location.pathname so the correct label appears regardless of whether
+// Quarto renders the navbar id attribute (it does not).
+(function () {
+  var darkTog = document.querySelector(".quarto-color-scheme-toggle");
+  if (!darkTog) return;
+  var isFR  = location.pathname.startsWith("/fr/") || location.pathname === "/fr";
+  var clone = document.createElement("a");
+  clone.className = "bq-lang-mobile";
+  clone.href      = isFR ? "/" : "/fr/";
+  clone.textContent = isFR ? "EN" : "FR";
+  darkTog.parentNode.insertBefore(clone, darkTog.nextSibling);
+})();
+
+// ── Nav cleanup ───────────────────────────────────────────────────────────
+// The Quarto FR profile render re-renders all pages with a merged navbar
+// (EN items + FR items concatenated). This script removes the wrong-language
+// items at runtime on every page load.
+(function () {
+  var isFR = location.pathname.startsWith("/fr/") || location.pathname === "/fr";
+
+  // Left nav: keep items whose links match the current language.
+  // Each top-level <li> contains only same-language hrefs, so checking for
+  // "fr/" is a reliable discriminator.
+  var leftNav = document.querySelector(".navbar-nav.me-auto");
+  if (leftNav) {
+    Array.from(leftNav.querySelectorAll(":scope > li")).forEach(function (li) {
+      var links = Array.from(li.querySelectorAll("a[href]"));
+      var hasFRLink = links.some(function (a) {
+        return (a.getAttribute("href") || "").indexOf("fr/") !== -1;
+      });
+      if (isFR ? !hasFRLink : hasFRLink) li.remove();
+    });
+  }
+
+  // Right nav: on FR pages, remove the self-referential FR toggle link
+  // (the EN config's "FR" link merges in alongside the FR config's "EN" link).
+  if (isFR) {
+    var rightNav = document.querySelector(".navbar-nav.ms-auto");
+    if (rightNav) {
+      Array.from(rightNav.querySelectorAll("li")).forEach(function (li) {
+        var a = li.querySelector("a[href]");
+        if (a && (a.getAttribute("href") || "").indexOf("fr/") !== -1) {
+          li.remove();
+        }
+      });
+    }
+  }
+})();
+
+// ── Theme toggle label ("Light" / "Dark") ────────────────────────────────
+(function () {
+  var tog = document.querySelector(".quarto-color-scheme-toggle");
+  if (!tog) return;
+  var label = document.createElement("span");
+  label.className = "bq-theme-label";
+  var update = function () {
+    var isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+    label.textContent = isDark ? "Light" : "Dark";
+  };
+  tog.appendChild(label);
+  update();
+  new MutationObserver(update).observe(
+    document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] }
+  );
+})();
+
+// ── Bilingual alert toggle (EN | FR) ─────────────────────────────────────
+// Sets data-lang on each .bq-bilingual block; CSS controls visibility.
+document.querySelectorAll(".bq-bilingual").forEach(function (block) {
+  var btns = block.querySelectorAll(".bq-lang-btn");
+  function setLang(lang) {
+    block.setAttribute("data-lang", lang);
+    btns.forEach(function (b) {
+      b.classList.toggle("active", b.dataset.set === lang);
+    });
+  }
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () { setLang(b.dataset.set); });
+  });
+  setLang(block.getAttribute("data-lang") || "en");
+});
+
+// ── Language toggle link + hreflang injection ─────────────────────────────
+// Computes the exact mirror URL from the current pathname and updates the
+// navbar toggle link, then injects hreflang <link> tags for search engines.
+(function () {
+  var frPfx = "/fr/";
+  var path  = location.pathname;
+  var isFR  = path.startsWith(frPfx) || path === "/fr";
+
+  var enPath, frPath;
+  if (isFR) {
+    enPath = (path === "/fr" || path === "/fr/")
+      ? "/"
+      : path.replace(frPfx, "/");
+    frPath = path.endsWith("/") ? path : path + "/";
+  } else {
+    enPath = path;
+    frPath = frPfx + path.replace(/^\//, "");
+  }
+
+  function abs(p) { return location.origin + p; }
+
+  // Update the navbar toggle link. After nav cleanup the right nav has
+  // exactly one <a>: the link to the other language.
+  var rightNav = document.querySelector(".navbar-nav.ms-auto");
+  if (rightNav) {
+    var tog = rightNav.querySelector("a.nav-link");
+    if (tog) {
+      tog.href        = isFR ? abs(enPath) : abs(frPath);
+      tog.textContent = isFR ? "EN" : "FR";
+    }
+  }
+
+  // Also sync the mobile clone's href to the specific counterpart page.
+  var mobileClone = document.querySelector(".bq-lang-mobile");
+  if (mobileClone) {
+    mobileClone.href = isFR ? abs(enPath) : abs(frPath);
+  }
+
+  // Hreflang <link> tags for search engines.
+  function addLink(rel, hreflang, href) {
+    var el = document.createElement("link");
+    el.rel = rel;
+    if (hreflang) el.setAttribute("hreflang", hreflang);
+    el.href = href;
+    document.head.appendChild(el);
+  }
+  addLink("alternate", "en-CA",    abs(enPath));
+  addLink("alternate", "fr-CA",    abs(frPath));
+  addLink("alternate", "x-default", abs(enPath));
+})();
+</script>
