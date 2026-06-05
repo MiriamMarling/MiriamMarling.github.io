@@ -354,4 +354,4 @@ six saisons froides du 15 novembre au 15 avril, 2020–21 à 2025–26. Analyse
 par [BonQuery](https://bonquery.ca). Météo : archives horaires d'Environnement
 et Changement climatique Canada, station de Toronto.*
 
-Contient des informations publiées sous la [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-license/).
+Contient des informations publiées sous la [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-licence/).

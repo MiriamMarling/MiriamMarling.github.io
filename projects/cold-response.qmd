@@ -48,7 +48,7 @@ format:
               "@type": "Place",
               "name": "Toronto, Ontario, Canada"
             },
-            "license": "https://open.toronto.ca/open-data-license/",
+            "license": "https://open.toronto.ca/open-data-licence/",
             "creator": {
               "@type": "Organization",
               "name": "City of Toronto Shelter, Support and Housing Administration"
@@ -361,4 +361,4 @@ November 15–April 15, 2020–21 through 2025–26. Analysis by
 [BonQuery](https://bonquery.ca). Weather: Environment and Climate Change Canada
 hourly records, Toronto station.*
 
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-license/).
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).
