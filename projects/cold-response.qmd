@@ -38,11 +38,11 @@ format:
             "url": "https://bonquery.ca"
           },
           "datePublished": "2026-06-04",
-          "description": "Analysis of unplaced households in Toronto's shelter system on freezing nights across six cold seasons (2020-21 through 2025-26).",
+          "description": "Analysis of unplaced people in Toronto's shelter system on freezing nights across six cold seasons (2020-21 through 2025-26).",
           "about": {
             "@type": "Dataset",
-            "name": "Toronto Central Intake — Overnight Unplaced Households",
-            "description": "Singles and couples households left unplaced at 4 a.m. Central Intake closeout, linked to overnight minimum temperature, across six cold seasons (November 15 to April 15, 2020 to 2026).",
+            "name": "Toronto Central Intake — Overnight Unplaced People",
+            "description": "Singles and couples left unplaced at 4 a.m. Central Intake closeout, linked to overnight minimum temperature, across six cold seasons (November 15 to April 15, 2020 to 2026).",
             "temporalCoverage": "2020-11-15/2026-04-15",
             "spatialCoverage": {
               "@type": "Place",
@@ -56,7 +56,7 @@ format:
           },
           "url": "https://bonquery.ca/projects/cold-response.html",
           "keywords": ["Toronto shelter system", "homelessness", "cold response",
-                       "winter services", "Central Intake", "unplaced households",
+                       "winter services", "Central Intake", "unplaced people",
                        "shelter capacity", "warming centres"]
         }]
         </script>

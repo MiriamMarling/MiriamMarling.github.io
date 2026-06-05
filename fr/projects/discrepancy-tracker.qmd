@@ -28,7 +28,7 @@ par la Ville de Toronto et les données brutes du SMIS publiées sur le
 portail des données ouvertes. Chaque ligne indique le chiffre officiel de
 la Ville, le chiffre issu de notre audit des données brutes, et l'écart
 entre les deux — afin que le public puisse voir, au quotidien, où le
-système ne parvient pas à atteindre l'objectif de zéro ménage sans place
+système ne parvient pas à atteindre l'objectif de zéro personne sans place
 lors des nuits atteignant −5 °C.
 
 **Tableau 1.** *Divergences consignées entre les dénombrements officiels de
@@ -42,5 +42,5 @@ la Ville et l'audit des données brutes, par date.*
 de l'Admission centrale à 4 h. L'écart correspond au dénombrement de l'audit
 des données brutes moins le dénombrement officiel de la Ville ; une valeur
 positive indique que les données brutes font état d'un plus grand nombre de
-ménages sans place que le chiffre officiel. Source : Données ouvertes de la
+personnes sans place que le chiffre officiel. Source : Données ouvertes de la
 Ville de Toronto (SMIS) ; audit BonQuery.

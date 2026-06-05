@@ -43,7 +43,7 @@ format:
             "url": "https://bonquery.ca"
           },
           "datePublished": "2026-06-04",
-          "description": "Analyse des ménages sans place dans le réseau de refuges de Toronto lors des nuits glaciales, six saisons froides (2020-21 à 2025-26).",
+          "description": "Analyse des personnes sans place dans le réseau de refuges de Toronto lors des nuits glaciales, six saisons froides (2020-21 à 2025-26).",
           "url": "https://bonquery.ca/fr/projects/cold-response.html"
         }]
         </script>

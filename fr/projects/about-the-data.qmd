@@ -23,27 +23,20 @@ twitter-card:
 ---
 
 ::::: {.bq-alert .bq-alert-hero .bq-bilingual}
-
-```{=html}
-<div class="bq-lang-toggle" role="group" aria-label="Language / Langue">
-<button type="button" class="bq-lang-btn" data-set="fr">FR</button><span
-class="bq-lang-sep">|</span><button type="button" class="bq-lang-btn"
-data-set="en">EN</button>
-</div>
-```
-
 ::: {.bq-lang .bq-lang-fr}
 **AUDIT ACTIF : SAISON HIVERNALE 2026–2027.** Nous suivons l'écart entre la
 capacité déclarée par la Ville et les données brutes. Les écarts sont consignés
 dans notre [Suivi des divergences](discrepancy-tracker.qmd). Nous exigeons zéro
-ménage sans place lorsque la température atteint −5 °C.
+personne sans place lorsque la température atteint −5 °C. Le suivi quotidien
+débutera à l'ouverture de la saison froide 2026–2027 en novembre.
 :::
 
 ::: {.bq-lang .bq-lang-en}
 **ACTIVE AUDIT: 2026–2027 WINTER SEASON.** We are tracking the gap between the
 City's reported capacity and the raw data. Discrepancies are being logged in our
 [Discrepancy Tracker](discrepancy-tracker.qmd). We are demanding zero unplaced
-households on nights reaching −5 °C.
+people on nights reaching −5 °C. Daily monitoring will start when the
+2026–2027 cold season opens in November.
 :::
 
 :::::
