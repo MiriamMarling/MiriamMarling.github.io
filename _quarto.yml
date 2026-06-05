@@ -72,6 +72,7 @@ website:
 
 format:
   html:
+    lang: en-CA
     theme:
       light: cosmo
       dark: darkly
@@ -81,6 +82,20 @@ format:
     include-after-body:
       text: |
         <script>
+        // Inject a mobile-visible language toggle next to the theme toggle.
+        // The navbar lang link (#bq-lang-toggle-nav) is hidden on mobile via CSS;
+        // this clone stays pinned in the header row at all viewport widths.
+        (function() {
+          var darkTog = document.querySelector(".quarto-color-scheme-toggle");
+          if (!darkTog) return;
+          var langLink = document.getElementById("bq-lang-toggle-nav");
+          var clone = document.createElement("a");
+          clone.className = "bq-lang-mobile";
+          clone.href   = langLink ? langLink.href : "/fr/";
+          clone.textContent = langLink ? langLink.textContent : "FR";
+          darkTog.parentNode.insertBefore(clone, darkTog.nextSibling);
+        })();
+
         // Label the theme toggle with "Light" / "Dark"
         (function() {
           const tog = document.querySelector(".quarto-color-scheme-toggle");

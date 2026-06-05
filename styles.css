@@ -122,6 +122,44 @@
 }
 
 
+/* ── Mobile: keep language toggle visible outside the hamburger ──────── */
+
+/* On small screens Quarto collapses all navbar-nav items into the hamburger.
+   We pull the lang toggle out by making it absolutely positioned in the
+   navbar header row, next to the toggler button. */
+@media (max-width: 991.98px) {
+  /* Give the navbar header row relative positioning so we can anchor to it */
+  .navbar > .container-fluid,
+  .navbar > .container {
+    position: relative;
+  }
+
+  /* Hide the lang toggle inside the collapsed menu on mobile … */
+  .navbar-collapse #bq-lang-toggle-nav {
+    display: none !important;
+  }
+
+  /* … and show a cloned version pinned beside the dark-mode toggle */
+  .bq-lang-mobile {
+    display: inline-flex !important;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    color: var(--bq-primary) !important;
+    text-decoration: none;
+    margin-right: 0.25rem;
+    opacity: 1 !important;
+    vertical-align: middle;
+    line-height: 1;
+  }
+}
+
+/* Hide the mobile clone on desktop */
+@media (min-width: 992px) {
+  .bq-lang-mobile { display: none !important; }
+}
+
 /* ── Global ──────────────────────────────────────────────────────────── */
 
 /* Hide the rendered author/date block — footer carries attribution site-wide.

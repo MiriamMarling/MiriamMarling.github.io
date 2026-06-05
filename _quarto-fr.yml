@@ -18,6 +18,20 @@ project:
 format:
   html:
     lang: fr-CA
+    include-after-body:
+      text: |
+        <script>
+        (function() {
+          var darkTog = document.querySelector(".quarto-color-scheme-toggle");
+          if (!darkTog) return;
+          var langLink = document.getElementById("bq-lang-toggle-nav");
+          var clone = document.createElement("a");
+          clone.className = "bq-lang-mobile";
+          clone.href   = langLink ? langLink.href : "/";
+          clone.textContent = langLink ? langLink.textContent : "EN";
+          darkTog.parentNode.insertBefore(clone, darkTog.nextSibling);
+        })();
+        </script>
 
 website:
   title: "BonQuery"
