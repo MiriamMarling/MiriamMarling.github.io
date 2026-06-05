@@ -133,7 +133,7 @@ viewof selectedDate = Inputs.select(allDates, {
 
 ```{ojs}
 //| echo: false
-html`<p style="font-size:0.85em;color:#666;margin-top:0.25em">Latest available from City of Toronto Open Data: <strong>${fmtDate(latestDate)}</strong>.</p>`
+html`<p class="bq-ckan-note">Latest available from City of Toronto Open Data: <strong>${fmtDate(latestDate)}</strong>.</p>`
 ```
 
 ```{ojs}
@@ -149,49 +149,49 @@ function offlineCell(r) {
   if (r.cap_funding === null || r.cap_funding === undefined) return `<td></td>`
   const offline = r.cap_funding - r.cap
   if (offline <= 0) {
-    return `<td style="padding:5px 10px;text-align:right">${offline.toLocaleString()}</td>`
+    return `<td class="bq-num">${offline.toLocaleString()}</td>`
   }
-  return `<td style="padding:5px 10px;text-align:right;color:#cc0000;font-weight:700">${offline.toLocaleString()}</td>`
+  return `<td class="bq-num bq-danger">${offline.toLocaleString()}</td>`
 }
 
 function tableRow(r, col1Label) {
   const pad = (r.indent ?? 0) * 16
-  const bold = r.is_total ? "font-weight:600" : ""
-  const bg   = r.is_total ? "#e8edf5" : "#ffffff"
+  const cls = r.is_total ? "bq-row-total" : "bq-row"
+  const bld = r.is_total ? " bq-bold" : ""
   if (r.col_type === "summary") {
-    return `<tr style="background:${bg}">
-      <td style="padding:5px 10px 5px ${pad}px;${bold}">${r.label}</td>
-      <td style="padding:5px 10px;text-align:right;${bold}">${n(r.ind)}</td>
+    return `<tr class="${cls}">
+      <td style="padding-left:${pad}px" class="${bld}">${r.label}</td>
+      <td class="bq-num${bld}">${n(r.ind)}</td>
       <td></td><td></td><td></td><td></td><td></td>
     </tr>`
   }
-  return `<tr style="background:${bg}">
-    <td style="padding:5px 10px 5px ${pad}px;${bold}">${r.label}</td>
-    <td style="padding:5px 10px;text-align:right;${bold}">${n(r.ind)}</td>
-    <td style="padding:5px 10px;text-align:right">${n(r.occ)}</td>
-    <td style="padding:5px 10px;text-align:right">${n(r.unocc)}</td>
-    <td style="padding:5px 10px;text-align:right">${n(r.cap)}</td>
+  return `<tr class="${cls}">
+    <td style="padding-left:${pad}px" class="${bld}">${r.label}</td>
+    <td class="bq-num${bld}">${n(r.ind)}</td>
+    <td class="bq-num">${n(r.occ)}</td>
+    <td class="bq-num">${n(r.unocc)}</td>
+    <td class="bq-num">${n(r.cap)}</td>
     ${offlineCell(r)}
-    <td style="padding:5px 10px;text-align:right">${pct(r.rate)}</td>
+    <td class="bq-num">${pct(r.rate)}</td>
   </tr>`
 }
 
 function sectionHeader(label, col1, col2, col3, col4) {
-  return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
-    <td style="padding:7px 10px">${label}</td>
-    <td style="padding:7px 10px;text-align:right">Individuals</td>
-    <td style="padding:7px 10px;text-align:right">${col1}</td>
-    <td style="padding:7px 10px;text-align:right">${col2}</td>
-    <td style="padding:7px 10px;text-align:right">${col3}</td>
-    <td style="padding:7px 10px;text-align:right">${col4}</td>
-    <td style="padding:7px 10px;text-align:right">Occupancy Rate</td>
+  return `<tr class="bq-th">
+    <td>${label}</td>
+    <td class="bq-num">Individuals</td>
+    <td class="bq-num">${col1}</td>
+    <td class="bq-num">${col2}</td>
+    <td class="bq-num">${col3}</td>
+    <td class="bq-num">${col4}</td>
+    <td class="bq-num">Occupancy Rate</td>
   </tr>`
 }
 
 function summaryHeader() {
-  return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
-    <td style="padding:7px 10px">Occupancy Summary</td>
-    <td style="padding:7px 10px;text-align:right">Individuals</td>
+  return `<tr class="bq-th">
+    <td>Occupancy Summary</td>
+    <td class="bq-num">Individuals</td>
     <td colspan="5"></td>
   </tr>`
 }
@@ -209,20 +209,20 @@ dailyTable = {
     ? allShelterInd + btInd
     : allShelterInd
 
-  const totalAccomRow = `<tr style="background:#e8edf5;font-weight:600">
-    <td style="padding:5px 10px">Total People Accommodated †</td>
-    <td style="padding:5px 10px;text-align:right">${n(totalInd)}</td>
+  const totalAccomRow = `<tr class="bq-row-total bq-bold">
+    <td>Total People Accommodated †</td>
+    <td class="bq-num">${n(totalInd)}</td>
     <td></td><td></td><td></td><td></td><td></td>
   </tr>`
   const bridgingRow = btInd !== null
-    ? `<tr style="background:#f5f5f5">
-        <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
-        <td style="padding:5px 10px;text-align:right">${n(btInd)}</td>
+    ? `<tr class="bq-row-alt">
+        <td style="padding-left:26px">Bridging &amp; Triage Programs</td>
+        <td class="bq-num">${n(btInd)}</td>
         <td></td><td></td><td></td><td></td><td></td>
        </tr>`
-    : `<tr style="background:#f5f5f5;color:#999;font-style:italic">
-        <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
-        <td style="padding:5px 10px;text-align:right;font-size:0.85em"
+    : `<tr class="bq-row-na">
+        <td style="padding-left:26px">Bridging &amp; Triage Programs</td>
+        <td class="bq-num" style="font-size:0.85em"
           >Not available for this date</td>
         <td></td><td></td><td></td><td></td><td></td>
        </tr>`
@@ -235,7 +235,7 @@ dailyTable = {
 
   return html`
     <div style="overflow-x:auto;margin:0 0 1rem">
-    <table style="border-collapse:collapse;width:100%;font-size:0.88em;font-family:'Segoe UI',Arial,sans-serif;min-width:620px">
+    <table class="bq-table">
       ${summaryHeader()}
       ${totalAccomRow}
       ${bridgingRow}
@@ -250,14 +250,14 @@ dailyTable = {
       ${sectionHeader("Allied Services", "Occupied Spaces", "Unoccupied Spaces", "Actual Space Capacity", "Offline Spaces")}
       ${alliedKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
 
-      <tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
-        <td style="padding:7px 10px">Temporary Programs, Bed/Space-Based</td>
-        <td style="padding:7px 10px;text-align:right">Individuals</td>
-        <td style="padding:7px 10px;text-align:right">Occupied Beds/Spaces</td>
-        <td style="padding:7px 10px;text-align:right">Unoccupied</td>
-        <td style="padding:7px 10px;text-align:right">Actual Capacity</td>
-        <td style="padding:7px 10px;text-align:right">Offline Beds/Spaces</td>
-        <td style="padding:7px 10px;text-align:right">Occupancy Rate</td>
+      <tr class="bq-th">
+        <td>Temporary Programs, Bed/Space-Based</td>
+        <td class="bq-num">Individuals</td>
+        <td class="bq-num">Occupied Beds/Spaces</td>
+        <td class="bq-num">Unoccupied</td>
+        <td class="bq-num">Actual Capacity</td>
+        <td class="bq-num">Offline Beds/Spaces</td>
+        <td class="bq-num">Occupancy Rate</td>
       </tr>
       ${s("temp_resp") ? tableRow(s("temp_resp")) : ""}
 
@@ -267,7 +267,7 @@ dailyTable = {
       ${sectionHeader("Temporary Isolation/Recovery Programs", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity", "Offline Rooms")}
       ${s("iso") ? tableRow(s("iso")) : ""}
     </table>
-    <p style="font-size:0.8em;color:#666;margin:4px 0 0">
+    <p class="bq-footnote">
       † Total People Accommodated = All Shelter Programs + Bridging &amp; Triage Programs.
       Bridging &amp; Triage figures are not published to the City of Toronto open data (CKAN)
       export. BonQuery scrapes them daily from the City's shelter census page when the City

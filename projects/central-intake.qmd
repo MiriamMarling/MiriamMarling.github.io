@@ -130,14 +130,12 @@ viewof controls = {
   </span>`
 
   // Assemble the full control bar
-  const bar = html`<div style="background:#f4f6f8;border:1px solid #dee2e6;
-      border-radius:6px;padding:10px 16px;margin-bottom:16px;
-      display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap">
+  const bar = html`<div class="bq-control-bar">
     ${modeInput}
     ${rangeSpan}
     <div>
       ${seInput}
-      <small style="color:#666;font-size:0.82em;display:block;margin-top:2px;max-width:340px">
+      <small class="bq-hint">
         Standard error of the monthly mean, computed from daily values within
         each month. ±2 SE approximates a 95% confidence band.
       </small>
@@ -226,7 +224,7 @@ activeX = controls.viewMode === "City replication"
 activeMarginBottom = 40   // no rotated labels in either mode
 ```
 
-<p style="font-size:0.88em;color:#555;margin:0 0 4px">
+<p style="font-size:0.88em;color:var(--bq-fg-secondary);margin:0 0 4px">
 Tap or hover any bar to see the month, year, and average value.
 </p>
 
@@ -235,7 +233,7 @@ Tap or hover any bar to see the month, year, and average value.
 // Chart 1 — Calls referred to a shelter space (wrap-up Code 1A)
 {
   if (activeRange.length === 0)
-    return html`<p style="padding:1rem;color:#888;font-style:italic">
+    return html`<p class="bq-no-data">
       ⚠ "From" month must be before "To" month.</p>`
 
   return Plot.plot({
@@ -260,7 +258,7 @@ Tap or hover any bar to see the month, year, and average value.
                        ? d.referred_mean - 2 * d.referred_se : null,
         y2:          d => d.referred_se != null
                        ? d.referred_mean + 2 * d.referred_se : null,
-        stroke:      "#333",
+        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
         strokeWidth: 1.5
       })] : [])
     ]
@@ -273,7 +271,7 @@ Tap or hover any bar to see the month, year, and average value.
 // Chart 2 — Unmatched individual callers (Service Queue data)
 {
   if (activeRange.length === 0)
-    return html`<p style="padding:1rem;color:#888;font-style:italic">
+    return html`<p class="bq-no-data">
       ⚠ "From" month must be before "To" month.</p>`
 
   return Plot.plot({
@@ -297,7 +295,7 @@ Tap or hover any bar to see the month, year, and average value.
                        ? d.unmatched_mean - 2 * d.unmatched_se : null,
         y2:          d => d.unmatched_se != null
                        ? d.unmatched_mean + 2 * d.unmatched_se : null,
-        stroke:      "#333",
+        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
         strokeWidth: 1.5
       })] : [])
     ]
@@ -310,7 +308,7 @@ Tap or hover any bar to see the month, year, and average value.
 // Chart 3 — Total calls handled (all wrap-up codes combined)
 {
   if (activeRange.length === 0)
-    return html`<p style="padding:1rem;color:#888;font-style:italic">
+    return html`<p class="bq-no-data">
       ⚠ "From" month must be before "To" month.</p>`
 
   return Plot.plot({
@@ -334,7 +332,7 @@ Tap or hover any bar to see the month, year, and average value.
                        ? d.handled_mean - 2 * d.handled_se : null,
         y2:          d => d.handled_se != null
                        ? d.handled_mean + 2 * d.handled_se : null,
-        stroke:      "#333",
+        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
         strokeWidth: 1.5
       })] : [])
     ]
@@ -353,8 +351,8 @@ the daily values in the City's CKAN open data export.
 
 // Shared style builders
 thStyle = (extra = "") =>
-  `border-bottom:2px solid #ccc;padding:6px 10px;text-align:center;` +
-  `background:#e8edf5;${extra}`
+  `border-bottom:2px solid var(--bq-chart-grid);padding:6px 10px;text-align:center;` +
+  `background:var(--bq-bg-accent);${extra}`
 
 html`<table style="width:100%;border-collapse:collapse;font-size:0.9em">
   <thead>
@@ -375,11 +373,11 @@ html`<table style="width:100%;border-collapse:collapse;font-size:0.9em">
     ${cityRange.map((d, i) => {
       // Jan rows mark a new year — same shade as headers; bold
       const bg = d.month === 1
-        ? "#e8edf5"
-        : (i % 2 === 0 ? "#fff" : "#f8f9fa")
+        ? "var(--bq-bg-accent)"
+        : (i % 2 === 0 ? "var(--bq-bg)" : "var(--bq-bg-alt)")
       const fw = d.month === 1 ? "font-weight:600;" : ""
       const td = () =>
-        `padding:5px 10px;border-bottom:1px solid #eee;` +
+        `padding:5px 10px;border-bottom:1px solid var(--bq-border);` +
         `text-align:center;background:${bg};${fw}`
       return html`<tr>
         <td style="${td()}">${d.year}</td>

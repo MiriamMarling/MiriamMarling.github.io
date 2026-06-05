@@ -83,10 +83,10 @@ passHdl  = (bq, city) => bq != null && Math.abs(bq - city) <= 1.0
 // Rendered pass/fail mark
 mark = (pass, bqVal) =>
   bqVal == null
-    ? `<span style="color:#999">—</span>`
+    ? `<span style="color:var(--bq-fg-disabled)">—</span>`
     : pass
-      ? `<span style="color:#1a7a4a;font-weight:700">✓</span>`
-      : `<span style="color:#cc0000;font-weight:700">✗</span>`
+      ? `<span style="color:var(--bq-success);font-weight:700">✓</span>`
+      : `<span style="color:var(--bq-danger);font-weight:700">✗</span>`
 
 // Assemble one row of the validation table
 function valRow(c, i) {
@@ -98,9 +98,9 @@ function valRow(c, i) {
   const pu  = passUnm(bu, c.unmatched)
   const ph  = passHdl(bh, c.handled)
 
-  const bg = i % 2 === 0 ? "#fff" : "#f8f9fa"
-  const td = `padding:5px 9px;text-align:center;border-bottom:1px solid #eee`
-  const tdb = td + ";border-left:2px solid #d0d8e8"  // metric group divider in body
+  const bg = i % 2 === 0 ? "var(--bq-bg)" : "var(--bq-bg-alt)"
+  const td = `padding:5px 9px;text-align:center;border-bottom:1px solid var(--bq-border)`
+  const tdb = td + ";border-left:2px solid var(--bq-chart-blue)"
 
   return html`<tr style="background:${bg}">
     <td style="${td}">${c.year}</td>
@@ -151,8 +151,8 @@ html`<p style="font-size:0.9em;margin:0 0 10px">
 // Validation table — one row per month, three metric triplets (BQ | City | ✓✗).
 // Background/color applied per-<th> to survive Quarto Bootstrap's <thead> overrides.
 {
-  const H = `background:#1a3c6b;color:#fff;font-weight:600;font-size:0.82em;padding:6px 9px;text-align:center`
-  const HB = H + ";border-left:2px solid #4a7ab5"  // metric group divider
+  const H = `background:var(--bq-th-bg);color:var(--bq-th-fg);font-weight:600;font-size:0.82em;padding:6px 9px;text-align:center`
+  const HB = H + ";border-left:2px solid var(--bq-chart-blue)"
 
   return html`<div style="overflow-x:auto">
 <table style="width:100%;border-collapse:collapse;font-size:0.88em">
@@ -201,7 +201,7 @@ html`<p style="font-size:0.9em;margin:0 0 10px">
   })
 
   if (failures.length === 0)
-    return html`<p style="color:#1a7a4a">All cells pass.</p>`
+    return html`<p style="color:var(--bq-success)">All cells pass.</p>`
 
   return html`<ul style="font-size:0.9em">
     ${failures.map(f => html`<li>${f}</li>`)}
@@ -236,7 +236,7 @@ sources.
 //| echo: false
 // Occupancy gap table — City published vs BonQuery CKAN, with the gap highlighted
 {
-  const H  = `background:#1a3c6b;color:#fff;font-weight:600;font-size:0.82em;padding:6px 9px;text-align:center`
+  const H  = `background:var(--bq-th-bg);color:var(--bq-th-fg);font-weight:600;font-size:0.82em;padding:6px 9px;text-align:center`
 
   return html`<div style="overflow-x:auto">
 <table style="width:100%;border-collapse:collapse;font-size:0.88em">
@@ -255,13 +255,13 @@ sources.
       const bo  = bq ? bq.occupancy_mean : null
       const gap = bo != null ? c.occupancy - bo : null
 
-      const bg = i % 2 === 0 ? "#fff" : "#f8f9fa"
-      const td = `padding:5px 9px;text-align:center;border-bottom:1px solid #eee`
+      const bg = i % 2 === 0 ? "var(--bq-bg)" : "var(--bq-bg-alt)"
+      const td = `padding:5px 9px;text-align:center;border-bottom:1px solid var(--bq-border)`
 
-      // Shade the gap cell — deeper orange for larger gaps
+      const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark"
       const gapStyle = gap == null ? td
-        : gap > 200 ? td + ";background:#ffe4cc;font-weight:700"
-        : gap > 80  ? td + ";background:#fff3e6"
+        : gap > 200 ? td + `;background:${isDark ? "rgba(217,119,6,0.25)" : "#ffe4cc"};font-weight:700`
+        : gap > 80  ? td + `;background:${isDark ? "rgba(217,119,6,0.12)" : "#fff3e6"}`
         : td
 
       return html`<tr style="background:${bg}">

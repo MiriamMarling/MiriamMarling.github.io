@@ -27,21 +27,21 @@ format:
         .sector-panel { min-width: 0; }
         /* Men's sector hero highlight */
         .crisis-hero {
-          background: #1a1a2e; color: #fff;
+          background: var(--bq-hero-bg); color: var(--bq-hero-fg);
           border-radius: 0.75rem; padding: 2rem 2.5rem;
           margin: 1.5rem 0 1rem;
           display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
         }
         .crisis-hero .hero-number {
-          font-size: 5rem; font-weight: 800; color: #ff3b30;
+          font-size: 5rem; font-weight: 800; color: var(--bq-hero-accent);
           line-height: 1; white-space: nowrap; flex-shrink: 0;
         }
         .crisis-hero .hero-text { max-width: 520px; }
-        .crisis-hero .hero-text strong { color: #ff3b30; }
+        .crisis-hero .hero-text strong { color: var(--bq-hero-accent); }
         .crisis-hero .hero-label {
           font-size: 1.15rem; font-weight: 600; line-height: 1.4; margin-bottom: 0.5rem;
         }
-        .crisis-hero .hero-sub { font-size: 0.9rem; color: #aab; line-height: 1.5; }
+        .crisis-hero .hero-sub { font-size: 0.9rem; color: var(--bq-hero-sub); line-height: 1.5; }
         </style>
 ---
 
@@ -185,10 +185,10 @@ Plot.plot({
       : null,
     // Expected line (trend + seasonal)
     Plot.line(systemData, {x: "dateObj", y: "expected",
-      stroke: "#aaa", strokeWidth: 1.5, strokeDasharray: "4,3"}),
+      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1.5, strokeDasharray: "4,3"}),
     // Observed line
     Plot.line(systemData, {x: "dateObj", y: "observed",
-      stroke: "#0066cc", strokeWidth: 2}),
+      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 2}),
     // Spike dots — colored by severity
     Plot.dot(systemData.filter(d => d.spike_flag !== "none"), {
       x: "dateObj",
@@ -270,7 +270,7 @@ Plot.plot({
       x: "pctDays", y: "label",
       text: d => `${d.pctDays.toFixed(1)}%  (${d.spikes} days, ${d.spikes3} severe)`,
       dx: 8, textAnchor: "start", fontSize: 13,
-      fill: d => d.isTop ? "#ff3b30" : "#333",
+      fill: d => d.isTop ? "#ff3b30" : getComputedStyle(document.documentElement).getPropertyValue("--bq-fg"),
       fontWeight: d => d.isTop ? "700" : "400"
     }),
     Plot.ruleX([0])
@@ -301,9 +301,9 @@ Plot.plot({
           fill: "#ff3b30", fillOpacity: 0.15})
       : null,
     Plot.line(heroSectorData, {x: "dateObj", y: "expected",
-      stroke: "#aaa", strokeWidth: 1.5, strokeDasharray: "4,3"}),
+      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1.5, strokeDasharray: "4,3"}),
     Plot.line(heroSectorData, {x: "dateObj", y: "observed",
-      stroke: "#0066cc", strokeWidth: 2}),
+      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 2}),
     Plot.dot(heroSectorData.filter(d => d.spike_flag !== "none"), {
       x: "dateObj", y: "observed",
       fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
@@ -354,9 +354,9 @@ html`<div class="sector-grid">${sectorOrder.map(sec => {
             fill: "#ff3b30", fillOpacity: 0.15})
         : null,
       Plot.line(secData, {x: "dateObj", y: "expected",
-        stroke: "#aaa", strokeWidth: 1, strokeDasharray: "3,2"}),
+        stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1, strokeDasharray: "3,2"}),
       Plot.line(secData, {x: "dateObj", y: "observed",
-        stroke: "#0066cc", strokeWidth: 1.5}),
+        stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 1.5}),
       Plot.dot(secData.filter(d => d.spike_flag !== "none"), {
         x: "dateObj", y: "observed",
         fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
