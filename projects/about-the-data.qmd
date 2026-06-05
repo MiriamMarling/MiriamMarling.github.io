@@ -1,28 +1,58 @@
 ---
-title: "About the Data"
-subtitle: "What Toronto's shelter system flow data does and doesn't tell us"
-description: "Data notes for Toronto's shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions."
+title: "Audit Methodology"
+subtitle: "Data sources, integrity checks, and the structural limits of Toronto's shelter system data"
+description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, reporting discrepancies, and structural limits worth knowing before drawing conclusions."
 author: "Miriam Marling"
 open-graph:
-  title: "About the Data — Toronto Shelter System"
-  description: "Data notes for Toronto's shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions."
+  title: "Audit Methodology — Toronto Shelter System"
+  description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, reporting discrepancies, and structural limits worth knowing before drawing conclusions."
   site_name: "BonQuery — Data for the Greater Good"
 twitter-card:
   card-style: summary
-  title: "About the Data — Toronto Shelter System"
-  description: "Data notes for Toronto's shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions."
+  title: "Audit Methodology — Toronto Shelter System"
+  description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, reporting discrepancies, and structural limits worth knowing before drawing conclusions."
 ---
 
-The numbers on the [shelter system project page](toronto-shelter.qmd)
+::::: {.bq-alert .bq-alert-hero .bq-bilingual}
+::: {.bq-lang .bq-lang-en}
+**ACTIVE AUDIT: 2026–2027 WINTER SEASON.** We are tracking the gap between the
+City's reported capacity and the raw data. Discrepancies are being logged in our
+[Discrepancy Tracker](discrepancy-tracker.qmd). We are demanding zero unplaced
+households on nights reaching −5 °C. Daily monitoring will start when the
+2026–2027 cold season opens in November.
+:::
+
+::: {.bq-lang .bq-lang-fr}
+**AUDIT ACTIF : SAISON HIVERNALE 2026–2027.** Nous suivons l'écart entre la
+capacité déclarée par la Ville et les données brutes. Les écarts sont consignés
+dans notre [Suivi des divergences](discrepancy-tracker.qmd). Nous exigeons zéro
+ménage sans place lorsque la température atteint −5 °C. Le suivi quotidien
+débutera à l'ouverture de la saison froide 2026–2027 en novembre.
+:::
+
+:::::
+
+The numbers on the [shelter system audit](toronto-shelter.qmd)
 come from a single dataset published by the City of Toronto. Like any
 dataset, it captures some things well, leaves other things out, and
 has structural quirks worth knowing before drawing conclusions from
-it. This page covers what we've noticed.
+it. This page documents the methodology behind the audit: where the
+data comes from, how it is checked, and where careful reading matters.
 
 The notes below are not findings about Toronto's shelter system
-itself — those will come later, as statistical analyses are added to
-the site. These are notes about the data: what it represents, what it
-doesn't, and where careful reading matters.
+itself — those are reported in the audit pages. These are notes about
+the data: what it represents, what it doesn't, and where careful
+reading matters.
+
+## Data Integrity & Reporting Discrepancies
+
+Our analysis relies exclusively on raw SMIS data published by the City
+via the Open Data portal. We have observed consistent discrepancies
+between these raw records and the figures presented in the City's
+public-facing dashboards. We perform a nightly audit of these
+discrepancies to ensure the public has an accurate, granular view of
+shelter performance that is not obscured by smoothed, aggregated
+monthly averages.
 
 ## The 18% undercount
 
@@ -59,8 +89,8 @@ The three most common counts:
   dataset.
 - **Actively homeless.** How many people used the shelter system at
   least once in the past three months and haven't moved to permanent
-  housing. This is the headline number on every dashboard on the
-  shelter system project page.
+  housing. This is the headline number on every dashboard in the
+  shelter system audit.
 - **Annual unique individuals.** How many different people used the
   shelter system at any point during a calendar year. Published by
   the City in occasional reports rather than in a regular dataset.
@@ -127,10 +157,10 @@ they'd already been using the shelter system. Most of the people
 in that count were already in the system; they just newly met
 the federal definition of chronic homelessness.
 
-This is explained on the
-[project page](toronto-shelter.qmd#key-terms) and in the City's
-own documentation, but it's worth flagging again here because the
-column name is misleading. Any cross-group comparison of "Newly
+This is explained in the
+[shelter system audit](toronto-shelter.qmd#key-terms) and in the
+City's own documentation, but it's worth flagging again here because
+the column name is misleading. Any cross-group comparison of "Newly
 Identified" figures that includes the Chronic row is mixing two
 different measurements.
 
