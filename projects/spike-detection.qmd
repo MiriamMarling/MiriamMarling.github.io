@@ -1,7 +1,7 @@
 ---
 title: "Occupancy Spike Detection"
 subtitle: "Toronto Shelter System — days unusually above seasonal and trend expectations"
-description: "Retrospective spike detection for Toronto’s daily shelter occupancy — identifying days well above seasonal and trend expectations with **Seasonal-Trend decomposition using LOESS** (Locally Estimated Scatterplot Smoothing), abbreviated STL, and robust thresholds."
+description: "Retrospective spike detection for Toronto's daily shelter occupancy — identifying days well above seasonal and trend expectations with **Seasonal-Trend decomposition using LOESS** (Locally Estimated Scatterplot Smoothing), abbreviated STL, and robust thresholds."
 author: "Miriam Marling"
 open-graph:
   title: "Occupancy Spike Detection — Toronto Shelter System"
@@ -18,14 +18,11 @@ format:
     include-in-header:
       text: |
         <style>
-        /* same max-width override as other chart pages */
         .quarto-container, .container-fluid, .container { max-width: none !important; }
         .cell-output-display { max-width: none !important; overflow: visible !important; }
         .cell-output-display svg .tick text { font-size: 13px; }
-        /* small-multiples grid for sector panels */
         .sector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
         .sector-panel { min-width: 0; }
-        /* Men's sector hero highlight */
         .crisis-hero {
           background: var(--bq-hero-bg); color: var(--bq-hero-fg);
           border-radius: 0.75rem; padding: 2rem 2.5rem;
@@ -55,364 +52,77 @@ The page shows **two threshold bands**. The amber band (2 MAD-SD, or two Median 
 
 ```{ojs}
 //| echo: false
-data = FileAttachment("../data/spike_detection.json").json()
-```
+S = ({
+  fmtN:   d => d.toLocaleString(),
+  devStr: v => v != null ? v.toFixed(1) + " MAD-SD" : "—",
 
-```{ojs}
-//| echo: false
-// Parse dates — spike_detection.json has date as "YYYY-MM-DD" string
-spikeData = data.map(d => ({
-  ...d,
-  dateObj: new Date(d.date + "T00:00:00")   // avoid UTC/local midnight shift
-}))
-```
+  sectorLabels: {men: "Men", women: "Women", mixed_adult: "Mixed Adult",
+                 youth: "Youth", families: "Families"},
+  ratioHigher: "more than any other, and nearly double the next highest",
+  ratioSame:   "more than any other sector",
 
-```{ojs}
-//| echo: false
-// Sector ranking — derives the most-affected sector from the data
-// so the heading, hero box, bar highlight, and commentary stay correct
-// even as new data shifts the ordering.
-_sectorLabels = ({men: "Men", women: "Women", mixed_adult: "Mixed Adult", youth: "Youth", families: "Families"})
+  months:   ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+  julLabel: y => `Jul ${y}`,
 
-sectorRanked = ["men","women","mixed_adult","youth","families"].map(sec => {
-  const rows  = spikeData.filter(d => d.series === sec)
-  const sp    = rows.filter(d => d.spike_flag !== "none").length
-  const sp3   = rows.filter(d => d.spike_flag === "3mad").length
-  return { key: sec, label: _sectorLabels[sec], spikes: sp, spikes3: sp3 }
-}).sort((a, b) => b.spikes - a.spikes)
+  windowLabels:     ["1 Month","3 Months","6 Months","12 Months","All (2021–present)"],
+  windowInputLabel: "View window",
+  band2:            "2 MAD-SD",
+  band3:            "3 MAD-SD",
+  bandsLabel:       "Show threshold bands",
 
-topSec    = sectorRanked[0]
-secondSec = sectorRanked[1]
+  flag3:   " ★ SPIKE (3 MAD-SD)",
+  flag2:   " ▲ Spike (2 MAD-SD)",
+  flag3s:  " ★ SPIKE",
+  flag2s:  " ▲ Spike",
+  tipObs:  "Observed: ",
+  tipExp:  "Expected: ",
+  tipDev:  "Deviation: ",
+  persons: "individuals",
+  above:   "above expected",
+  noData:  "no data",
 
-// "nearly double" phrasing only when the top sector is at least 1.8x the next
-ratioPhrase = (secondSec.spikes > 0 && (topSec.spikes / secondSec.spikes) >= 1.8)
-  ? `more than any other, and nearly double the next highest`
-  : `more than any other sector`
-```
+  headingSystem: "System-Wide Occupancy — All Programs",
+  ySystem:       "Individuals accommodated",
+  yHero:         label => `${label} — individuals accommodated`,
 
-```{ojs}
-//| echo: false
-// Window dropdown — controls x-axis zoom only, NOT decomposition
-windowOptions = [
-  {label: "1 Month",  months: 1},
-  {label: "3 Months", months: 3},
-  {label: "6 Months", months: 6},
-  {label: "12 Months", months: 12},
-  {label: "All (2021–present)", months: null}
-]
-viewof selectedWindow = Inputs.select(windowOptions, {
-  label: "View window",
-  format: d => d.label,
-  value: windowOptions[4]   // default: All
-})
-```
+  heroHeading: label => `${label}'s Sector Experienced the Most Spike Events`,
+  heroBox: (stats, ratioPhrase) => html`<div class="crisis-hero">
+    <div class="hero-number">${stats.pct}%</div>
+    <div class="hero-text">
+      <div class="hero-label">of all sector spike days in Toronto's shelter system occurred in the <strong>${stats.topLabel}'s sector</strong> — ${ratioPhrase}.</div>
+      <div class="hero-sub">${stats.topSpikes.toLocaleString()} of ${stats.totalSpikes.toLocaleString()} total spike days &nbsp;·&nbsp; ${stats.topSevere} were severe (3 MAD-SD) &nbsp;·&nbsp; ${stats.startYear}–present</div>
+    </div>
+  </div>`,
 
-```{ojs}
-//| echo: false
-// Band toggle — toggleable shaded regions
-viewof showBands = Inputs.checkbox(["2 MAD-SD", "3 MAD-SD"], {
-  label: "Show threshold bands",
-  value: ["2 MAD-SD", "3 MAD-SD"]
-})
-```
+  barXLabel:  "% of days that were spike days",
+  barXSuffix: "%",
+  barText: (pct, sp, sp3) => `${pct.toFixed(1)}%  (${sp} days, ${sp3} severe)`,
 
-```{ojs}
-//| echo: false
-// Compute x-axis cutoff from window selection
-windowCutoff = selectedWindow.months === null
-  ? new Date("2021-01-01")
-  : (() => {
-      const d = new Date()
-      d.setMonth(d.getMonth() - selectedWindow.months)
-      return d
-    })()
+  figCaption: (startYear, pct, total, totalDays) => html`<p style="font-style:italic; font-size:0.88rem; margin-top:0.4rem; color: var(--bq-fg-muted, #666)">Figure 1. <em>Percentage of days classified as spike days (occupancy exceeding the 2 MAD-SD threshold) by shelter sector, Toronto shelter system, ${startYear}–present. Red bar indicates the sector with the most spike days. Labels show total spike days and the count crossing the more severe 3 MAD-SD band. Across all five sectors combined, ${pct}% of sector-days were spike days (${total.toLocaleString()} of ${totalDays.toLocaleString()} total sector-days). Thresholds are sector-specific and era-calibrated; each sector is judged against its own recent volatility.</em></p>`,
 
-// Filter system-wide series to selected window (zoom only)
-systemData = spikeData
-  .filter(d => d.series === "system" && d.dateObj >= windowCutoff)
-  .sort((a, b) => a.dateObj - b.dateObj)
+  narrativeMen:   stats => html`<p>Men are both the largest sector in Toronto's shelter system and the most frequently affected by occupancy spikes. Across ${stats.startYear}–present, ${stats.topSpikes.toLocaleString()} of the ${stats.totalSpikes.toLocaleString()} total sector spike days occurred in the Men's sector — ${stats.pct}%, more than any other sector by a significant margin. And unlike other sectors, Men's spike days skew toward the most severe band: ${stats.topSevere} of the ${stats.topSpikes.toLocaleString()} crossed the 3 MAD-SD threshold, compared to just ${stats.topSpikes - stats.topSevere} at the 2 MAD-SD level, indicating that Men's sector anomalies tend to be pronounced rather than subtle. This is consistent with a broader pattern in Toronto's homelessness data: men make up the majority of the city's chronically homeless population. When the system comes under pressure, the Men's sector shows it first and most sharply. That pattern is visible here.</p>`,
+  narrativeOther: stats => html`<p>The ${stats.topLabel} sector recorded the most occupancy spike days during ${stats.startYear}–present: ${stats.topSpikes.toLocaleString()} spike days, representing ${stats.pct}% of all sector spike days. ${stats.topSevere} of those crossed the more severe 3 MAD-SD threshold. The chart below shows the ${stats.topLabel} sector's full spike history.</p>`,
 
-// The top sector gets its own full-width chart; remaining four go into the small-multiples grid
-heroSectorData = spikeData
-  .filter(d => d.series === topSec.key && d.dateObj >= windowCutoff)
-  .sort((a, b) => a.dateObj - b.dateObj)
+  headingOther:      "Other Sectors",
+  otherSectorsIntro: "Each panel uses its own y-axis and its own threshold — sectors differ too much in size to share a scale. When the system-wide or Men's chart shows a spike, these panels show whether other sectors were also affected.",
 
-sectorOrder = ["men", "women", "mixed_adult", "youth", "families"].filter(s => s !== topSec.key)
-sectorLabels = _sectorLabels
-```
-
-```{ojs}
-//| echo: false
-// x-axis config shared across charts
-MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-
-xAxis = (() => {
-  if (!systemData.length) return {type: "time", label: null}
-  const spanDays = (systemData[systemData.length-1].dateObj - systemData[0].dateObj) / 86400000
-  const spanMonths = spanDays / 30.44
-  return {
-    type: "time",
-    label: null,
-    ticks: spanMonths <= 3 ? d3.utcDay.every(7) : spanMonths <= 18 ? d3.utcMonth.every(1) : 8,
-    tickFormat: d => {
-      const m = d.getMonth(), y = d.getFullYear()
-      if (spanMonths <= 18) return m === 0 ? `${MON[m]}-${y}` : MON[m]
-      return m === 0 ? String(y) : m === 6 ? `Jul ${y}` : ""
-    }
-  }
-})()
-
-fmtN = d => d.toLocaleString()
-```
-
-### System-Wide Occupancy — All Programs
-
-```{ojs}
-//| echo: false
-Plot.plot({
-  width, height: 400, marginLeft: 70,
-  x: xAxis,
-  y: {label: "Individuals accommodated", grid: true, tickFormat: fmtN},
-  marks: [
-    // Threshold bands (toggleable) — area between expected and threshold levels
-    showBands.includes("2 MAD-SD")
-      ? Plot.areaY(systemData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-          fill: "#ff9500", fillOpacity: 0.20})
-      : null,
-    showBands.includes("3 MAD-SD")
-      ? Plot.areaY(systemData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
-          fill: "#ff3b30", fillOpacity: 0.15})
-      : null,
-    // Expected line (trend + seasonal)
-    Plot.line(systemData, {x: "dateObj", y: "expected",
-      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1.5, strokeDasharray: "4,3"}),
-    // Observed line
-    Plot.line(systemData, {x: "dateObj", y: "observed",
-      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 2}),
-    // Spike dots — colored by severity
-    Plot.dot(systemData.filter(d => d.spike_flag !== "none"), {
-      x: "dateObj",
-      y: "observed",
-      fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
-      r: 4,
-      title: d => `${d.date}\n${d.observed.toLocaleString()} individuals\n${d.remainder_mad_sd.toFixed(1)} MAD-SD above expected`
-    }),
-    Plot.tip(systemData, Plot.pointerX({
-      x: "dateObj", y: "observed",
-      title: d => {
-        const flag = d.spike_flag === "3mad" ? " ★ SPIKE (3 MAD-SD)"
-                   : d.spike_flag === "2mad" ? " ▲ Spike (2 MAD-SD)" : ""
-        return `${d.date}${flag}\nObserved: ${d.observed.toLocaleString()}\nExpected: ${Math.round(d.expected).toLocaleString()}\nDeviation: ${d.remainder_mad_sd.toFixed(1)} MAD-SD`
-      }
-    }))
-  ]
-})
-```
-
-```{ojs}
-//| echo: false
-html`<h3>${topSec.label}'s Sector Experienced the Most Spike Events</h3>`
-```
-
-```{ojs}
-//| echo: false
-heroStats = {
-  const sectors = ["men","women","mixed_adult","youth","families"]
-  const topRows = spikeData.filter(d => d.series === topSec.key)
-  const topSpikes = topRows.filter(d => d.spike_flag !== "none").length
-  const topSevere = topRows.filter(d => d.spike_flag === "3mad").length
-  const totalSpikes = spikeData.filter(d => sectors.includes(d.series) && d.spike_flag !== "none").length
-  const pct = Math.round(topSpikes / totalSpikes * 100)
-  const startYear = spikeData.reduce((mn, d) => Math.min(mn, +d.date.slice(0,4)), 9999)
-  return {topSpikes, topSevere, totalSpikes, pct, startYear, topLabel: topSec.label}
-}
-```
-
-```{ojs}
-//| echo: false
-html`<div class="crisis-hero">
-  <div class="hero-number">${heroStats.pct}%</div>
-  <div class="hero-text">
-    <div class="hero-label">of all sector spike days in Toronto's shelter system occurred in the <strong>${heroStats.topLabel}'s sector</strong> — ${ratioPhrase}.</div>
-    <div class="hero-sub">${heroStats.topSpikes.toLocaleString()} of ${heroStats.totalSpikes.toLocaleString()} total spike days &nbsp;·&nbsp; ${heroStats.topSevere} were severe (3 MAD-SD) &nbsp;·&nbsp; ${heroStats.startYear}–present</div>
-  </div>
-</div>`
-```
-
-```{ojs}
-//| echo: false
-// Sector spike comparison — computed from live data; top sector highlighted dynamically
-sectorStats = ["men", "youth", "families", "women", "mixed_adult"].map(sec => {
-  const rows = spikeData.filter(d => d.series === sec)
-  const spikes = rows.filter(d => d.spike_flag !== "none").length
-  const spikes3 = rows.filter(d => d.spike_flag === "3mad").length
-  return {
-    label: _sectorLabels[sec],
-    spikes,
-    spikes3,
-    pctDays: spikes / rows.length * 100,
-    isTop: sec === topSec.key
-  }
-}).sort((a, b) => b.spikes - a.spikes)
-
-Plot.plot({
-  width, height: 210, marginLeft: 110, marginRight: 160,
-  x: {label: "% of days that were spike days", tickFormat: d => d + "%", domain: [0, 18]},
-  y: {label: null},
-  marks: [
-    Plot.barX(sectorStats, {
-      x: "pctDays", y: "label",
-      fill: d => d.isTop ? "#ff3b30" : "#4a6fa5",
-      fillOpacity: d => d.isTop ? 1 : 0.45,
-      sort: {y: "-x"}
-    }),
-    Plot.text(sectorStats, {
-      x: "pctDays", y: "label",
-      text: d => `${d.pctDays.toFixed(1)}%  (${d.spikes} days, ${d.spikes3} severe)`,
-      dx: 8, textAnchor: "start", fontSize: 13,
-      fill: d => d.isTop ? "#ff3b30" : getComputedStyle(document.documentElement).getPropertyValue("--bq-fg"),
-      fontWeight: d => d.isTop ? "700" : "400"
-    }),
-    Plot.ruleX([0])
-  ]
-})
-```
-
-```{ojs}
-//| echo: false
-topSec.key === "men"
-  ? html`<p>Men are both the largest sector in Toronto's shelter system and the most frequently affected by occupancy spikes. Across ${heroStats.startYear}–present, ${heroStats.topSpikes.toLocaleString()} of the ${heroStats.totalSpikes.toLocaleString()} total sector spike days occurred in the Men's sector — ${heroStats.pct}%, more than any other sector by a significant margin. And unlike other sectors, Men's spike days skew toward the most severe band: ${heroStats.topSevere} of the ${heroStats.topSpikes.toLocaleString()} crossed the 3 MAD-SD threshold, compared to just ${heroStats.topSpikes - heroStats.topSevere} at the 2 MAD-SD level, indicating that Men's sector anomalies tend to be pronounced rather than subtle. This is consistent with a broader pattern in Toronto's homelessness data: men make up the majority of the city's chronically homeless population. When the system comes under pressure, the Men's sector shows it first and most sharply. That pattern is visible here.</p>`
-  : html`<p>The ${heroStats.topLabel} sector recorded the most occupancy spike days during ${heroStats.startYear}–present: ${heroStats.topSpikes.toLocaleString()} spike days, representing ${heroStats.pct}% of all sector spike days. ${heroStats.topSevere} of those crossed the more severe 3 MAD-SD threshold. The chart below shows the ${heroStats.topLabel} sector's full spike history.</p>`
-```
-
-```{ojs}
-//| echo: false
-Plot.plot({
-  width, height: 400, marginLeft: 70,
-  x: xAxis,
-  y: {label: `${topSec.label} — individuals accommodated`, grid: true, tickFormat: fmtN},
-  marks: [
-    showBands.includes("2 MAD-SD")
-      ? Plot.areaY(heroSectorData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-          fill: "#ff9500", fillOpacity: 0.20})
-      : null,
-    showBands.includes("3 MAD-SD")
-      ? Plot.areaY(heroSectorData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
-          fill: "#ff3b30", fillOpacity: 0.15})
-      : null,
-    Plot.line(heroSectorData, {x: "dateObj", y: "expected",
-      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1.5, strokeDasharray: "4,3"}),
-    Plot.line(heroSectorData, {x: "dateObj", y: "observed",
-      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 2}),
-    Plot.dot(heroSectorData.filter(d => d.spike_flag !== "none"), {
-      x: "dateObj", y: "observed",
-      fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
-      r: 4,
-      title: d => `${d.date}\n${d.observed.toLocaleString()} individuals\n${d.remainder_mad_sd.toFixed(1)} MAD-SD above expected`
-    }),
-    Plot.tip(heroSectorData, Plot.pointerX({
-      x: "dateObj", y: "observed",
-      title: d => {
-        const flag = d.spike_flag === "3mad" ? " ★ SPIKE (3 MAD-SD)"
-                   : d.spike_flag === "2mad" ? " ▲ Spike (2 MAD-SD)" : ""
-        return `${topSec.label}${flag}\n${d.date}\nObserved: ${d.observed.toLocaleString()}\nExpected: ${Math.round(d.expected).toLocaleString()}\nDeviation: ${d.remainder_mad_sd.toFixed(1)} MAD-SD`
-      }
-    }))
-  ]
-})
-```
-
-### Other Sectors
-
-Each panel uses its own y-axis and its own threshold — sectors differ too much in size to share a scale. When the system-wide or Men's chart shows a spike, these panels show whether other sectors were also affected.
-
-```{ojs}
-//| echo: false
-// Small multiples — one Plot.plot() per sector
-// Use html`` template to arrange in CSS grid
-html`<div class="sector-grid">${sectorOrder.map(sec => {
-  const secData = spikeData
-    .filter(d => d.series === sec && d.dateObj >= windowCutoff)
-    .sort((a, b) => a.dateObj - b.dateObj)
-  const label = sectorLabels[sec]
-  if (!secData.length) return html`<div class="sector-panel"><em>${label}: no data</em></div>`
-  const chart = Plot.plot({
-    width: Math.max(300, Math.floor((width - 40) / 3)),
-    height: 220,
-    marginLeft: 60,
-    marginTop: 30,
-    caption: label,
-    x: xAxis,
-    y: {label: null, grid: true, tickFormat: fmtN},
-    marks: [
-      showBands.includes("2 MAD-SD")
-        ? Plot.areaY(secData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-            fill: "#ff9500", fillOpacity: 0.20})
-        : null,
-      showBands.includes("3 MAD-SD")
-        ? Plot.areaY(secData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
-            fill: "#ff3b30", fillOpacity: 0.15})
-        : null,
-      Plot.line(secData, {x: "dateObj", y: "expected",
-        stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1, strokeDasharray: "3,2"}),
-      Plot.line(secData, {x: "dateObj", y: "observed",
-        stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 1.5}),
-      Plot.dot(secData.filter(d => d.spike_flag !== "none"), {
-        x: "dateObj", y: "observed",
-        fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
-        r: 3,
-        title: d => `${d.date}\n${d.observed.toLocaleString()} individuals\n${d.remainder_mad_sd.toFixed(1)} MAD-SD`
-      }),
-      Plot.tip(secData, Plot.pointerX({
-        x: "dateObj", y: "observed",
-        title: d => {
-          const flag = d.spike_flag === "3mad" ? " ★ SPIKE"
-                     : d.spike_flag === "2mad" ? " ▲ Spike" : ""
-          return `${label}${flag}\n${d.date}\n${d.observed.toLocaleString()} individuals`
-        }
-      }))
-    ]
-  })
-  return html`<div class="sector-panel">${chart}</div>`
-})}</div>`
-```
-
-### Spike Days
-
-```{ojs}
-//| echo: false
-// All spike rows across all series, most-recent-first
-allSpikes = spikeData
-  .filter(d => d.spike_flag !== "none")
-  .sort((a, b) => b.date.localeCompare(a.date))
-  .map(d => ({
-    Date: d.date,
-    Metric: d.label,
-    Observed: d.observed,
-    Expected: Math.round(d.expected),
-    "Deviation (MAD-SD)": +d.remainder_mad_sd.toFixed(1),
-    Band: d.spike_flag === "3mad" ? "3 MAD-SD ★" : "2 MAD-SD",
-    Notes: ""
-  }))
-```
-
-```{ojs}
-//| echo: false
-viewof spikeSearch = Inputs.search(allSpikes, {placeholder: "Filter by metric or date…"})
-```
-
-```{ojs}
-//| echo: false
-Inputs.table(spikeSearch, {
-  columns: ["Date","Metric","Observed","Expected","Deviation (MAD-SD)","Band","Notes"],
-  format: {
-    Observed: d => d.toLocaleString(),
-    Expected: d => d.toLocaleString()
+  headingTable:      "Spike Days",
+  col: {
+    date:      "Date",
+    metric:    "Metric",
+    observed:  "Observed",
+    expected:  "Expected",
+    deviation: "Deviation (MAD-SD)",
+    band:      "Band",
+    notes:     "Notes"
   },
-  sort: "Date",
-  reverse: true
+  band2row:          "2 MAD-SD",
+  band3row:          "3 MAD-SD ★",
+  searchPlaceholder: "Filter by metric or date…",
 })
 ```
+
+{{< include _spike-detection-body.qmd >}}
 
 ---
 

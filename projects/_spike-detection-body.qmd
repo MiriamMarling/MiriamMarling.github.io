@@ -1,0 +1,344 @@
+```{ojs}
+//| echo: false
+data = FileAttachment("../data/spike_detection.json").json()
+```
+
+```{ojs}
+//| echo: false
+spikeData = data.map(d => ({
+  ...d,
+  dateObj: new Date(d.date + "T00:00:00")
+}))
+```
+
+```{ojs}
+//| echo: false
+sectorRanked = ["men","women","mixed_adult","youth","families"].map(sec => {
+  const rows = spikeData.filter(d => d.series === sec)
+  const sp   = rows.filter(d => d.spike_flag !== "none").length
+  const sp3  = rows.filter(d => d.spike_flag === "3mad").length
+  return { key: sec, label: S.sectorLabels[sec], spikes: sp, spikes3: sp3 }
+}).sort((a, b) => b.spikes - a.spikes)
+
+topSec    = sectorRanked[0]
+secondSec = sectorRanked[1]
+
+ratioPhrase = (secondSec.spikes > 0 && (topSec.spikes / secondSec.spikes) >= 1.8)
+  ? S.ratioHigher
+  : S.ratioSame
+```
+
+```{ojs}
+//| echo: false
+windowOptions = [
+  {label: S.windowLabels[0], months: 1},
+  {label: S.windowLabels[1], months: 3},
+  {label: S.windowLabels[2], months: 6},
+  {label: S.windowLabels[3], months: 12},
+  {label: S.windowLabels[4], months: null}
+]
+viewof selectedWindow = Inputs.select(windowOptions, {
+  label: S.windowInputLabel,
+  format: d => d.label,
+  value: windowOptions[4]
+})
+```
+
+```{ojs}
+//| echo: false
+viewof showBands = Inputs.checkbox([S.band2, S.band3], {
+  label: S.bandsLabel,
+  value: [S.band2, S.band3]
+})
+```
+
+```{ojs}
+//| echo: false
+windowCutoff = selectedWindow.months === null
+  ? new Date("2021-01-01")
+  : (() => {
+      const d = new Date()
+      d.setMonth(d.getMonth() - selectedWindow.months)
+      return d
+    })()
+
+systemData = spikeData
+  .filter(d => d.series === "system" && d.dateObj >= windowCutoff)
+  .sort((a, b) => a.dateObj - b.dateObj)
+
+heroSectorData = spikeData
+  .filter(d => d.series === topSec.key && d.dateObj >= windowCutoff)
+  .sort((a, b) => a.dateObj - b.dateObj)
+
+sectorOrder  = ["men", "women", "mixed_adult", "youth", "families"].filter(s => s !== topSec.key)
+sectorLabels = S.sectorLabels
+```
+
+```{ojs}
+//| echo: false
+xAxis = (() => {
+  if (!systemData.length) return {type: "time", label: null}
+  const spanDays   = (systemData[systemData.length-1].dateObj - systemData[0].dateObj) / 86400000
+  const spanMonths = spanDays / 30.44
+  return {
+    type: "time",
+    label: null,
+    ticks: spanMonths <= 3 ? d3.utcDay.every(7) : spanMonths <= 18 ? d3.utcMonth.every(1) : 8,
+    tickFormat: d => {
+      const m = d.getMonth(), y = d.getFullYear()
+      if (spanMonths <= 18) return m === 0 ? `${S.months[m]}-${y}` : S.months[m]
+      return m === 0 ? String(y) : m === 6 ? S.julLabel(y) : ""
+    }
+  }
+})()
+
+fmtN = S.fmtN
+```
+
+```{ojs}
+//| echo: false
+html`<h3>${S.headingSystem}</h3>`
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width, height: 400, marginLeft: 70,
+  x: xAxis,
+  y: {label: S.ySystem, grid: true, tickFormat: fmtN},
+  marks: [
+    showBands.includes(S.band2)
+      ? Plot.areaY(systemData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
+          fill: "#ff9500", fillOpacity: 0.20})
+      : null,
+    showBands.includes(S.band3)
+      ? Plot.areaY(systemData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
+          fill: "#ff3b30", fillOpacity: 0.15})
+      : null,
+    Plot.line(systemData, {x: "dateObj", y: "expected",
+      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1.5, strokeDasharray: "4,3"}),
+    Plot.line(systemData, {x: "dateObj", y: "observed",
+      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 2}),
+    Plot.dot(systemData.filter(d => d.spike_flag !== "none"), {
+      x: "dateObj", y: "observed",
+      fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
+      r: 4,
+      title: d => `${d.date}\n${S.fmtN(d.observed)} ${S.persons}\n${S.devStr(d.remainder_mad_sd)} ${S.above}`
+    }),
+    Plot.tip(systemData, Plot.pointerX({
+      x: "dateObj", y: "observed",
+      title: d => {
+        const flag = d.spike_flag === "3mad" ? S.flag3 : d.spike_flag === "2mad" ? S.flag2 : ""
+        return `${d.date}${flag}\n${S.tipObs}${S.fmtN(d.observed)}\n${S.tipExp}${S.fmtN(Math.round(d.expected))}\n${S.tipDev}${S.devStr(d.remainder_mad_sd)}`
+      }
+    }))
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+html`<h3>${S.heroHeading(topSec.label)}</h3>`
+```
+
+```{ojs}
+//| echo: false
+heroStats = {
+  const sectors = ["men","women","mixed_adult","youth","families"]
+  const topRows = spikeData.filter(d => d.series === topSec.key)
+  const topSpikes   = topRows.filter(d => d.spike_flag !== "none").length
+  const topSevere   = topRows.filter(d => d.spike_flag === "3mad").length
+  const totalSpikes = spikeData.filter(d => sectors.includes(d.series) && d.spike_flag !== "none").length
+  const pct = Math.round(topSpikes / totalSpikes * 100)
+  const startYear = spikeData.reduce((mn, d) => Math.min(mn, +d.date.slice(0,4)), 9999)
+  return {topSpikes, topSevere, totalSpikes, pct, startYear, topLabel: topSec.label}
+}
+```
+
+```{ojs}
+//| echo: false
+S.heroBox(heroStats, ratioPhrase)
+```
+
+```{ojs}
+//| echo: false
+sectorStats = ["men", "youth", "families", "women", "mixed_adult"].map(sec => {
+  const rows    = spikeData.filter(d => d.series === sec)
+  const spikes  = rows.filter(d => d.spike_flag !== "none").length
+  const spikes3 = rows.filter(d => d.spike_flag === "3mad").length
+  return {
+    label: S.sectorLabels[sec],
+    spikes,
+    spikes3,
+    pctDays: spikes / rows.length * 100,
+    isTop: sec === topSec.key
+  }
+}).sort((a, b) => b.spikes - a.spikes)
+
+Plot.plot({
+  width, height: 210, marginLeft: 110, marginRight: 160,
+  x: {label: S.barXLabel, tickFormat: d => d + S.barXSuffix, domain: [0, 18]},
+  y: {label: null},
+  marks: [
+    Plot.barX(sectorStats, {
+      x: "pctDays", y: "label",
+      fill: d => d.isTop ? "#ff3b30" : "#4a6fa5",
+      fillOpacity: d => d.isTop ? 1 : 0.45,
+      sort: {y: "-x"}
+    }),
+    Plot.text(sectorStats, {
+      x: "pctDays", y: "label",
+      text: d => S.barText(d.pctDays, d.spikes, d.spikes3),
+      dx: 8, textAnchor: "start", fontSize: 13,
+      fill: d => d.isTop ? "#ff3b30" : getComputedStyle(document.documentElement).getPropertyValue("--bq-fg"),
+      fontWeight: d => d.isTop ? "700" : "400"
+    }),
+    Plot.ruleX([0])
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  const _secs = ["men","women","mixed_adult","youth","families"]
+  const totalSpikeDays = sectorStats.reduce((s, r) => s + r.spikes, 0)
+  const totalDays = _secs.reduce((s, sec) => s + spikeData.filter(d => d.series === sec).length, 0)
+  const overallPct = (totalSpikeDays / totalDays * 100).toFixed(1)
+  return S.figCaption(heroStats.startYear, overallPct, totalSpikeDays, totalDays)
+}
+```
+
+```{ojs}
+//| echo: false
+topSec.key === "men" ? S.narrativeMen(heroStats) : S.narrativeOther(heroStats)
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width, height: 400, marginLeft: 70,
+  x: xAxis,
+  y: {label: S.yHero(topSec.label), grid: true, tickFormat: fmtN},
+  marks: [
+    showBands.includes(S.band2)
+      ? Plot.areaY(heroSectorData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
+          fill: "#ff9500", fillOpacity: 0.20})
+      : null,
+    showBands.includes(S.band3)
+      ? Plot.areaY(heroSectorData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
+          fill: "#ff3b30", fillOpacity: 0.15})
+      : null,
+    Plot.line(heroSectorData, {x: "dateObj", y: "expected",
+      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1.5, strokeDasharray: "4,3"}),
+    Plot.line(heroSectorData, {x: "dateObj", y: "observed",
+      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 2}),
+    Plot.dot(heroSectorData.filter(d => d.spike_flag !== "none"), {
+      x: "dateObj", y: "observed",
+      fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
+      r: 4,
+      title: d => `${d.date}\n${S.fmtN(d.observed)} ${S.persons}\n${S.devStr(d.remainder_mad_sd)} ${S.above}`
+    }),
+    Plot.tip(heroSectorData, Plot.pointerX({
+      x: "dateObj", y: "observed",
+      title: d => {
+        const flag = d.spike_flag === "3mad" ? S.flag3 : d.spike_flag === "2mad" ? S.flag2 : ""
+        return `${topSec.label}${flag}\n${d.date}\n${S.tipObs}${S.fmtN(d.observed)}\n${S.tipExp}${S.fmtN(Math.round(d.expected))}\n${S.tipDev}${S.devStr(d.remainder_mad_sd)}`
+      }
+    }))
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+html`<h3>${S.headingOther}</h3><p>${S.otherSectorsIntro}</p>`
+```
+
+```{ojs}
+//| echo: false
+html`<div class="sector-grid">${sectorOrder.map(sec => {
+  const secData = spikeData
+    .filter(d => d.series === sec && d.dateObj >= windowCutoff)
+    .sort((a, b) => a.dateObj - b.dateObj)
+  const label = sectorLabels[sec]
+  if (!secData.length) return html`<div class="sector-panel"><em>${label}: ${S.noData}</em></div>`
+  const chart = Plot.plot({
+    width: Math.max(300, Math.floor((width - 40) / 3)),
+    height: 220,
+    marginLeft: 60,
+    marginTop: 30,
+    caption: label,
+    x: xAxis,
+    y: {label: null, grid: true, tickFormat: fmtN},
+    marks: [
+      showBands.includes(S.band2)
+        ? Plot.areaY(secData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
+            fill: "#ff9500", fillOpacity: 0.20})
+        : null,
+      showBands.includes(S.band3)
+        ? Plot.areaY(secData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
+            fill: "#ff3b30", fillOpacity: 0.15})
+        : null,
+      Plot.line(secData, {x: "dateObj", y: "expected",
+        stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1, strokeDasharray: "3,2"}),
+      Plot.line(secData, {x: "dateObj", y: "observed",
+        stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 1.5}),
+      Plot.dot(secData.filter(d => d.spike_flag !== "none"), {
+        x: "dateObj", y: "observed",
+        fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
+        r: 3,
+        title: d => `${d.date}\n${S.fmtN(d.observed)} ${S.persons}\n${S.devStr(d.remainder_mad_sd)}`
+      }),
+      Plot.tip(secData, Plot.pointerX({
+        x: "dateObj", y: "observed",
+        title: d => {
+          const flag = d.spike_flag === "3mad" ? S.flag3s : d.spike_flag === "2mad" ? S.flag2s : ""
+          return `${label}${flag}\n${d.date}\n${S.fmtN(d.observed)} ${S.persons}`
+        }
+      }))
+    ]
+  })
+  return html`<div class="sector-panel">${chart}</div>`
+})}</div>`
+```
+
+```{ojs}
+//| echo: false
+html`<h3>${S.headingTable}</h3>`
+```
+
+```{ojs}
+//| echo: false
+allSpikes = spikeData
+  .filter(d => d.spike_flag !== "none")
+  .sort((a, b) => b.date.localeCompare(a.date))
+  .map(d => ({
+    [S.col.date]:      d.date,
+    [S.col.metric]:    d.label,
+    [S.col.observed]:  d.observed,
+    [S.col.expected]:  Math.round(d.expected),
+    [S.col.deviation]: d.remainder_mad_sd != null ? +d.remainder_mad_sd.toFixed(1) : null,
+    [S.col.band]:      d.spike_flag === "3mad" ? S.band3row : S.band2row,
+    [S.col.notes]:     ""
+  }))
+```
+
+```{ojs}
+//| echo: false
+viewof spikeSearch = Inputs.search(allSpikes, {placeholder: S.searchPlaceholder})
+```
+
+```{ojs}
+//| echo: false
+Inputs.table(spikeSearch, {
+  columns: [S.col.date, S.col.metric, S.col.observed, S.col.expected,
+            S.col.deviation, S.col.band, S.col.notes],
+  format: {
+    [S.col.observed]: d => S.fmtN(d),
+    [S.col.expected]: d => S.fmtN(d)
+  },
+  sort: S.col.date,
+  reverse: true
+})
+```

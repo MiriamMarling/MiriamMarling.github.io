@@ -87,355 +87,78 @@ seuil monte ou descend selon que le réseau devient plus ou moins volatil.
 
 ```{ojs}
 //| echo: false
-data = FileAttachment("../data/spike_detection.json").json()
-```
+S = ({
+  fmtN:   d => d.toLocaleString("fr-CA"),
+  devStr: v => v != null ? v.toFixed(1) + " MAD-ÉT" : "—",
 
-```{ojs}
-//| echo: false
-spikeData = data.map(d => ({
-  ...d,
-  dateObj: new Date(d.date + "T00:00:00")
-}))
-```
+  sectorLabels: {men: "Hommes", women: "Femmes", mixed_adult: "Adultes mixtes",
+                 youth: "Jeunes", families: "Familles"},
+  ratioHigher: "plus que tout autre secteur, et près du double du suivant",
+  ratioSame:   "plus que tout autre secteur",
 
-```{ojs}
-//| echo: false
-_sectorLabels = ({
-  men: "Hommes",
-  women: "Femmes",
-  mixed_adult: "Adultes mixtes",
-  youth: "Jeunes",
-  families: "Familles"
-})
+  months:   ["janv.","févr.","mars","avr.","mai","juin",
+             "juill.","août","sept.","oct.","nov.","déc."],
+  julLabel: y => `juill. ${y}`,
 
-sectorRanked = ["men","women","mixed_adult","youth","families"].map(sec => {
-  const rows  = spikeData.filter(d => d.series === sec)
-  const sp    = rows.filter(d => d.spike_flag !== "none").length
-  const sp3   = rows.filter(d => d.spike_flag === "3mad").length
-  return { key: sec, label: _sectorLabels[sec], spikes: sp, spikes3: sp3 }
-}).sort((a, b) => b.spikes - a.spikes)
+  windowLabels:     ["1 mois","3 mois","6 mois","12 mois","Tout (2021–présent)"],
+  windowInputLabel: "Fenêtre d'affichage",
+  band2:            "2 MAD-ÉT",
+  band3:            "3 MAD-ÉT",
+  bandsLabel:       "Afficher les bandes seuil",
 
-topSec    = sectorRanked[0]
-secondSec = sectorRanked[1]
+  flag3:   " ★ PIC (3 MAD-ÉT)",
+  flag2:   " ▲ Pic (2 MAD-ÉT)",
+  flag3s:  " ★ PIC",
+  flag2s:  " ▲ Pic",
+  tipObs:  "Observé : ",
+  tipExp:  "Attendu : ",
+  tipDev:  "Écart : ",
+  persons: "personnes",
+  above:   "au-dessus de l'attendu",
+  noData:  "aucune donnée",
 
-ratioPhrase = (secondSec.spikes > 0 && (topSec.spikes / secondSec.spikes) >= 1.8)
-  ? `plus que tout autre secteur, et près du double du suivant`
-  : `plus que tout autre secteur`
-```
+  headingSystem: "Occupation à l'échelle du système — tous les programmes",
+  ySystem:       "Personnes hébergées",
+  yHero:         label => `${label} — personnes hébergées`,
 
-```{ojs}
-//| echo: false
-windowOptions = [
-  {label: "1 mois",           months: 1},
-  {label: "3 mois",           months: 3},
-  {label: "6 mois",           months: 6},
-  {label: "12 mois",          months: 12},
-  {label: "Tout (2021–présent)", months: null}
-]
-viewof selectedWindow = Inputs.select(windowOptions, {
-  label: "Fenêtre d'affichage",
-  format: d => d.label,
-  value: windowOptions[4]
-})
-```
+  heroHeading: label => `Le secteur des ${label} a connu le plus grand nombre de jours de pic`,
+  heroBox: (stats, ratioPhrase) => html`<div class="crisis-hero">
+    <div class="hero-number">${stats.pct} %</div>
+    <div class="hero-text">
+      <div class="hero-label">de tous les jours de pic sectoriels du réseau de refuges de Toronto se sont produits dans le <strong>secteur des ${stats.topLabel}</strong> — ${ratioPhrase}.</div>
+      <div class="hero-sub">${stats.topSpikes.toLocaleString("fr-CA")} sur ${stats.totalSpikes.toLocaleString("fr-CA")} jours de pic au total &nbsp;·&nbsp; ${stats.topSevere} graves (3 MAD-ÉT) &nbsp;·&nbsp; ${stats.startYear}–présent</div>
+    </div>
+  </div>`,
 
-```{ojs}
-//| echo: false
-viewof showBands = Inputs.checkbox(["2 MAD-ÉT", "3 MAD-ÉT"], {
-  label: "Afficher les bandes seuil",
-  value: ["2 MAD-ÉT", "3 MAD-ÉT"]
-})
-```
+  barXLabel:  "% des jours ayant été des jours de pic",
+  barXSuffix: " %",
+  barText: (pct, sp, sp3) => `${pct.toFixed(1)} %  (${sp} jours, ${sp3} graves)`,
 
-```{ojs}
-//| echo: false
-windowCutoff = selectedWindow.months === null
-  ? new Date("2021-01-01")
-  : (() => {
-      const d = new Date()
-      d.setMonth(d.getMonth() - selectedWindow.months)
-      return d
-    })()
+  figCaption: (startYear, pct, total, totalDays) => html`<p style="font-style:italic; font-size:0.88rem; margin-top:0.4rem; color: var(--bq-fg-muted, #666)">Figure 1. <em>Pourcentage de jours classés comme jours de pic (occupation dépassant le seuil de 2 MAD-ÉT) par secteur de refuge, réseau de refuges de Toronto, ${startYear}–présent. La barre rouge indique le secteur avec le plus grand nombre de jours de pic. Les étiquettes indiquent le total des jours de pic et le nombre dépassant la bande plus sévère de 3 MAD-ÉT. Pour l'ensemble des cinq secteurs combinés, ${pct} % des jours-secteurs étaient des jours de pic (${total.toLocaleString("fr-CA")} sur ${totalDays.toLocaleString("fr-CA")} jours-secteurs au total). Les seuils sont spécifiques à chaque secteur et calibrés selon l'ère ; chaque secteur est évalué par rapport à sa propre volatilité récente.</em></p>`,
 
-systemData = spikeData
-  .filter(d => d.series === "system" && d.dateObj >= windowCutoff)
-  .sort((a, b) => a.dateObj - b.dateObj)
+  narrativeMen:   stats => html`<p>Le secteur des hommes est à la fois le plus important du réseau de refuges de Toronto et le plus fréquemment touché par les pics d'occupation. Sur la période ${stats.startYear}–présent, ${stats.topSpikes.toLocaleString("fr-CA")} des ${stats.totalSpikes.toLocaleString("fr-CA")} jours de pic sectoriels au total se sont produits dans le secteur des hommes — ${stats.pct} %, davantage que tout autre secteur et de façon significative. Contrairement aux autres secteurs, les jours de pic du secteur des hommes tendent vers la bande la plus grave : ${stats.topSevere} des ${stats.topSpikes.toLocaleString("fr-CA")} ont dépassé le seuil de 3 MAD-ÉT, contre seulement ${stats.topSpikes - stats.topSevere} au niveau de 2 MAD-ÉT, ce qui indique que les anomalies du secteur des hommes tendent à être prononcées plutôt que subtiles. Ce constat s'inscrit dans un schéma plus large des données sur l'itinérance à Toronto : les hommes représentent la majorité de la population en situation d'itinérance chronique dans la ville. Lorsque le système est sous pression, le secteur des hommes le manifeste en premier et le plus nettement. Ce schéma est visible ici.</p>`,
+  narrativeOther: stats => html`<p>Le secteur des ${stats.topLabel} a enregistré le plus grand nombre de jours de pic d'occupation sur la période ${stats.startYear}–présent : ${stats.topSpikes.toLocaleString("fr-CA")} jours de pic, représentant ${stats.pct} % de l'ensemble des jours de pic sectoriels. ${stats.topSevere} d'entre eux ont dépassé le seuil plus sévère de 3 MAD-ÉT. Le graphique ci-dessous présente l'historique complet des pics du secteur des ${stats.topLabel}.</p>`,
 
-heroSectorData = spikeData
-  .filter(d => d.series === topSec.key && d.dateObj >= windowCutoff)
-  .sort((a, b) => a.dateObj - b.dateObj)
+  headingOther:      "Autres secteurs",
+  otherSectorsIntro: "Chaque panneau utilise son propre axe des ordonnées et ses propres seuils — les secteurs diffèrent trop en taille pour partager une même échelle. Lorsque le graphique du système global ou du secteur des hommes indique un pic, ces panneaux permettent de vérifier si d'autres secteurs ont également été touchés.",
 
-sectorOrder = ["men", "women", "mixed_adult", "youth", "families"].filter(s => s !== topSec.key)
-sectorLabels = _sectorLabels
-```
-
-```{ojs}
-//| echo: false
-MON = ["janv.","févr.","mars","avr.","mai","juin",
-       "juill.","août","sept.","oct.","nov.","déc."]
-
-xAxis = (() => {
-  if (!systemData.length) return {type: "time", label: null}
-  const spanDays = (systemData[systemData.length-1].dateObj - systemData[0].dateObj) / 86400000
-  const spanMonths = spanDays / 30.44
-  return {
-    type: "time",
-    label: null,
-    ticks: spanMonths <= 3 ? d3.utcDay.every(7) : spanMonths <= 18 ? d3.utcMonth.every(1) : 8,
-    tickFormat: d => {
-      const m = d.getMonth(), y = d.getFullYear()
-      if (spanMonths <= 18) return m === 0 ? `${MON[m]}-${y}` : MON[m]
-      return m === 0 ? String(y) : m === 6 ? `juill. ${y}` : ""
-    }
-  }
-})()
-
-fmtN = d => d.toLocaleString("fr-CA")
-```
-
-### Occupation à l'échelle du système — tous les programmes
-
-```{ojs}
-//| echo: false
-Plot.plot({
-  width, height: 400, marginLeft: 70,
-  x: xAxis,
-  y: {label: "Personnes hébergées", grid: true, tickFormat: fmtN},
-  marks: [
-    showBands.includes("2 MAD-ÉT")
-      ? Plot.areaY(systemData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-          fill: "#ff9500", fillOpacity: 0.20})
-      : null,
-    showBands.includes("3 MAD-ÉT")
-      ? Plot.areaY(systemData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
-          fill: "#ff3b30", fillOpacity: 0.15})
-      : null,
-    Plot.line(systemData, {x: "dateObj", y: "expected",
-      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1.5, strokeDasharray: "4,3"}),
-    Plot.line(systemData, {x: "dateObj", y: "observed",
-      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 2}),
-    Plot.dot(systemData.filter(d => d.spike_flag !== "none"), {
-      x: "dateObj",
-      y: "observed",
-      fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
-      r: 4,
-      title: d => `${d.date}\n${d.observed.toLocaleString("fr-CA")} personnes\n${d.remainder_mad_sd.toFixed(1)} MAD-ÉT au-dessus de l'attendu`
-    }),
-    Plot.tip(systemData, Plot.pointerX({
-      x: "dateObj", y: "observed",
-      title: d => {
-        const flag = d.spike_flag === "3mad" ? " ★ PIC (3 MAD-ÉT)"
-                   : d.spike_flag === "2mad" ? " ▲ Pic (2 MAD-ÉT)" : ""
-        return `${d.date}${flag}\nObservé : ${d.observed.toLocaleString("fr-CA")}\nAttendu : ${Math.round(d.expected).toLocaleString("fr-CA")}\nÉcart : ${d.remainder_mad_sd.toFixed(1)} MAD-ÉT`
-      }
-    }))
-  ]
-})
-```
-
-```{ojs}
-//| echo: false
-html`<h3>Le secteur des ${topSec.label} a connu le plus grand nombre de jours de pic</h3>`
-```
-
-```{ojs}
-//| echo: false
-heroStats = {
-  const sectors = ["men","women","mixed_adult","youth","families"]
-  const topRows = spikeData.filter(d => d.series === topSec.key)
-  const topSpikes = topRows.filter(d => d.spike_flag !== "none").length
-  const topSevere = topRows.filter(d => d.spike_flag === "3mad").length
-  const totalSpikes = spikeData.filter(d => sectors.includes(d.series) && d.spike_flag !== "none").length
-  const pct = Math.round(topSpikes / totalSpikes * 100)
-  const startYear = spikeData.reduce((mn, d) => Math.min(mn, +d.date.slice(0,4)), 9999)
-  return {topSpikes, topSevere, totalSpikes, pct, startYear, topLabel: topSec.label}
-}
-```
-
-```{ojs}
-//| echo: false
-html`<div class="crisis-hero">
-  <div class="hero-number">${heroStats.pct} %</div>
-  <div class="hero-text">
-    <div class="hero-label">de tous les jours de pic sectoriels du réseau de refuges de Toronto se sont produits dans le <strong>secteur des ${heroStats.topLabel}</strong> — ${ratioPhrase}.</div>
-    <div class="hero-sub">${heroStats.topSpikes.toLocaleString("fr-CA")} sur ${heroStats.totalSpikes.toLocaleString("fr-CA")} jours de pic au total &nbsp;·&nbsp; ${heroStats.topSevere} graves (3 MAD-ÉT) &nbsp;·&nbsp; ${heroStats.startYear}–présent</div>
-  </div>
-</div>`
-```
-
-```{ojs}
-//| echo: false
-sectorStats = ["men", "youth", "families", "women", "mixed_adult"].map(sec => {
-  const rows = spikeData.filter(d => d.series === sec)
-  const spikes = rows.filter(d => d.spike_flag !== "none").length
-  const spikes3 = rows.filter(d => d.spike_flag === "3mad").length
-  return {
-    label: _sectorLabels[sec],
-    spikes,
-    spikes3,
-    pctDays: spikes / rows.length * 100,
-    isTop: sec === topSec.key
-  }
-}).sort((a, b) => b.spikes - a.spikes)
-
-Plot.plot({
-  width, height: 210, marginLeft: 110, marginRight: 160,
-  x: {label: "% des jours ayant été des jours de pic", tickFormat: d => d + " %", domain: [0, 18]},
-  y: {label: null},
-  marks: [
-    Plot.barX(sectorStats, {
-      x: "pctDays", y: "label",
-      fill: d => d.isTop ? "#ff3b30" : "#4a6fa5",
-      fillOpacity: d => d.isTop ? 1 : 0.45,
-      sort: {y: "-x"}
-    }),
-    Plot.text(sectorStats, {
-      x: "pctDays", y: "label",
-      text: d => `${d.pctDays.toFixed(1)} %  (${d.spikes} jours, ${d.spikes3} graves)`,
-      dx: 8, textAnchor: "start", fontSize: 13,
-      fill: d => d.isTop ? "#ff3b30" : getComputedStyle(document.documentElement).getPropertyValue("--bq-fg"),
-      fontWeight: d => d.isTop ? "700" : "400"
-    }),
-    Plot.ruleX([0])
-  ]
-})
-```
-
-```{ojs}
-//| echo: false
-topSec.key === "men"
-  ? html`<p>Le secteur des hommes est à la fois le plus important du réseau de refuges de Toronto et le plus fréquemment touché par les pics d'occupation. Sur la période ${heroStats.startYear}–présent, ${heroStats.topSpikes.toLocaleString("fr-CA")} des ${heroStats.totalSpikes.toLocaleString("fr-CA")} jours de pic sectoriels au total se sont produits dans le secteur des hommes — ${heroStats.pct} %, davantage que tout autre secteur et de façon significative. Contrairement aux autres secteurs, les jours de pic du secteur des hommes tendent vers la bande la plus grave : ${heroStats.topSevere} des ${heroStats.topSpikes.toLocaleString("fr-CA")} ont dépassé le seuil de 3 MAD-ÉT, contre seulement ${heroStats.topSpikes - heroStats.topSevere} au niveau de 2 MAD-ÉT, ce qui indique que les anomalies du secteur des hommes tendent à être prononcées plutôt que subtiles. Ce constat s'inscrit dans un schéma plus large des données sur l'itinérance à Toronto : les hommes représentent la majorité de la population en situation d'itinérance chronique dans la ville. Lorsque le système est sous pression, le secteur des hommes le manifeste en premier et le plus nettement. Ce schéma est visible ici.</p>`
-  : html`<p>Le secteur des ${heroStats.topLabel} a enregistré le plus grand nombre de jours de pic d'occupation sur la période ${heroStats.startYear}–présent : ${heroStats.topSpikes.toLocaleString("fr-CA")} jours de pic, représentant ${heroStats.pct} % de l'ensemble des jours de pic sectoriels. ${heroStats.topSevere} d'entre eux ont dépassé le seuil plus sévère de 3 MAD-ÉT. Le graphique ci-dessous présente l'historique complet des pics du secteur des ${heroStats.topLabel}.</p>`
-```
-
-```{ojs}
-//| echo: false
-Plot.plot({
-  width, height: 400, marginLeft: 70,
-  x: xAxis,
-  y: {label: `${topSec.label} — personnes hébergées`, grid: true, tickFormat: fmtN},
-  marks: [
-    showBands.includes("2 MAD-ÉT")
-      ? Plot.areaY(heroSectorData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-          fill: "#ff9500", fillOpacity: 0.20})
-      : null,
-    showBands.includes("3 MAD-ÉT")
-      ? Plot.areaY(heroSectorData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
-          fill: "#ff3b30", fillOpacity: 0.15})
-      : null,
-    Plot.line(heroSectorData, {x: "dateObj", y: "expected",
-      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1.5, strokeDasharray: "4,3"}),
-    Plot.line(heroSectorData, {x: "dateObj", y: "observed",
-      stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 2}),
-    Plot.dot(heroSectorData.filter(d => d.spike_flag !== "none"), {
-      x: "dateObj", y: "observed",
-      fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
-      r: 4,
-      title: d => `${d.date}\n${d.observed.toLocaleString("fr-CA")} personnes\n${d.remainder_mad_sd.toFixed(1)} MAD-ÉT au-dessus de l'attendu`
-    }),
-    Plot.tip(heroSectorData, Plot.pointerX({
-      x: "dateObj", y: "observed",
-      title: d => {
-        const flag = d.spike_flag === "3mad" ? " ★ PIC (3 MAD-ÉT)"
-                   : d.spike_flag === "2mad" ? " ▲ Pic (2 MAD-ÉT)" : ""
-        return `${topSec.label}${flag}\n${d.date}\nObservé : ${d.observed.toLocaleString("fr-CA")}\nAttendu : ${Math.round(d.expected).toLocaleString("fr-CA")}\nÉcart : ${d.remainder_mad_sd.toFixed(1)} MAD-ÉT`
-      }
-    }))
-  ]
-})
-```
-
-### Autres secteurs
-
-Chaque panneau utilise son propre axe des ordonnées et ses propres seuils — les
-secteurs diffèrent trop en taille pour partager une même échelle. Lorsque le
-graphique du système global ou du secteur des hommes indique un pic, ces panneaux
-permettent de vérifier si d'autres secteurs ont également été touchés.
-
-```{ojs}
-//| echo: false
-html`<div class="sector-grid">${sectorOrder.map(sec => {
-  const secData = spikeData
-    .filter(d => d.series === sec && d.dateObj >= windowCutoff)
-    .sort((a, b) => a.dateObj - b.dateObj)
-  const label = sectorLabels[sec]
-  if (!secData.length) return html`<div class="sector-panel"><em>${label} : aucune donnée</em></div>`
-  const chart = Plot.plot({
-    width: Math.max(300, Math.floor((width - 40) / 3)),
-    height: 220,
-    marginLeft: 60,
-    marginTop: 30,
-    caption: label,
-    x: xAxis,
-    y: {label: null, grid: true, tickFormat: fmtN},
-    marks: [
-      showBands.includes("2 MAD-ÉT")
-        ? Plot.areaY(secData, {x: "dateObj", y1: "expected", y2: "threshold_2mad",
-            fill: "#ff9500", fillOpacity: 0.20})
-        : null,
-      showBands.includes("3 MAD-ÉT")
-        ? Plot.areaY(secData, {x: "dateObj", y1: "threshold_2mad", y2: "threshold_3mad",
-            fill: "#ff3b30", fillOpacity: 0.15})
-        : null,
-      Plot.line(secData, {x: "dateObj", y: "expected",
-        stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-axis"), strokeWidth: 1, strokeDasharray: "3,2"}),
-      Plot.line(secData, {x: "dateObj", y: "observed",
-        stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-blue"), strokeWidth: 1.5}),
-      Plot.dot(secData.filter(d => d.spike_flag !== "none"), {
-        x: "dateObj", y: "observed",
-        fill: d => d.spike_flag === "3mad" ? "#ff3b30" : "#ff9500",
-        r: 3,
-        title: d => `${d.date}\n${d.observed.toLocaleString("fr-CA")} personnes\n${d.remainder_mad_sd.toFixed(1)} MAD-ÉT`
-      }),
-      Plot.tip(secData, Plot.pointerX({
-        x: "dateObj", y: "observed",
-        title: d => {
-          const flag = d.spike_flag === "3mad" ? " ★ PIC"
-                     : d.spike_flag === "2mad" ? " ▲ Pic" : ""
-          return `${label}${flag}\n${d.date}\n${d.observed.toLocaleString("fr-CA")} personnes`
-        }
-      }))
-    ]
-  })
-  return html`<div class="sector-panel">${chart}</div>`
-})}</div>`
-```
-
-### Jours de pic
-
-```{ojs}
-//| echo: false
-allSpikes = spikeData
-  .filter(d => d.spike_flag !== "none")
-  .sort((a, b) => b.date.localeCompare(a.date))
-  .map(d => ({
-    "Date": d.date,
-    "Indicateur": d.label,
-    "Observé": d.observed,
-    "Attendu": Math.round(d.expected),
-    "Écart (MAD-ÉT)": +d.remainder_mad_sd.toFixed(1),
-    "Bande": d.spike_flag === "3mad" ? "3 MAD-ÉT ★" : "2 MAD-ÉT",
-    "Notes": ""
-  }))
-```
-
-```{ojs}
-//| echo: false
-viewof spikeSearch = Inputs.search(allSpikes, {placeholder: "Filtrer par indicateur ou date…"})
-```
-
-```{ojs}
-//| echo: false
-Inputs.table(spikeSearch, {
-  columns: ["Date","Indicateur","Observé","Attendu","Écart (MAD-ÉT)","Bande","Notes"],
-  format: {
-    "Observé": d => d.toLocaleString("fr-CA"),
-    "Attendu": d => d.toLocaleString("fr-CA")
+  headingTable:      "Jours de pic",
+  col: {
+    date:      "Date",
+    metric:    "Indicateur",
+    observed:  "Observé",
+    expected:  "Attendu",
+    deviation: "Écart (MAD-ÉT)",
+    band:      "Bande",
+    notes:     "Notes"
   },
-  sort: "Date",
-  reverse: true
+  band2row:          "2 MAD-ÉT",
+  band3row:          "3 MAD-ÉT ★",
+  searchPlaceholder: "Filtrer par indicateur ou date…",
 })
 ```
+
+{{< include ../../projects/_spike-detection-body.qmd >}}
 
 ---
 
