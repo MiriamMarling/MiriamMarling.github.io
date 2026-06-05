@@ -1,0 +1,301 @@
+---
+title: "Validation — Admission centrale"
+subtitle: "Valeurs calculées par BonQuery c. chiffres publiés par la Ville de Toronto"
+description: >
+  Validation des statistiques d'appels à l'Admission centrale de BonQuery
+  par rapport au tableau des demandes d'orientation dans les refuges publié
+  par la Ville de Toronto, plus une estimation mensuelle de la population
+  Passerelle et triage absente de l'exportation CKAN.
+author: "Miriam Marling"
+open-graph:
+  title: "Validation — Admission centrale — BonQuery"
+  description: >
+    Validation des statistiques d'appels à l'Admission centrale de BonQuery
+    par rapport au tableau des demandes d'orientation dans les refuges publié
+    par la Ville de Toronto.
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Validation — Admission centrale — BonQuery"
+  description: >
+    Validation des statistiques d'appels à l'Admission centrale de BonQuery
+    par rapport au tableau des demandes d'orientation dans les refuges publié
+    par la Ville de Toronto.
+---
+
+Cette page valide les moyennes mensuelles calculées par BonQuery pour les trois
+indicateurs de l'Admission centrale par rapport au tableau
+[Demandes d'orientation dans les refuges](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/)
+publié par la Ville de Toronto (instantané de référence : 2026-05-25, couvrant
+avril 2024 – avril 2026). La page quantifie également l'écart mensuel entre
+l'occupation nocturne de BonQuery basée sur CKAN et le chiffre publié par la
+Ville — cet écart représente les programmes Passerelle et triage suivis dans le
+système opérationnel de la Ville mais non publiés dans les données ouvertes.
+
+---
+
+## Validation : Appels orientés, Appelants sans jumelage, Appels traités
+
+Tolérance appliquée : ±0,1 pour Orientés et Sans jumelage (la Ville publie une
+décimale) ; ±1 pour Traités (la Ville publie des nombres entiers).
+
+```{ojs}
+//| echo: false
+ci = FileAttachment("../data/central_intake.json").json()
+```
+
+```{ojs}
+//| echo: false
+cityRef = [
+  {year:2024, month:4,  referred:5.7,  unmatched:224.5, handled:991,  occupancy:9734},
+  {year:2024, month:5,  referred:7.3,  unmatched:220.2, handled:993,  occupancy:9936},
+  {year:2024, month:6,  referred:5.2,  unmatched:231.1, handled:955,  occupancy:9850},
+  {year:2024, month:7,  referred:6.2,  unmatched:235.7, handled:978,  occupancy:9815},
+  {year:2024, month:8,  referred:7.3,  unmatched:233.0, handled:987,  occupancy:9713},
+  {year:2024, month:9,  referred:7.1,  unmatched:223.0, handled:936,  occupancy:9615},
+  {year:2024, month:10, referred:5.2,  unmatched:225.1, handled:929,  occupancy:9603},
+  {year:2024, month:11, referred:16.0, unmatched:191.6, handled:799,  occupancy:9623},
+  {year:2024, month:12, referred:25.9, unmatched:114.1, handled:604,  occupancy:9911},
+  {year:2025, month:1,  referred:38.3, unmatched:89.0,  handled:577,  occupancy:10228},
+  {year:2025, month:2,  referred:32.4, unmatched:101.0, handled:553,  occupancy:10150},
+  {year:2025, month:3,  referred:22.6, unmatched:135.9, handled:628,  occupancy:9778},
+  {year:2025, month:4,  referred:9.9,  unmatched:156.6, handled:708,  occupancy:9447},
+  {year:2025, month:5,  referred:12.7, unmatched:148.7, handled:614,  occupancy:9181},
+  {year:2025, month:6,  referred:15.8, unmatched:117.3, handled:509,  occupancy:9065},
+  {year:2025, month:7,  referred:22.5, unmatched:95.7,  handled:500,  occupancy:8900},
+  {year:2025, month:8,  referred:16.1, unmatched:119.8, handled:561,  occupancy:8765},
+  {year:2025, month:9,  referred:13.9, unmatched:148.5, handled:627,  occupancy:8649},
+  {year:2025, month:10, referred:12.9, unmatched:154.8, handled:653,  occupancy:8697},
+  {year:2025, month:11, referred:21.7, unmatched:122.2, handled:596,  occupancy:8742},
+  {year:2025, month:12, referred:42.4, unmatched:39.4,  handled:414,  occupancy:9035},
+  {year:2026, month:1,  referred:55.1, unmatched:30.4,  handled:440,  occupancy:9217},
+  {year:2026, month:2,  referred:39.3, unmatched:32.8,  handled:421,  occupancy:9206},
+  {year:2026, month:3,  referred:35.4, unmatched:50.5,  handled:446,  occupancy:8742},
+  {year:2026, month:4,  referred:20.0, unmatched:85.6,  handled:496,  occupancy:8391}
+]
+
+MONTH_ABB = ["","janv.","févr.","mars","avr.","mai","juin",
+             "juill.","août","sept.","oct.","nov.","déc."]
+
+bqIndex = {
+  const idx = new Map()
+  ci.monthly.forEach(r => idx.set(r.year * 100 + r.month, r))
+  return idx
+}
+
+passRef  = (bq, city) => bq != null && Math.abs(bq - city) <= 0.10
+passUnm  = (bq, city) => bq != null && Math.abs(bq - city) <= 0.10
+passHdl  = (bq, city) => bq != null && Math.abs(bq - city) <= 1.0
+
+mark = (pass, bqVal) =>
+  bqVal == null
+    ? `<span style="color:var(--bq-fg-disabled)">—</span>`
+    : pass
+      ? `<span style="color:var(--bq-success);font-weight:700">✓</span>`
+      : `<span style="color:var(--bq-danger);font-weight:700">✗</span>`
+
+function valRow(c, i) {
+  const bq  = bqIndex.get(c.year * 100 + c.month)
+  const br  = bq ? bq.referred_mean  : null
+  const bu  = bq ? bq.unmatched_mean : null
+  const bh  = bq ? bq.handled_mean   : null
+  const pr  = passRef(br, c.referred)
+  const pu  = passUnm(bu, c.unmatched)
+  const ph  = passHdl(bh, c.handled)
+
+  const bg  = i % 2 === 0 ? "var(--bq-bg)" : "var(--bq-bg-alt)"
+  const td  = `padding:5px 9px;text-align:center;border-bottom:1px solid var(--bq-border)`
+  const tdb = td + ";border-left:2px solid var(--bq-chart-blue)"
+
+  return html`<tr style="background:${bg}">
+    <td style="${td}">${c.year}</td>
+    <td style="${td}">${MONTH_ABB[c.month]}</td>
+    <td style="${tdb}">${br != null ? br.toFixed(1) : "—"}</td>
+    <td style="${td}">${c.referred.toFixed(1)}</td>
+    <td style="${td}">${mark(pr, br)}</td>
+    <td style="${tdb}">${bu != null ? bu.toFixed(1) : "—"}</td>
+    <td style="${td}">${c.unmatched.toFixed(1)}</td>
+    <td style="${td}">${mark(pu, bu)}</td>
+    <td style="${tdb}">${bh != null ? Math.round(bh).toLocaleString("fr-CA") : "—"}</td>
+    <td style="${td}">${c.handled.toLocaleString("fr-CA")}</td>
+    <td style="${td}">${mark(ph, bh)}</td>
+  </tr>`
+}
+
+valSummary = {
+  let ref_p=0, unm_p=0, hdl_p=0, ref_f=0, unm_f=0, hdl_f=0
+  cityRef.forEach(c => {
+    const bq = bqIndex.get(c.year * 100 + c.month)
+    const br = bq ? bq.referred_mean  : null
+    const bu = bq ? bq.unmatched_mean : null
+    const bh = bq ? bq.handled_mean   : null
+    if (br != null) { passRef(br,c.referred) ? ref_p++ : ref_f++ }
+    if (bu != null) { passUnm(bu,c.unmatched) ? unm_p++ : unm_f++ }
+    if (bh != null) { passHdl(bh,c.handled)  ? hdl_p++ : hdl_f++ }
+  })
+  return {ref_p, ref_f, unm_p, unm_f, hdl_p, hdl_f}
+}
+```
+
+```{ojs}
+//| echo: false
+html`<p style="font-size:0.9em;margin:0 0 10px">
+  <strong>Succès / échecs (25 mois) :</strong>
+  Orientés ${valSummary.ref_p}/25 ✓
+  &nbsp;·&nbsp;
+  Sans jumelage ${valSummary.unm_p}/25 ✓
+  &nbsp;·&nbsp;
+  Traités ${valSummary.hdl_p}/25 ✓
+</p>`
+```
+
+```{ojs}
+//| echo: false
+{
+  const H  = `background:var(--bq-th-bg);color:var(--bq-th-fg);font-weight:600;font-size:0.82em;padding:6px 9px;text-align:center`
+  const HB = H + ";border-left:2px solid var(--bq-chart-blue)"
+
+  return html`<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:0.88em">
+  <thead>
+    <tr>
+      <th style="${H}">Année</th>
+      <th style="${H}">Mois</th>
+      <th style="${HB}">Orientés BQ</th>
+      <th style="${H}">Orientés Ville</th>
+      <th style="${H}"> </th>
+      <th style="${HB}">Sans jumelage BQ</th>
+      <th style="${H}">Sans jumelage Ville</th>
+      <th style="${H}"> </th>
+      <th style="${HB}">Traités BQ</th>
+      <th style="${H}">Traités Ville</th>
+      <th style="${H}"> </th>
+    </tr>
+  </thead>
+  <tbody>
+    ${cityRef.map((c, i) => valRow(c, i))}
+  </tbody>
+</table>
+</div>`
+}
+```
+
+### Échecs
+
+```{ojs}
+//| echo: false
+{
+  const failures = cityRef.flatMap(c => {
+    const bq = bqIndex.get(c.year * 100 + c.month)
+    const br = bq ? bq.referred_mean  : null
+    const bu = bq ? bq.unmatched_mean : null
+    const bh = bq ? bq.handled_mean   : null
+    const out = []
+    if (br != null && !passRef(br, c.referred))
+      out.push(`${MONTH_ABB[c.month]} ${c.year} — Orientés : BonQuery ${br.toFixed(1)} c. Ville ${c.referred.toFixed(1)} (diff. ${(br - c.referred).toFixed(2)})`)
+    if (bu != null && !passUnm(bu, c.unmatched))
+      out.push(`${MONTH_ABB[c.month]} ${c.year} — Sans jumelage : BonQuery ${bu.toFixed(1)} c. Ville ${c.unmatched.toFixed(1)} (diff. ${(bu - c.unmatched).toFixed(2)})`)
+    if (bh != null && !passHdl(bh, c.handled))
+      out.push(`${MONTH_ABB[c.month]} ${c.year} — Traités : BonQuery ${Math.round(bh).toLocaleString("fr-CA")} c. Ville ${c.handled.toLocaleString("fr-CA")} (diff. ${(bh - c.handled).toFixed(1)})`)
+    return out
+  })
+
+  if (failures.length === 0)
+    return html`<p style="color:var(--bq-success)">Toutes les cellules sont conformes.</p>`
+
+  return html`<ul style="font-size:0.9em">
+    ${failures.map(f => html`<li>${f}</li>`)}
+  </ul>`
+}
+```
+
+**Mai 2024 : Total des appels traités.** La moyenne mensuelle calculée par
+BonQuery (976,6 appels/jour) est inférieure de 16,4 appels/jour au chiffre
+publié par la Ville (993). L'extrait BonQuery couvre les 31 jours sans zéro
+ni valeur nulle, ce qui écarte les données manquantes comme cause possible.
+Cela indique une différence de périmètre dans l'extrait CKAN pour ce mois-là —
+peut-être un programme ou un type d'appel que la Ville inclut dans son chiffre
+publié mais qui est absent de la ressource de données ouvertes. Tous les autres
+mois concordent à ±0,5 près, ce qui est cohérent avec l'arrondissement à
+l'entier par la Ville.
+
+**Nov 2024 : Appelants sans jumelage.** BonQuery 191,4 c. Ville 191,6
+(diff. −0,2). Juste à l'extérieur de la tolérance de ±0,1 ; probablement une
+différence d'arrondissement dans la façon dont la Ville calcule sa moyenne
+mensuelle publiée.
+
+---
+
+## Estimation de la population Passerelle et triage (non disponible dans l'exportation CKAN)
+
+Le chiffre d'occupation nocturne publié par la Ville inclut les programmes
+suivis dans son système opérationnel qui ne sont pas publiés dans les données
+ouvertes (Programmes Passerelle et triage). L'occupation de BonQuery est
+calculée uniquement à partir de l'exportation CKAN. L'écart ci-dessous —
+Ville moins BonQuery — est une estimation de la population Passerelle et
+triage pour chaque mois. Il ne s'agit pas d'un échec de validation ; c'est
+une différence structurelle attendue entre les deux sources de données.
+
+```{ojs}
+//| echo: false
+{
+  const H = `background:var(--bq-th-bg);color:var(--bq-th-fg);font-weight:600;font-size:0.82em;padding:6px 9px;text-align:center`
+
+  return html`<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:0.88em">
+  <thead>
+    <tr>
+      <th style="${H}">Année</th>
+      <th style="${H}">Mois</th>
+      <th style="${H}">BonQuery (CKAN)</th>
+      <th style="${H}">Publié par la Ville</th>
+      <th style="${H}">Écart (Ville − BonQuery)</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${cityRef.map((c, i) => {
+      const bq  = bqIndex.get(c.year * 100 + c.month)
+      const bo  = bq ? bq.occupancy_mean : null
+      const gap = bo != null ? c.occupancy - bo : null
+
+      const bg = i % 2 === 0 ? "var(--bq-bg)" : "var(--bq-bg-alt)"
+      const td = `padding:5px 9px;text-align:center;border-bottom:1px solid var(--bq-border)`
+
+      const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark"
+      const gapStyle = gap == null ? td
+        : gap > 200 ? td + `;background:${isDark ? "rgba(217,119,6,0.25)" : "#ffe4cc"};font-weight:700`
+        : gap > 80  ? td + `;background:${isDark ? "rgba(217,119,6,0.12)" : "#fff3e6"}`
+        : td
+
+      return html`<tr style="background:${bg}">
+        <td style="${td}">${c.year}</td>
+        <td style="${td}">${MONTH_ABB[c.month]}</td>
+        <td style="${td}">${bo != null ? bo.toFixed(1) : "—"}</td>
+        <td style="${td}">${c.occupancy.toLocaleString("fr-CA")}</td>
+        <td style="${gapStyle}">${gap != null ? gap.toFixed(1) : "—"}</td>
+      </tr>`
+    })}
+  </tbody>
+</table>
+</div>`
+}
+```
+
+Les écarts plus importants de la fin 2024 au début 2025 coïncident avec le pic
+de la réponse d'urgence aux refuges hivernaux, lorsque les programmes Passerelle
+et triage fonctionnent probablement à plus grande capacité. Les écarts plus
+faibles durant les mois d'été concordent avec une activité réduite de la réponse
+d'urgence.
+
+### Source des données
+
+Toutes les données proviennent du jeu de données
+[Appels à l'Admission centrale](https://open.toronto.ca/dataset/central-intake-calls/)
+et du jeu de données [Utilisation quotidienne des refuges et services d'hébergement
+de nuit, occupation et capacité](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/)
+de la Ville de Toronto, publiés sur le portail des données ouvertes de la Ville.
+Les valeurs de référence de la Ville proviennent de la page
+[Demandes d'orientation dans les refuges](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/),
+instantané du 2026-05-25.
+
+Contient des informations sous licence [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-licence/).

@@ -1,7 +1,7 @@
 ---
 title: "BonQuery"
-subtitle: "Data for the greater good"
-description: "BonQuery turns humanitarian open data into clear, useful analyses — starting with Toronto's shelter system capacity, demand, and flow."
+subtitle: "Toronto Shelter System: An Independent Data Audit."
+description: "BonQuery turns humanitarian open data into clear, useful analyses — starting with Toronto's shelter system capacity, demand, and flow. Built for journalists, researchers, advocates, policymakers, and anyone paying attention."
 author: "Miriam Marling"
 open-graph:
   title: "BonQuery — Data for the Greater Good"
@@ -15,92 +15,258 @@ twitter-card:
 
 ```{ojs}
 //| echo: false
-daily_occ = FileAttachment("data/daily_occupancy.json").json()
-bt_data   = FileAttachment("data/city_bridging_triage.json").json()
+daily_occ    = FileAttachment("data/daily_occupancy.json").json()
+bt_data      = FileAttachment("data/city_bridging_triage.json").json()
 shelter_flow = FileAttachment("data/shelter_flow.json").json()
-bayesian_gender = FileAttachment("data/bayesian_gender.json").json()
-spike_detection = FileAttachment("data/spike_detection.json").json()
+seasonRug    = FileAttachment("data/season_rug.csv").csv().then(rows =>
+  rows.map(d => ({ min_temp: +d.min_temp, winter_season: d.winter_season }))
+)
+binnedSC     = FileAttachment("data/cold_response_binned_by_winter_sc.csv").csv().then(rows =>
+  rows.map(d => ({
+    min_temp_bin:  +d.min_temp_bin,
+    winter_season: d.winter_season,
+    mean_unplaced: +d.mean_unplaced,
+    n:             +d.n
+  }))
+)
 ```
 
 ```{=html}
 <style>
 .quarto-container, .container-fluid, .container { max-width: none !important; }
-/* Crisis callout — shared visual language with spike-detection page */
-.crisis-hero {
-  background: #1a1a2e; color: #fff;
-  border-radius: 0.75rem; padding: 2rem 2.5rem;
-  margin: 1.5rem 0 1rem;
-  display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
-}
-.crisis-hero .hero-number {
-  font-size: 5rem; font-weight: 800; color: #ff3b30;
-  line-height: 1; white-space: nowrap; flex-shrink: 0;
-}
-.crisis-hero .hero-text { max-width: 520px; }
-.crisis-hero .hero-text strong { color: #ff3b30; }
-.crisis-hero .hero-label {
-  font-size: 1.8rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.65rem;
-}
-.crisis-hero .hero-sub { font-size: 1.2rem; color: #ccd; line-height: 1.5; }
-/* Plain-English callout — appears after technical prose blocks */
-.plain-eng {
-  border-left: 3px solid #ff3b30;
-  background: rgba(255,59,48,0.04);
-  border-radius: 0 0.35rem 0.35rem 0;
-  padding: 0.55rem 0.9rem;
-  margin: 0.5rem 0 0.75rem;
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: #333;
-}
-.plain-eng .pe-label {
-  display: inline-block;
-  font-size: 0.7rem; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: #ff3b30; margin-bottom: 0.2rem;
-}
-/* KEY FINDING alert box */
-.key-finding-box {
-  border: 2px solid #ff3b30;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  margin: 2.5rem 0;
-  padding: 0 1.5rem 1.75rem;
-}
-.key-finding-box-header {
-  background: #ff3b30;
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  padding: 0.65rem 1.5rem;
-  margin: 0 -1.5rem 1.5rem;
-}
-.key-finding-box h3 { margin-top: 0.4rem; }
 </style>
 ```
 
-# Welcome
+## Winter Accountability Monitor
 
-BonQuery breathes life into humanitarian-related data — turning
-numbers on government open-data portals into clear, useful analyses
-for the people who can do something about the issues behind them.
+::: {.bq-alert .bq-alert-hero}
+**WINTER ACCOUNTABILITY MONITOR: 2026–2027.** Our core mandate is tracking
+whether the City of Toronto meets its humanitarian obligation: zero people
+left unplaced when temperatures drop to −5 °C or below. Six winters of Central
+Intake data show the city has failed this standard on 95.9% of qualifying nights.
+Daily monitoring resumes when the 2026–2027 cold season opens in November.
+:::
 
-<!-- The work is open, reproducible, and built for journalists,
-     researchers, advocates, policymakers, and anyone paying
-     attention. -->
-The work is built for journalists, researchers, advocates,
-policymakers, and anyone paying attention.
+::: {.bq-cta}
+[View the Data Audit & Evidence →](projects/cold-response.qmd){.btn .btn-danger .btn-lg
+role="button"}
 
-## First project — Inside Toronto's Shelter System
+[View Audit Methodology & Reporting Discrepancies →](projects/about-the-data.qmd){.btn
+.btn-outline-danger .btn-lg role="button"}
+:::
 
-Toronto publishes monthly data on its taxed shelter system, but
-numbers alone don't tell the story. This project closes that gap
-with headache-free takeaways: what the numbers mean, why they
-matter, and what the data leaves out.
+::: {.key-finding-box}
 
-[Explore the project →](projects/toronto-shelter.qmd)
+```{=html}
+<div class="key-finding-box-header">COLD-WEATHER ACCOUNTABILITY</div>
+```
+
+### People left unplaced on freezing nights — six winters of evidence
+
+```{ojs}
+//| echo: false
+//| output: false
+cs      = getComputedStyle(document.documentElement)
+refLine = cs.getPropertyValue("--bq-chart-stroke").trim()
+
+seasonColorMap = new Map([
+  ["2020-21", "#4DF884"],
+  ["2021-22", "#2F9DF5"],
+  ["2022-23", "#DEDD32"],
+  ["2023-24", "#E63946"],
+  ["2024-25", "#F65F18"],
+  ["2025-26", "#900C00"]
+])
+```
+
+```{ojs}
+//| echo: false
+viewof selectedWinters = {
+  const allSeasons = [
+    "2020-21","2021-22","2022-23","2023-24","2024-25","2025-26"
+  ];
+  const selected = new Set(allSeasons);
+
+  if (!document.getElementById("bq-season-cb-style")) {
+    const s = document.createElement("style");
+    s.id = "bq-season-cb-style";
+    s.textContent = `
+      .bq-season-cb {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+        margin: 0;
+        border: 1.5px solid #888;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: transparent;
+      }
+      .bq-season-cb:checked {
+        background-color: var(--season-color);
+        border-color: var(--season-color);
+      }
+      .bq-season-cb:checked::after {
+        content: "✓";
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .bq-season-cb:hover {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.15);
+      }
+      .bq-season-lbl {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  const root = document.createElement("div");
+  root.style.cssText = "font-family:var(--sans-serif,sans-serif);font-size:13.5px;";
+
+  const labelEl = document.createElement("div");
+  labelEl.textContent = "Seasons shown";
+  labelEl.style.cssText = "font-weight:600;margin-bottom:3px;";
+
+  const hint = document.createElement("div");
+  hint.textContent = "Click a season to show or hide it";
+  hint.style.cssText =
+    "font-size:11.5px;font-weight:400;color:#888;margin-bottom:6px;";
+
+  const row = document.createElement("div");
+  row.style.cssText =
+    "display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;";
+
+  for (const season of allSeasons) {
+    const color = seasonColorMap.get(season);
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.value = season; cb.checked = true;
+    cb.className = "bq-season-cb";
+    cb.style.setProperty("--season-color", color);
+
+    const txt = document.createElement("span");
+    txt.textContent = season;
+
+    const lbl = document.createElement("label");
+    lbl.className = "bq-season-lbl";
+    lbl.append(cb, txt);
+    row.append(lbl);
+
+    cb.addEventListener("change", () => {
+      if (cb.checked) selected.add(season); else selected.delete(season);
+      root.value = [...selected];
+      root.dispatchEvent(new Event("input"));
+    });
+  }
+
+  root.append(labelEl, hint, row);
+  root.value = allSeasons;
+  return root;
+}
+```
+
+```{ojs}
+//| echo: false
+//| output: false
+scSeasons = selectedWinters
+```
+
+:::{.callout-note collapse="false"}
+**Reading the chart.** The chart shows data from up to six cold seasons
+(November 15 to April 15), colour-coded by winter year. The vertical lines
+across the background act as a temperature rug — each line marks one night's
+recorded overnight minimum temperature, coloured to match its season. Where
+these lines cluster together, data is plentiful; where they thin out (below
+about −15 °C), individual nights carry more weight. Use the checkboxes above
+to show or hide individual seasons.
+:::
+
+```{ojs}
+//| echo: false
+{
+  const visibleBinned = binnedSC.filter(d => scSeasons.includes(d.winter_season))
+  const visibleRug    = seasonRug.filter(d => scSeasons.includes(d.winter_season))
+
+  return Plot.plot({
+    width:        720,
+    height:       400,
+    marginLeft:   70,
+    marginRight:  20,
+    marginTop:    20,
+    marginBottom: 50,
+    color: {
+      type:   "ordinal",
+      legend: true,
+      label:  "Winter season",
+      domain: [...seasonColorMap.keys()],
+      range:  [...seasonColorMap.values()]
+    },
+    r: { range: [2, 8] },
+    x: {
+      label: "Overnight minimum temperature (°C)",
+      labelAnchor: "center",
+      reverse: true
+    },
+    y: {
+      label: "Mean people unplaced (singles/couples, observed)",
+      labelAnchor: "top",
+      grid: true
+    },
+    marks: [
+      Plot.tickX(visibleRug, {
+        x: "min_temp",
+        stroke: "winter_season",
+        frameAnchor: "bottom",
+        strokeOpacity: 0.35,
+        strokeWidth: 1
+      }),
+      Plot.ruleX([0, -5, -10, -15], {
+        stroke: refLine,
+        strokeWidth: 1,
+        strokeDasharray: "4,3"
+      }),
+      Plot.dot(visibleBinned, {
+        x: "min_temp_bin",
+        y: "mean_unplaced",
+        fill: "winter_season",
+        r: "n"
+      }),
+      Plot.tip(visibleBinned, Plot.pointer({
+        x: "min_temp_bin",
+        y: "mean_unplaced",
+        title: d =>
+          `${d.winter_season}\n` +
+          `${d.min_temp_bin} °C bin  ·  ${d.n} nights\n` +
+          `Observed mean: ${d.mean_unplaced.toFixed(1)} unplaced`
+      }))
+    ]
+  })
+}
+```
+
+*Figure 1: Observed mean unplaced people (singles and couples) at 4 a.m. by
+overnight minimum temperature and cold season, binned in 2 °C intervals. Bins
+are labelled by their midpoint (e.g., the −3 °C dot covers −4 °C up to but not
+including −2 °C). Each dot represents one temperature bin for one winter; dot
+size scales with the number of nights in that bin (larger = more nights).*
+
+[See the full analysis: Left in the Cold →](projects/cold-response.qmd){.btn .btn-danger .btn-lg role="button"}
+
+:::
+
+## The data we're tracking
 
 <!-- SYNC: both callout boxes below must be kept in sync with projects/toronto-shelter.qmd.
      Paths here are adjusted for root-level rendering (projects/ prefix added). -->
@@ -137,7 +303,7 @@ A point-in-time view of the shelter system for any month from January
   src="projects/monthly-snapshot.html"
   width="100%"
   height="2800"
-  style="border: 1px solid #ddd; border-radius: 4px;"
+  class="bq-embed"
   loading="lazy">
 </iframe>
 
@@ -153,7 +319,7 @@ exceed, match, or fall below last year.
   src="projects/ytd-comparison.html"
   width="100%"
   height="900"
-  style="border: 1px solid #ddd; border-radius: 4px;"
+  class="bq-embed"
   loading="lazy">
 </iframe>
 
@@ -169,7 +335,7 @@ patterns or seasonal trends.
   src="projects/historical-trends.html"
   width="100%"
   height="3800"
-  style="border: 1px solid #ddd; border-radius: 4px;"
+  class="bq-embed"
   loading="lazy">
 </iframe>
 
@@ -365,7 +531,7 @@ viewof selectedDate = Inputs.select(allDates, {
 
 ```{ojs}
 //| echo: false
-html`<p style="font-size:0.85em;color:#666;margin-top:0.25em">Latest available from City of Toronto Open Data: <strong>${fmtDate(latestDate)}</strong>.</p>`
+html`<p class="bq-ckan-note">Latest available from City of Toronto Open Data: <strong>${fmtDate(latestDate)}</strong>.</p>`
 ```
 
 ```{ojs}
@@ -381,49 +547,49 @@ function offlineCell(r) {
   if (r.cap_funding === null || r.cap_funding === undefined) return `<td></td>`
   const offline = r.cap_funding - r.cap
   if (offline <= 0) {
-    return `<td style="padding:5px 10px;text-align:right">${offline.toLocaleString()}</td>`
+    return `<td class="bq-num">${offline.toLocaleString()}</td>`
   }
-  return `<td style="padding:5px 10px;text-align:right;color:#cc0000;font-weight:700">${offline.toLocaleString()}</td>`
+  return `<td class="bq-num bq-danger">${offline.toLocaleString()}</td>`
 }
 
 function tableRow(r, col1Label) {
   const pad = (r.indent ?? 0) * 16
-  const bold = r.is_total ? "font-weight:600" : ""
-  const bg   = r.is_total ? "#e8edf5" : "#ffffff"
+  const cls = r.is_total ? "bq-row-total" : "bq-row"
+  const bld = r.is_total ? " bq-bold" : ""
   if (r.col_type === "summary") {
-    return `<tr style="background:${bg}">
-      <td style="padding:5px 10px 5px ${pad}px;${bold}">${r.label}</td>
-      <td style="padding:5px 10px;text-align:right;${bold}">${n(r.ind)}</td>
+    return `<tr class="${cls}">
+      <td style="padding-left:${pad}px" class="${bld}">${r.label}</td>
+      <td class="bq-num${bld}">${n(r.ind)}</td>
       <td></td><td></td><td></td><td></td><td></td>
     </tr>`
   }
-  return `<tr style="background:${bg}">
-    <td style="padding:5px 10px 5px ${pad}px;${bold}">${r.label}</td>
-    <td style="padding:5px 10px;text-align:right;${bold}">${n(r.ind)}</td>
-    <td style="padding:5px 10px;text-align:right">${n(r.occ)}</td>
-    <td style="padding:5px 10px;text-align:right">${n(r.unocc)}</td>
-    <td style="padding:5px 10px;text-align:right">${n(r.cap)}</td>
+  return `<tr class="${cls}">
+    <td style="padding-left:${pad}px" class="${bld}">${r.label}</td>
+    <td class="bq-num${bld}">${n(r.ind)}</td>
+    <td class="bq-num">${n(r.occ)}</td>
+    <td class="bq-num">${n(r.unocc)}</td>
+    <td class="bq-num">${n(r.cap)}</td>
     ${offlineCell(r)}
-    <td style="padding:5px 10px;text-align:right">${pct(r.rate)}</td>
+    <td class="bq-num">${pct(r.rate)}</td>
   </tr>`
 }
 
 function sectionHeader(label, col1, col2, col3, col4) {
-  return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
-    <td style="padding:7px 10px">${label}</td>
-    <td style="padding:7px 10px;text-align:right">Individuals</td>
-    <td style="padding:7px 10px;text-align:right">${col1}</td>
-    <td style="padding:7px 10px;text-align:right">${col2}</td>
-    <td style="padding:7px 10px;text-align:right">${col3}</td>
-    <td style="padding:7px 10px;text-align:right">${col4}</td>
-    <td style="padding:7px 10px;text-align:right">Occupancy Rate</td>
+  return `<tr class="bq-th">
+    <td>${label}</td>
+    <td class="bq-num">Individuals</td>
+    <td class="bq-num">${col1}</td>
+    <td class="bq-num">${col2}</td>
+    <td class="bq-num">${col3}</td>
+    <td class="bq-num">${col4}</td>
+    <td class="bq-num">Occupancy Rate</td>
   </tr>`
 }
 
 function summaryHeader() {
-  return `<tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
-    <td style="padding:7px 10px">Occupancy Summary</td>
-    <td style="padding:7px 10px;text-align:right">Individuals</td>
+  return `<tr class="bq-th">
+    <td>Occupancy Summary</td>
+    <td class="bq-num">Individuals</td>
     <td colspan="5"></td>
   </tr>`
 }
@@ -441,20 +607,20 @@ dailyTable = {
     ? allShelterInd + btInd
     : allShelterInd
 
-  const totalAccomRow = `<tr style="background:#e8edf5;font-weight:600">
-    <td style="padding:5px 10px">Total People Accommodated †</td>
-    <td style="padding:5px 10px;text-align:right">${n(totalInd)}</td>
+  const totalAccomRow = `<tr class="bq-row-total bq-bold">
+    <td>Total People Accommodated †</td>
+    <td class="bq-num">${n(totalInd)}</td>
     <td></td><td></td><td></td><td></td><td></td>
   </tr>`
   const bridgingRow = btInd !== null
-    ? `<tr style="background:#f5f5f5">
-        <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
-        <td style="padding:5px 10px;text-align:right">${n(btInd)}</td>
+    ? `<tr class="bq-row-alt">
+        <td style="padding-left:26px">Bridging &amp; Triage Programs</td>
+        <td class="bq-num">${n(btInd)}</td>
         <td></td><td></td><td></td><td></td><td></td>
        </tr>`
-    : `<tr style="background:#f5f5f5;color:#999;font-style:italic">
-        <td style="padding:5px 10px 5px 26px">Bridging &amp; Triage Programs</td>
-        <td style="padding:5px 10px;text-align:right;font-size:0.85em"
+    : `<tr class="bq-row-na">
+        <td style="padding-left:26px">Bridging &amp; Triage Programs</td>
+        <td class="bq-num" style="font-size:0.85em"
           >Not available for this date</td>
         <td></td><td></td><td></td><td></td><td></td>
        </tr>`
@@ -467,7 +633,7 @@ dailyTable = {
 
   return html`
     <div style="overflow-x:auto;margin:0 0 1rem">
-    <table style="border-collapse:collapse;width:100%;font-size:0.88em;font-family:'Segoe UI',Arial,sans-serif;min-width:620px">
+    <table class="bq-table">
       ${summaryHeader()}
       ${totalAccomRow}
       ${bridgingRow}
@@ -482,14 +648,14 @@ dailyTable = {
       ${sectionHeader("Allied Services", "Occupied Spaces", "Unoccupied Spaces", "Actual Space Capacity", "Offline Spaces")}
       ${alliedKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
 
-      <tr style="background:#1a3c6b;color:white;font-weight:600;font-size:0.85em">
-        <td style="padding:7px 10px">Temporary Programs, Bed/Space-Based</td>
-        <td style="padding:7px 10px;text-align:right">Individuals</td>
-        <td style="padding:7px 10px;text-align:right">Occupied Beds/Spaces</td>
-        <td style="padding:7px 10px;text-align:right">Unoccupied</td>
-        <td style="padding:7px 10px;text-align:right">Actual Capacity</td>
-        <td style="padding:7px 10px;text-align:right">Offline Beds/Spaces</td>
-        <td style="padding:7px 10px;text-align:right">Occupancy Rate</td>
+      <tr class="bq-th">
+        <td>Temporary Programs, Bed/Space-Based</td>
+        <td class="bq-num">Individuals</td>
+        <td class="bq-num">Occupied Beds/Spaces</td>
+        <td class="bq-num">Unoccupied</td>
+        <td class="bq-num">Actual Capacity</td>
+        <td class="bq-num">Offline Beds/Spaces</td>
+        <td class="bq-num">Occupancy Rate</td>
       </tr>
       ${s("temp_resp") ? tableRow(s("temp_resp")) : ""}
 
@@ -499,7 +665,7 @@ dailyTable = {
       ${sectionHeader("Temporary Isolation/Recovery Programs", "Occupied Rooms", "Unoccupied Rooms", "Actual Room Capacity", "Offline Rooms")}
       ${s("iso") ? tableRow(s("iso")) : ""}
     </table>
-    <p style="font-size:0.8em;color:#666;margin:4px 0 0">
+    <p class="bq-footnote">
       † Total People Accommodated = All Shelter Programs + Bridging &amp; Triage Programs.
       Bridging &amp; Triage figures are not published to the City of Toronto open data (CKAN)
       export. BonQuery scrapes them daily from the City's shelter census page when the City
@@ -541,7 +707,7 @@ The amber band marks moderate anomalies (2 MAD-SD above the expected value), the
   src="projects/spike-detection.html"
   width="100%"
   height="2800"
-  style="border: 1px solid #ddd; border-radius: 4px;"
+  class="bq-embed"
   loading="lazy">
 </iframe>
 
@@ -574,7 +740,7 @@ queue); see the page for important caveats on combining the two series.
   src="projects/central-intake.html"
   width="100%"
   height="4200"
-  style="border: 1px solid #ddd; border-radius: 4px;"
+  class="bq-embed"
   loading="lazy">
 </iframe>
 
@@ -587,268 +753,6 @@ Contains information licensed under the [Open Government Licence – Toronto](ht
 
 ---
 
-::: {.key-finding-box}
-
-```{=html}
-<div class="key-finding-box-header">KEY FINDING</div>
-```
-
-### The most affected group — and the one we hear least about
-
-```{ojs}
-//| echo: false
-// All months, All Population row — used for time-series statistics
-_allFlow = shelter_flow
-  .filter(d => d.population_group === "All Population"
-            && d.gender_male != null && d.gender_female != null)
-
-// Most recent month — for the hero ratio and sub-line
-_latestFlow = _allFlow.sort((a, b) => b.flow_date.localeCompare(a.flow_date))[0]
-
-_menCount   = _latestFlow ? _latestFlow.gender_male : 0
-_womenCount = _latestFlow ? _latestFlow.gender_female : 0
-_transCount = _latestFlow ? _latestFlow.gender_trans_nb_two_spirit : 0
-_ratio      = _womenCount > 0 ? (_menCount / _womenCount).toFixed(1) : "—"
-_flowMonth  = _latestFlow
-  ? new Date(_latestFlow.flow_date + "T00:00:00")
-      .toLocaleString("default", {month: "long", year: "numeric"})
-  : ""
-
-// --- Time-series statistics ---
-// These are population counts, not random samples, so a single month carries no
-// sampling error. The meaningful uncertainty is month-to-month volatility.
-// We treat each month as one observation and compare group means across months.
-
-function _mean(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length }
-function _sd(arr) {
-  const m = _mean(arr)
-  return Math.sqrt(arr.reduce((s, x) => s + (x - m) ** 2, 0) / (arr.length - 1))
-}
-function _se(arr) { return _sd(arr) / Math.sqrt(arr.length) }
-
-// Normal CDF — Abramowitz & Stegun 26.2.17, accurate to ~7 dp.
-// Used for Bonferroni-adjusted two-tailed p-values.
-function _Phi(z) {
-  const c = [0.319381530, -0.356563782, 1.781477937, -1.821255978, 1.330274429]
-  const t = 1 / (1 + 0.2316419 * Math.abs(z))
-  const tail = t*(c[0]+t*(c[1]+t*(c[2]+t*(c[3]+t*c[4])))) * Math.exp(-z*z/2) / Math.sqrt(2*Math.PI)
-  return z >= 0 ? 1 - tail : tail
-}
-
-_menSeries   = _allFlow.map(d => d.gender_male)
-_womenSeries = _allFlow.map(d => d.gender_female)
-_transSeries = _allFlow.map(d => d.gender_trans_nb_two_spirit).filter(v => v != null)
-
-_menMean   = _mean(_menSeries);   _menSE   = _se(_menSeries)
-_womenMean = _mean(_womenSeries); _womenSE = _se(_womenSeries)
-_transMean = _mean(_transSeries); _transSE = _se(_transSeries)
-
-_n1 = _menSeries.length;   _s1 = _sd(_menSeries)
-_n2 = _womenSeries.length; _s2 = _sd(_womenSeries)
-_n3 = _transSeries.length; _s3 = _sd(_transSeries)
-
-// Welch's t-test helper — unequal variances, returns {t, df}
-function _wt(m1, s1, n1, m2, s2, n2) {
-  const v1 = s1**2/n1, v2 = s2**2/n2
-  const t  = (m1 - m2) / Math.sqrt(v1 + v2)
-  const df = (v1 + v2)**2 / (v1**2/(n1-1) + v2**2/(n2-1))
-  return {t, df}
-}
-
-// All three pairwise tests
-_pw_mw = _wt(_menMean,   _s1, _n1, _womenMean, _s2, _n2)  // Men   vs Women
-_pw_mt = _wt(_menMean,   _s1, _n1, _transMean, _s3, _n3)  // Men   vs Trans/NB/2S
-_pw_wt = _wt(_womenMean, _s2, _n2, _transMean, _s3, _n3)  // Women vs Trans/NB/2S
-
-// Bonferroni-adjusted two-tailed p (3 comparisons → multiply by 3, cap at 1)
-function _pAdj(t) { return Math.min(1, 3 * 2 * _Phi(-Math.abs(t))) }
-function _pLabel(t) {
-  const p = _pAdj(t)
-  return p < 0.0001 ? "< 0.0001 ***" : p < 0.001 ? "< 0.001 **" : p < 0.05 ? p.toFixed(3) + " *" : p.toFixed(3)
-}
-
-_yearRange = _allFlow.length > 0
-  ? _allFlow[_allFlow.length - 1].flow_date.slice(0, 4) + "–" + _latestFlow.flow_date.slice(0, 4)
-  : ""
-
-// Minimum monthly share of men, used in the closing paragraph.
-// Math.floor ensures the displayed integer is a true lower bound: every
-// month on record had men's share above this number.
-_menShareSeries = _allFlow.map(d => d.gender_male / d.actively_homeless)
-_menShareMinPct = Math.floor(Math.min(..._menShareSeries) * 100)
-
-// Average monthly gap: men minus (women + transgender/NB/2S), full record.
-_gapAvg    = Math.round(_menMean - (_womenMean + _transMean))
-_gapAvgStr = _gapAvg.toLocaleString()
-
-// Earliest and latest years in the data, for the "on record (X to Y)" phrase.
-_recordStartYear = _allFlow.map(d => d.flow_date.slice(0, 4)).sort()[0]
-_recordEndYear   = _latestFlow.flow_date.slice(0, 4)
-```
-
-```{ojs}
-//| echo: false
-html`<div class="crisis-hero">
-  <div class="hero-number">${_ratio}×</div>
-  <div class="hero-text">
-    <div class="hero-label">more <strong>men</strong> than women are actively homeless in Toronto's shelter system</div>
-    <div class="hero-sub"><strong>${_menCount.toLocaleString()} men</strong> · ${_womenCount.toLocaleString()} women · ${_transCount.toLocaleString()} transgender, non-binary, or two-spirit · ${_flowMonth}</div>
-  </div>
-</div>`
-```
-
-```{ojs}
-//| echo: false
-_genderStats = [
-  {label: "Men",          mean: _menMean,   ci_lo: _menMean   - 1.96 * _menSE,   ci_hi: _menMean   + 1.96 * _menSE,   isFocus: true},
-  {label: "Women",        mean: _womenMean, ci_lo: _womenMean - 1.96 * _womenSE, ci_hi: _womenMean + 1.96 * _womenSE, isFocus: false},
-  {label: "Trans/NB/2S",  mean: _transMean, ci_lo: _transMean - 1.96 * _transSE, ci_hi: _transMean + 1.96 * _transSE, isFocus: false}
-].sort((a, b) => b.mean - a.mean)
-
-Plot.plot({
-  width, height: 300, marginBottom: 36, marginLeft: 70, marginRight: 20,
-  title: `Mean monthly actively homeless count by gender — ${_yearRange} (${_n1} months)`,
-  caption: "Error bars show 95% confidence intervals of the monthly mean. Source: City of Toronto Shelter System Flow dataset (open.toronto.ca).",
-  x: {label: null, domain: _genderStats.map(d => d.label)},
-  y: {label: "Mean individuals actively homeless / month", grid: true,
-      tickFormat: d => d.toLocaleString(),
-      domain: [0, Math.max(..._genderStats.map(d => d.ci_hi)) * 1.12]},
-  marks: [
-    // Bars — mean monthly count
-    Plot.barY(_genderStats, {
-      x: "label", y: "mean",
-      fill: d => d.isFocus ? "#ff3b30" : "#4a6fa5",
-      fillOpacity: d => d.isFocus ? 1 : 0.55
-    }),
-    // Vertical error bar line (ci_lo → ci_hi)
-    Plot.ruleY(_genderStats, {
-      x: "label", y1: "ci_lo", y2: "ci_hi",
-      stroke: "#222", strokeWidth: 1.8
-    }),
-    // Horizontal cap at ci_hi (top)
-    Plot.tickY(_genderStats, {
-      x: "label", y: "ci_hi",
-      stroke: "#222", strokeWidth: 1.8,
-      insetLeft: 18, insetRight: 18
-    }),
-    // Horizontal cap at ci_lo (bottom)
-    Plot.tickY(_genderStats, {
-      x: "label", y: "ci_lo",
-      stroke: "#222", strokeWidth: 1.8,
-      insetLeft: 18, insetRight: 18
-    }),
-    // Value label above each bar
-    Plot.text(_genderStats, {
-      x: "label", y: "ci_hi",
-      text: d => Math.round(d.mean).toLocaleString(),
-      dy: -10, textAnchor: "middle", fontSize: 13,
-      fill: d => d.isFocus ? "#cc1f15" : "#333",
-      fontWeight: "600"
-    }),
-    Plot.ruleY([0])
-  ]
-})
-```
-
-```{ojs}
-//| echo: false
-{
-  // Bayesian results from brms model (pre-computed, saved in data/bayesian_gender.json)
-  const bg   = bayesian_gender
-  const rr   = bg.rate_ratios
-  const pd   = bg.pairwise_diffs
-  const diag = bg.diagnostics
-  const fmt1 = x => Number(x).toFixed(1)
-  const fmtN = x => Math.round(x).toLocaleString()
-
-  const bayesPairs = [
-    {comp: "Men vs Women",         rr: rr.men_vs_women,       diff: pd.men_vs_women,       note: false},
-    {comp: "Men vs Trans/NB/2S",   rr: rr.men_vs_transnb2s,   diff: pd.men_vs_transnb2s,   note: true},
-    {comp: "Women vs Trans/NB/2S", rr: rr.women_vs_transnb2s, diff: pd.women_vs_transnb2s, note: true}
-  ]
-  const bayesRows = bayesPairs.map(p => html`<tr>
-    <td style="padding:3px 10px 3px 0">${p.comp}${p.note ? html`<sup> †</sup>` : ""}</td>
-    <td style="padding:3px 10px;text-align:right;font-variant-numeric:tabular-nums">
-      ${fmt1(p.rr.median)}&times; (${fmt1(p.rr.hdi[0])}&ndash;${fmt1(p.rr.hdi[1])})
-    </td>
-    <td style="padding:3px 0;text-align:right;font-variant-numeric:tabular-nums;font-weight:${p.note?"400":"700"}">
-      ${fmtN(p.diff.median)} (${fmtN(p.diff.hdi[0])}&ndash;${fmtN(p.diff.hdi[1])})
-    </td>
-  </tr>`)
-
-  return html`<div style="font-size:0.81rem;color:#444;margin:0.6rem 0 0;line-height:1.6">
-    <p style="margin:0 0 0.3rem">
-      <strong>Bayesian analysis (negative-binomial regression, fit with
-      <code>brms</code> ${bg.brms_version} on ${bg.n_months} months of data):</strong>
-      Weakly informative priors were used throughout.
-      Sampling diagnostics: R&#x0302;&nbsp;${diag.max_rhat},
-      ESS&nbsp;${diag.min_ess_bulk.toLocaleString()},
-      ${diag.n_divergent} divergent transitions.
-    </p>
-    <table style="border-collapse:collapse;width:100%;font-size:0.8rem;margin-bottom:0.3rem">
-      <thead><tr style="border-bottom:1px solid #ccc;color:#666">
-        <th style="text-align:left;padding:3px 10px 3px 0;font-weight:600">Comparison</th>
-        <th style="text-align:right;padding:3px 10px;font-weight:600">Rate ratio (95% HDI)</th>
-        <th style="text-align:right;padding:3px 0;font-weight:600">Difference in count (95% HDI)</th>
-      </tr></thead>
-      <tbody>${bayesRows}</tbody>
-    </table>
-    <p style="margin:0 0 0.5rem;color:#777">
-      † The Trans/NB/2S group averages ~${Math.round(_transMean)} individuals per month,
-      a small count that is also likely under-reported in administrative shelter records.
-      Tests involving this group should be interpreted with caution.
-    </p>
-    <p style="margin:0 0 0.3rem">
-      <strong>Men vs Women:</strong>
-      Men's expected monthly count is roughly
-      <strong>${fmt1(rr.men_vs_women.median)}&times; that of women</strong>
-      (95% HDI ${fmt1(rr.men_vs_women.hdi[0])}&ndash;${fmt1(rr.men_vs_women.hdi[1])}&times;),
-      an average gap of about
-      <strong>${fmtN(pd.men_vs_women.median)} people per month</strong>
-      (95% HDI ${fmtN(pd.men_vs_women.hdi[0])}&ndash;${fmtN(pd.men_vs_women.hdi[1])}).
-      Across a wide range of reasonable priors, the posterior probability that the true mean
-      monthly count of men exceeds women is indistinguishable from 1.
-    </p>
-    <div class="plain-eng">
-      <div class="pe-label">Plain English</div>
-      A posterior probability indistinguishable from 1 means the estimated probability is
-      close to 100% that men's true monthly count exceeds women's. The 95% HDI also indicates
-      the gap is consistently large — men's running about ${fmt1(rr.men_vs_women.median)}&times;
-      women's, or roughly ${fmtN(pd.men_vs_women.median)} more people per month.
-      <strong>Men are the largest and most consistently over-represented group in the city's shelter system.</strong>
-    </div>
-  </div>`
-}
-```
-
-```{ojs}
-//| echo: false
-md`Men have accounted for at least **${_menShareMinPct}%** of Toronto's actively homeless population every single month on record (${_recordStartYear} to ${_recordEndYear}). That figure is the **lowest single-month share of men observed across the entire data record**; in most months the share is higher. The average monthly gap between men and everyone else (women plus transgender, non-binary, and two-spirit individuals combined) is roughly **${_gapAvgStr} people**, and it has barely moved as the total has risen and fallen. The pattern is not new, not subtle, and not hidden in the data. Yet it rarely makes headlines, and few of the city's public conversations about homelessness lead with it.`
-```
-
-```{ojs}
-//| echo: false
-// Only render the cross-reference link while Men is still the top spike sector;
-// if the data ever shifts, the link auto-hides so it never contradicts the
-// findings on the spike-detection page.
-_spikeTopSector = (() => {
-  const sectors = ["men","women","mixed_adult","youth","families"]
-  const counts = sectors.map(s => ({
-    key: s,
-    n: spike_detection.filter(d => d.series === s && d.spike_flag !== "none").length
-  }))
-  counts.sort((a, b) => b.n - a.n)
-  return counts[0].key
-})()
-
-_spikeTopSector === "men"
-  ? md`[The impact on men is also highlighted here: Occupancy Spike Detection →](projects/spike-detection.html)`
-  : html``
-```
-
-:::
-
----
-
-*Have a humanitarian dataset you think should get this treatment?
-Reach out at [info@BonQuery.ca](mailto:info@BonQuery.ca).*
+*BonQuery is an independent data audit of Toronto's shelter system, built on
+public records and reproducible methods. Data and methodology inquiries:
+[info@BonQuery.ca](mailto:info@BonQuery.ca).*

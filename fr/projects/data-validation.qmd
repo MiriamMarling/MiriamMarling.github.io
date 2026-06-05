@@ -1,0 +1,404 @@
+---
+title: "Validation des données d'occupation quotidienne"
+subtitle: >
+  Une vérification de transparence comparant les chiffres d'occupation des
+  refuges de BonQuery avec le tableau de bord en direct de la Ville de Toronto,
+  avec un compte rendu complet des différences de données connues.
+author: "Miriam Marling"
+open-graph:
+  title: "Validation des données de BonQuery par rapport à la Ville de Toronto"
+  description: >
+    Vérification de transparence comparant les chiffres d'occupation des refuges
+    de BonQuery avec le tableau de bord en direct de la Ville de Toronto, avec
+    un compte rendu complet des différences connues.
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Validation des données de BonQuery — Ville de Toronto"
+  description: >
+    Vérification de transparence : chiffres d'occupation des refuges de
+    BonQuery c. tableau de bord de la Ville, avec les différences documentées.
+---
+
+Cette page est une vérification de transparence. Elle place les chiffres de
+données ouvertes de BonQuery pour l'occupation quotidienne des refuges directement
+à côté des chiffres du tableau de bord en direct publié par la Ville de Toronto
+pour la même date, et documente précisément chaque différence. Le tableau de
+BonQuery est entièrement construit à partir des données ouvertes de la Ville
+(exportation CKAN) ; le tableau de bord en direct de la Ville inclut **certains**
+chiffres qui ne peuvent pas être reproduits à partir de leur propre exportation
+CKAN. La plupart des chiffres correspondent exactement. Là où ce n'est pas le
+cas, la raison est documentée ci-dessous.
+
+**Date de référence de la comparaison : 14 mai 2026.** Le côté Ville de ce tableau
+est un instantané unique capturé depuis le tableau de bord en direct le 14 mai,
+qui n'est plus visible sur le site de la Ville.
+
+---
+
+## Légende
+
+| Marque | Signification |
+|---|---|
+| ✓ | **Concordance** — le chiffre de données ouvertes de BonQuery égale le chiffre publié par la Ville |
+| * | **Différence connue** — les chiffres diffèrent d'un montant documenté et expliqué (voir notes) |
+
+Les lignes marquées *Non publié en données ouvertes* sont entièrement absentes
+de l'exportation CKAN et ne reçoivent aucune marque.
+
+---
+
+## Comparaison côte à côte — 14 mai 2026
+
+```{ojs}
+//| echo: false
+daily_occ = FileAttachment("../data/daily_occupancy.json").json()
+city_ref  = FileAttachment("../data/city_reference_2026-05-14.json").json()
+```
+
+```{ojs}
+//| echo: false
+bq14 = daily_occ.filter(r => r.date === "2026-05-14")
+
+function bq(key) { return bq14.find(r => r.key === key) }
+function cr(key) { return city_ref.find(r => r.key === key) }
+
+function n(v)   { return v !== null && v !== undefined ? (+v).toLocaleString("fr-CA") : "—" }
+function pct(v) { return v !== null && v !== undefined ? (+v).toFixed(1) + " %" : "—" }
+
+KNOWN_CAP_KEYS = new Set(["mix_emerg","men_emerg","wom_emerg","yth_emerg","emerg_total","singles_total"])
+
+function mark(bqVal, cityVal, isCapOrRate, key) {
+  if (cityVal === null || cityVal === undefined) return ""
+  if (bqVal === null || bqVal === undefined) return ""
+  const match = Math.abs(+bqVal - +cityVal) < 0.11
+  if (match) return `<span style="color:var(--bq-success);font-weight:bold">✓</span>`
+  if (isCapOrRate && KNOWN_CAP_KEYS.has(key))
+    return `<span style="color:var(--bq-caution);font-weight:bold" title="Différence connue — voir notes">*</span>`
+  return ""
+}
+
+function compRow(key, bqRow, cityRow, opts = {}) {
+  const { indent = 0, isTot = false, summaryOnly = false } = opts
+  const pad  = indent * 16
+  const bold = isTot ? "font-weight:600" : ""
+  const bg   = isTot ? "var(--bq-bg-accent)" : "var(--bq-bg)"
+
+  if (!bqRow || !cityRow) return ""
+
+  if (summaryOnly || bqRow.col_type === "summary") {
+    return `<tr style="background:${bg}">
+      <td style="padding:5px 10px 5px ${pad}px;${bold}">${bqRow.label}</td>
+      <td style="padding:5px 8px;text-align:right;${bold}">
+        ${n(bqRow.ind)} ${mark(bqRow.ind, cityRow.city_ind, false, key)}</td>
+      <td style="padding:5px 8px;text-align:right;color:var(--bq-fg-faint)">${n(cityRow.city_ind)}</td>
+      <td colspan="6"></td>
+    </tr>`
+  }
+
+  return `<tr style="background:${bg}">
+    <td style="padding:5px 10px 5px ${pad}px;${bold}">${bqRow.label}</td>
+    <td style="padding:5px 8px;text-align:right;${bold}">
+      ${n(bqRow.ind)} ${mark(bqRow.ind, cityRow.city_ind, false, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:var(--bq-fg-faint)">${n(cityRow.city_ind)}</td>
+    <td style="padding:5px 8px;text-align:right">
+      ${n(bqRow.occ)} ${mark(bqRow.occ, cityRow.city_occ, false, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:var(--bq-fg-faint)">${n(cityRow.city_occ)}</td>
+    <td style="padding:5px 8px;text-align:right">
+      ${n(bqRow.unocc)} ${mark(bqRow.unocc, cityRow.city_unocc, true, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:var(--bq-fg-faint)">${n(cityRow.city_unocc)}</td>
+    <td style="padding:5px 8px;text-align:right">
+      ${n(bqRow.cap)}${bqRow.cap_funding != null && bqRow.cap_funding !== bqRow.cap ? ` <span style="color:var(--bq-fg-faint);font-size:0.85em">(financé ${n(bqRow.cap_funding)})</span>` : ""} ${mark(bqRow.cap, cityRow.city_cap, true, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:var(--bq-fg-faint)">${n(cityRow.city_cap)}</td>
+    <td style="padding:5px 8px;text-align:right">
+      ${pct(bqRow.rate)} ${mark(bqRow.rate, cityRow.city_rate, true, key)}</td>
+    <td style="padding:5px 8px;text-align:right;color:var(--bq-fg-faint)">${pct(cityRow.city_rate)}</td>
+  </tr>`
+}
+
+function secHead(label, col1) {
+  return `<tr style="background:var(--bq-th-bg);color:var(--bq-th-fg);font-weight:600;font-size:0.82em">
+    <td style="padding:6px 10px" rowspan="2">${label}</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">Personnes</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">${col1[0]}</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">${col1[1]}</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">${col1[2]}</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">Taux d'occupation</td>
+  </tr>
+  <tr style="background:var(--bq-th-sub-bg);color:var(--bq-th-sub-fg);font-size:0.78em">
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">Ville</td>
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">Ville</td>
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">Ville</td>
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">Ville</td>
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">Ville</td>
+  </tr>`
+}
+
+function summarySecHead() {
+  return `<tr style="background:var(--bq-th-bg);color:var(--bq-th-fg);font-weight:600;font-size:0.82em">
+    <td style="padding:6px 10px" rowspan="2">Résumé de l'occupation</td>
+    <td style="padding:6px 8px;text-align:center" colspan="2">Personnes</td>
+    <td colspan="8"></td>
+  </tr>
+  <tr style="background:var(--bq-th-sub-bg);color:var(--bq-th-sub-fg);font-size:0.78em">
+    <td style="padding:3px 8px;text-align:center">BQ</td>
+    <td style="padding:3px 8px;text-align:center">Ville</td>
+    <td colspan="8"></td>
+  </tr>`
+}
+
+bridgingRow = `<tr style="background:var(--bq-bg-alt);color:var(--bq-fg-faint)">
+  <td style="padding:5px 10px 5px 20px;font-style:italic">Programmes de passerelle et de triage</td>
+  <td style="padding:5px 8px;text-align:right;font-size:0.85em" colspan="2">Non publié en données ouvertes (29 personnes)</td>
+  <td colspan="8"></td>
+</tr>`
+
+compTable = {
+  const rows = [
+    "all_shelter","room_based","singles_sector","singles_shelter","allied_summ","temp_summ","iso_summ"
+  ]
+  return html`
+  <div style="overflow-x:auto;margin:1rem 0">
+  <table style="border-collapse:collapse;width:100%;font-size:0.83em;font-family:'Segoe UI',Arial,sans-serif;min-width:800px">
+
+    ${summarySecHead()}
+    ${compRow("all_shelter",     bq("all_shelter"),    cr("all_shelter"),    {isTot:true,  summaryOnly:true})}
+    ${bridgingRow}
+    ${compRow("room_based",      bq("room_based"),     cr("room_based"),     {indent:1, summaryOnly:true})}
+    ${compRow("singles_sector",  bq("singles_sector"), {city_ind:5727},      {indent:1, summaryOnly:true})}
+    ${compRow("singles_shelter", bq("singles_shelter"),cr("singles_total"),  {indent:2, summaryOnly:true})}
+    ${compRow("allied_summ",     bq("allied_summ"),    cr("allied_total"),   {indent:2, summaryOnly:true})}
+    ${compRow("temp_summ",       bq("temp_summ"),      {city_ind:1901},      {indent:2, summaryOnly:true})}
+    ${compRow("iso_summ",        bq("iso_summ"),       cr("iso"),            {indent:1, summaryOnly:true})}
+
+    ${secHead("Programmes de refuge, base chambre", ["Chambres occupées","Chambres inoccupées","Capacité réelle (chambres)"])}
+    ${compRow("fam_total",   bq("fam_total"),   cr("fam_total"),   {isTot:true})}
+    ${compRow("fam_emerg",   bq("fam_emerg"),   cr("fam_emerg"),   {indent:1})}
+    ${compRow("fam_trans_r", bq("fam_trans_r"), cr("fam_trans_r"), {indent:1})}
+    ${compRow("fam_hotel",   bq("fam_hotel"),   cr("fam_hotel"),   {indent:1})}
+    ${compRow("sng_hotel",   bq("sng_hotel"),   cr("sng_hotel"),   {isTot:true})}
+
+    ${secHead("Programmes de refuge, base lit", ["Lits occupés","Lits inoccupés","Capacité réelle (lits)"])}
+    ${compRow("singles_total", bq("singles_total"), cr("singles_total"), {isTot:true})}
+    ${compRow("emerg_total",   bq("emerg_total"),   cr("emerg_total"),   {indent:1, isTot:true})}
+    ${compRow("mix_emerg",     bq("mix_emerg"),     cr("mix_emerg"),     {indent:2})}
+    ${compRow("men_emerg",     bq("men_emerg"),     cr("men_emerg"),     {indent:2})}
+    ${compRow("wom_emerg",     bq("wom_emerg"),     cr("wom_emerg"),     {indent:2})}
+    ${compRow("yth_emerg",     bq("yth_emerg"),     cr("yth_emerg"),     {indent:2})}
+    ${compRow("trans_total",   bq("trans_total"),   cr("trans_total"),   {indent:1, isTot:true})}
+    ${compRow("mix_trans",     bq("mix_trans"),     cr("mix_trans"),     {indent:2})}
+    ${compRow("fam_trans_b",   bq("fam_trans_b"),   cr("fam_trans_b"),   {indent:2})}
+    ${compRow("men_trans",     bq("men_trans"),     cr("men_trans"),     {indent:2})}
+    ${compRow("wom_trans",     bq("wom_trans"),     cr("wom_trans"),     {indent:2})}
+    ${compRow("yth_trans",     bq("yth_trans"),     cr("yth_trans"),     {indent:2})}
+
+    ${secHead("Services complémentaires", ["Espaces occupés","Espaces inoccupés","Capacité réelle (espaces)"])}
+    ${compRow("allied_total", bq("allied_total"), cr("allied_total"), {isTot:true})}
+    ${compRow("respites",     bq("respites"),     cr("respites"),     {indent:1})}
+    ${compRow("dropin",       bq("dropin"),       cr("dropin"),       {indent:1})}
+
+    ${secHead("Programmes temporaires (lit/espace)", ["Lits/esp. occupés","Lits/esp. inoccupés","Capacité réelle"])}
+    ${compRow("temp_resp", bq("temp_resp"), cr("temp_resp"))}
+
+    ${secHead("Programmes temporaires (chambre/unité)", ["Chambres occupées","Chambres inoccupées","Capacité réelle (chambres)"])}
+    ${compRow("hotels", bq("hotels"), cr("hotels"))}
+
+    ${secHead("Isolement/rétablissement temporaire", ["Chambres occupées","Chambres inoccupées","Capacité réelle (chambres)"])}
+    ${compRow("iso", bq("iso"), cr("iso"))}
+
+  </table>
+  </div>`
+}
+```
+
+---
+
+## Pourquoi certains chiffres diffèrent-ils ?
+
+La section immédiatement sous l'en-tête **Programmes de refuge, base lit**
+contient quelques valeurs signalées (indiquées par un astérisque, `*`). La marque
+`*` apparaît dans les colonnes **Lits inoccupés**, **Capacité réelle (lits)** et
+**Taux d'occupation** pour les programmes de lits d'urgence, ainsi que dans la
+ligne **Total des secteurs individus**. Il ne s'agit pas d'erreurs dans le pipeline
+de données de BonQuery ni dans sa reconstitution des tableaux de la Ville. La Ville
+ne documente pas publiquement la dérivation exacte de ses chiffres de tableau de
+bord, ce qui explique pourquoi l'agrégation CKAN de BonQuery ne peut pas les
+reproduire exactement. BonQuery contacte la Ville pour obtenir des éclaircissements
+et publiera une mise à jour dès réception d'une réponse.
+
+Le chiffre **financé** entre parenthèses à côté de la Capacité réelle (lits) de
+BQ est le nombre de lits que la Ville a contracté un opérateur de refuge pour
+exploiter ; la Ville n'affiche pas ce chiffre dans son tableau de bord. Il est
+présenté ici pour faciliter le calcul du nombre de lits actuellement hors service,
+défini par `financé − réel = hors service`.
+
+Les chiffres dans la colonne BQ proviennent des propres données CKAN publiées par
+la Ville, agrégées par BonQuery. Là où BQ affiche un chiffre financé en gris entre
+parenthèses, ce chiffre provient également de l'exportation CKAN. La comparaison
+sur cette page vise à confirmer que l'agrégation de BonQuery reproduit correctement
+les données de la Ville — et à documenter les différences entre les deux produits de
+données de la Ville (l'exportation CKAN et le tableau de bord Occupation et capacité
+quotidiennes en direct).
+
+### Que sont les lits hors service ?
+
+Un **lit hors service** est un lit de refuge financé et réel qui a été temporairement
+retiré du service — de la même façon qu'un hôtel pourrait retirer une chambre du
+marché pour réparations. Les raisons comprennent l'entretien, la lutte antiparasitaire,
+les pénuries de personnel et l'isolement médical. L'opérateur de refuge enregistre
+le statut hors service ; la Ville compile les chiffres dans son exportation de
+données ouvertes.
+
+La Ville ne publie pas le nombre de lits hors service comme chiffre autonome dans
+aucun des deux produits de données. BonQuery l'a découvert en plaçant les deux
+chiffres côte à côte : `financé − réel = hors service`. Ce nombre de lits **hors
+service** prend une importance particulière lors d'événements météorologiques
+extrêmes, où chaque lit financé compte.
+
+### Reconstitution de l'écart, programme par programme
+
+Le tableau ci-dessous isole les programmes de lits d'urgence ligne par ligne,
+présentant trois chiffres de capacité avec trois différences calculées. La colonne
+**Écart capacité réelle (lits) Ville − BQ** montre à quel point le chiffre du
+tableau de bord de la Ville s'écarte de la Capacité réelle (lits) de BonQuery —
+la divergence que cette page cherche à expliquer. La colonne **Lits hors service
+(Réel BQ − Financé)** présente la Capacité réelle (lits) de BonQuery moins la
+capacité financée : un nombre négatif est le nombre de lits contractés temporairement
+hors service (pour maintenance, réparation, isolement, pénuries de personnel ou
+lutte antiparasitaire). La colonne **Lits hors service (Réel Ville − Financé)**
+présente le chiffre du tableau de bord de la Ville moins la capacité financée ;
+une valeur positive dans la ligne Adultes mixtes signale l'anomalie discutée dans
+la note ci-dessous.
+
+```{ojs}
+//| echo: false
+breakdownTable = {
+  const keys = ["men_emerg","wom_emerg","mix_emerg","yth_emerg","emerg_total","singles_total"]
+  const rows = keys.map(k => {
+    const b = bq(k)
+    const c = cr(k)
+    if (!b || !c) return null
+    const funded      = b.cap_funding
+    const cityGap     = (c.city_cap !== null && c.city_cap !== undefined && b.cap !== null) ? c.city_cap - b.cap : null
+    const offlineBQ   = (funded !== null && funded !== undefined && b.cap !== null) ? b.cap - funded : null
+    const offlineCity = (funded !== null && funded !== undefined && c.city_cap !== null && c.city_cap !== undefined) ? c.city_cap - funded : null
+    const anomaly     = c.city_cap !== null && funded !== null && c.city_cap > funded
+    return {key: k, label: b.label, bq_cap: b.cap, city_cap: c.city_cap, funded, cityGap, offlineBQ, offlineCity, anomaly}
+  }).filter(Boolean)
+
+  function signed(v) {
+    if (v === null || v === undefined) return "—"
+    if (v === 0) return "0"
+    return (v > 0 ? "+" : "") + (+v).toLocaleString("fr-CA")
+  }
+
+  const TH1  = "background:var(--bq-th-bg);color:var(--bq-th-fg);font-weight:600;font-size:0.82em;padding:7px 8px;text-align:right;border-bottom:2px solid var(--bq-th-sub-bg)"
+  const TH1L = "background:var(--bq-th-bg);color:var(--bq-th-fg);font-weight:600;font-size:0.82em;padding:7px 10px;text-align:left;border-bottom:2px solid var(--bq-th-sub-bg)"
+  const TH2  = "background:var(--bq-th-sub-bg);color:var(--bq-th-sub-fg);font-weight:600;font-size:0.82em;padding:7px 8px;text-align:right;border-bottom:2px solid var(--bq-th-sub-bg)"
+
+  return html`<div style="overflow-x:auto;margin:1rem 0">
+  <table style="border-collapse:collapse;font-size:0.88em;width:100%;max-width:880px;font-family:'Segoe UI',Arial,sans-serif">
+    <thead>
+      <tr>
+        <th colspan="4" style="${TH1L};border-bottom:0"> </th>
+        <th colspan="3" style="${TH2};text-align:center;border-left:3px solid var(--bq-chart-blue);border-bottom:0">Écarts</th>
+      </tr>
+      <tr>
+        <th style="${TH1L}">Programme</th>
+        <th style="${TH1}">Capacité réelle (lits)<br><span style="font-weight:400;font-size:0.88em">BonQuery</span></th>
+        <th style="${TH1}">Capacité réelle (lits)<br><span style="font-weight:400;font-size:0.88em">Tableau de bord de la Ville</span></th>
+        <th style="${TH1}">Capacité financée<br><span style="font-weight:400;font-size:0.88em">Données CKAN</span></th>
+        <th style="${TH2};border-left:3px solid var(--bq-chart-blue)">Capacité réelle (lits)<br><span style="font-weight:400;font-size:0.88em">Écart Ville − BQ</span></th>
+        <th style="${TH2}">Lits hors service<br><span style="font-weight:400;font-size:0.88em">Réel BQ − Financé</span></th>
+        <th style="${TH2}">Lits hors service<br><span style="font-weight:400;font-size:0.88em">Réel Ville − Financé</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(r => {
+        const isTotal = r.key === "emerg_total" || r.key === "singles_total"
+        const bg   = isTotal ? "var(--bq-bg-accent)" : "var(--bq-bg)"
+        const bold = isTotal ? "font-weight:600" : ""
+        const gapColor         = r.cityGap     !== null && r.cityGap     !== 0 ? "color:var(--bq-caution)" : ""
+        const offlineBQColor   = r.offlineBQ   !== null && r.offlineBQ   !== 0 ? "color:var(--bq-caution)" : ""
+        const offlineCityColor = r.offlineCity !== null && r.offlineCity !== 0 ? "color:var(--bq-caution)" : ""
+        const fundedBold       = r.anomaly ? "font-weight:bold" : ""
+        return html`<tr style="background:${bg};${bold}">
+          <td style="padding:6px 10px">${r.label}</td>
+          <td style="padding:6px 8px;text-align:right">${n(r.bq_cap)}</td>
+          <td style="padding:6px 8px;text-align:right">${n(r.city_cap)}</td>
+          <td style="padding:6px 8px;text-align:right;${fundedBold}">${n(r.funded)}</td>
+          <td style="padding:6px 8px;text-align:right;${gapColor};border-left:3px solid var(--bq-chart-blue)">${signed(r.cityGap)}</td>
+          <td style="padding:6px 8px;text-align:right;${offlineBQColor}">${signed(r.offlineBQ)}</td>
+          <td style="padding:6px 8px;text-align:right;${offlineCityColor}">${signed(r.offlineCity)}</td>
+        </tr>`
+      })}
+    </tbody>
+  </table></div>`
+}
+```
+
+```{ojs}
+//| echo: false
+mixEmergAnomaly = {
+  const m  = bq("mix_emerg")
+  const mc = cr("mix_emerg")
+  if (!m || !mc || mc.city_cap == null || m.cap == null || m.cap_funding == null) return md``
+  const city   = mc.city_cap
+  const actual = m.cap
+  const funded = m.cap_funding
+  let sentence
+  if (city > funded) {
+    sentence = `La ligne Adultes mixtes — urgence est notable : le tableau de bord de la Ville indique **${n(city)}** lits, ce qui représente **${n(city - funded)}** au-dessus de la capacité financée de **${n(funded)}**. Cela exclut une explication du type « la Ville publie la capacité financée » et suggère que le tableau de bord en direct s'appuie sur une définition de la capacité opérationnelle non documentée publiquement.`
+  } else if (city < actual) {
+    sentence = `La ligne Adultes mixtes — urgence est notable : le tableau de bord de la Ville indique **${n(city)}** lits, soit **${n(actual - city)}** *en dessous* de la capacité réelle (lits) de BonQuery de **${n(actual)}** (et **${n(funded - city)}** en dessous de la capacité financée de **${n(funded)}**). Le chiffre de la Ville ne correspond à aucune des deux définitions CKAN, et la dérivation exacte de la « Capacité réelle (lits) » dans le tableau de bord en direct n'est pas documentée publiquement.`
+  } else {
+    sentence = `La ligne Adultes mixtes — urgence se situe entre la Capacité réelle (lits) de BonQuery (**${n(actual)}**) et la capacité financée (**${n(funded)}**) — la Ville publie **${n(city)}**. La dérivation exacte de la « Capacité réelle (lits) » dans le tableau de bord en direct n'est pas documentée publiquement.`
+  }
+  return md`${sentence}`
+}
+```
+
+### Programmes Passerelle et triage (non publiés en données ouvertes)
+
+Le tableau de bord en direct de la Ville indique 29 personnes dans les programmes
+Passerelle et triage le 14 mai 2026. Ce type de programme n'apparaît pas du tout
+dans l'exportation CKAN des données ouvertes — les programmes sont suivis dans le
+système opérationnel interne de la Ville mais ne sont pas publiés sur le portail
+des données ouvertes. BonQuery ne peut pas reproduire ce chiffre à partir des données
+ouvertes, et la ligne est étiquetée en conséquence dans le tableau principal. BonQuery
+contactera la Ville pour vérifier si elle est disposée à ajouter ce type de programme
+à son jeu de données CKAN, rétroactivement ou à l'avenir. Il s'agit de la différence
+la plus significative entre le tableau de la Ville et le jeu de données CKAN.
+
+### Audit quotidien des mises à jour CKAN rétroactives
+
+BonQuery effectue un audit par programme à chaque extraction CKAN : un algorithme de
+comparaison confronte les lignes brutes du jour au dernier instantané brut archivé,
+enregistrement par enregistrement, chaque enregistrement étant identifié de façon
+unique par `(PROGRAM_ID, OCCUPANCY_DATE)`. Si les valeurs d'un programme changent
+pour une date déjà publiée, une notification par courriel est envoyée. Au dernier
+tirage en date, **aucune révision rétroactive** n'a été détectée pour une date
+historique dans la comparaison ci-dessus — les valeurs du 14 mai et de chaque jour
+précédent sont restées stables depuis le plus ancien instantané archivé de BonQuery
+(2026-05-17). Si CKAN venait à réviser une ligne déjà publiée, l'audit le ferait
+remonter.
+
+### Conclusion
+
+Le tableau de BonQuery est entièrement construit à partir des données ouvertes
+publiées par la Ville. L'[exportation CKAN](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/),
+l'agrégation des données brutes par BonQuery pour reproduire les tableaux de la
+Ville, et cette page de comparaison forment ensemble un traçage complet de l'audit.
+Le tableau de bord quotidien de la Ville s'appuie sur un état interne du système qui
+n'est pas entièrement présent dans l'exportation des données ouvertes.
+
+---
+
+Contient des informations sous licence [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-licence/). Source : Données ouvertes de la Ville de Toronto — [Utilisation quotidienne des refuges et services d'hébergement de nuit, occupation et capacité](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Agrégées par [BonQuery](https://bonquery.ca).
+
+Les données agrégées de BonQuery sont disponibles en téléchargement de 2021 à aujourd'hui : [JSON](https://bonquery.ca/data/daily_occupancy.json) · [CSV](https://bonquery.ca/data/daily_occupancy.csv)

@@ -1,0 +1,42 @@
+---
+title: "À propos"
+author: "Miriam Marling"
+open-graph:
+  title: "À propos — BonQuery"
+  description: >
+    À propos de Miriam Marling et de BonQuery — recherche sur données ouvertes
+    portant sur des enjeux humanitaires, à commencer par le réseau de refuges
+    de Toronto.
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "À propos — BonQuery"
+  description: >
+    À propos de Miriam Marling et de BonQuery — recherche sur données ouvertes
+    portant sur des enjeux humanitaires, à commencer par le réseau de refuges
+    de Toronto.
+---
+
+![](../images/miriam-headshot.jpg){fig-align="center" width="250" .rounded}
+
+Chercheuse en données basée à Toronto, j'ai complété une maîtrise en
+neurosciences cognitives, deux publications évaluées par les pairs, et un
+poste dans la fonction publique à Statistique Canada.
+
+R est mon langage d'analyse de prédilection. J'utilise également Oracle SQL,
+APEX et Python pour développer les projets de BonQuery de bout en bout :
+base de données, tableau de bord, analyse et rédaction.
+
+J'ai fondé BonQuery parce qu'une grande partie des données publiques sur les
+enjeux humanitaires au Canada se trouve sur des portails gouvernementaux
+en libre accès, mais que la plupart des citoyens n'y accèdent jamais. Le
+premier projet se concentre sur le réseau de refuges de Toronto, mis à rude
+épreuve. D'autres suivront.
+
+## Nous joindre
+
+Pour toute question sur les données, le projet ou une collaboration :
+
+- Miriam Marling : [miriam@BonQuery.ca](mailto:miriam@BonQuery.ca)
+- Demandes générales : [info@BonQuery.ca](mailto:info@BonQuery.ca)
+- [LinkedIn](https://www.linkedin.com/in/mmarling)

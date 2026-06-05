@@ -1,0 +1,751 @@
+---
+title: "BonQuery"
+subtitle: "Réseau de refuges de Toronto : un audit de données indépendant."
+description: >
+  BonQuery transforme les données ouvertes humanitaires en analyses claires
+  et utiles — à commencer par la capacité, la demande et les flux du réseau
+  de refuges de Toronto. Conçu pour les journalistes, les chercheurs, les
+  défenseurs, les décideurs politiques et toute personne qui suit la situation
+  de près.
+author: "Miriam Marling"
+open-graph:
+  title: "BonQuery — Des données au service du bien commun"
+  description: >
+    BonQuery transforme les données ouvertes humanitaires en analyses claires
+    et utiles — à commencer par la capacité, la demande et les flux du réseau
+    de refuges de Toronto.
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "BonQuery — Des données au service du bien commun"
+  description: >
+    BonQuery transforme les données ouvertes humanitaires en analyses claires
+    et utiles — capacité, demande et flux du réseau de refuges de Toronto.
+---
+
+```{ojs}
+//| echo: false
+daily_occ    = FileAttachment("data/daily_occupancy.json").json()
+bt_data      = FileAttachment("data/city_bridging_triage.json").json()
+shelter_flow = FileAttachment("data/shelter_flow.json").json()
+seasonRug    = FileAttachment("data/season_rug.csv").csv().then(rows =>
+  rows.map(d => ({ min_temp: +d.min_temp, winter_season: d.winter_season }))
+)
+binnedSC     = FileAttachment("data/cold_response_binned_by_winter_sc.csv").csv().then(rows =>
+  rows.map(d => ({
+    min_temp_bin:  +d.min_temp_bin,
+    winter_season: d.winter_season,
+    mean_unplaced: +d.mean_unplaced,
+    n:             +d.n
+  }))
+)
+```
+
+```{=html}
+<style>
+.quarto-container, .container-fluid, .container { max-width: none !important; }
+</style>
+```
+
+## Moniteur de responsabilité hivernale
+
+::: {.bq-alert .bq-alert-hero}
+**MONITEUR DE RESPONSABILITÉ HIVERNALE : 2026–2027.** Notre mandat principal
+consiste à vérifier si la Ville de Toronto respecte son obligation humanitaire :
+zéro personne sans place lorsque la température descend à −5 °C ou en dessous.
+Six hivers de données de l'Admission centrale montrent que la Ville n'a respecté
+cette norme que lors de 4,1 % des nuits admissibles. La surveillance quotidienne
+reprendra à l'ouverture de la saison froide 2026–2027 en novembre.
+:::
+
+::: {.bq-cta}
+[Voir l'audit des données et les données probantes →](projects/cold-response.qmd){.btn .btn-danger .btn-lg
+role="button"}
+
+[Voir la méthodologie de l'audit et les divergences →](projects/about-the-data.qmd){.btn
+.btn-outline-danger .btn-lg role="button"}
+:::
+
+::: {.key-finding-box}
+
+```{=html}
+<div class="key-finding-box-header">RESPONSABILITÉ HIVERNALE</div>
+```
+
+### Personnes sans place lors des nuits glaciales — six hivers de données
+
+```{ojs}
+//| echo: false
+//| output: false
+cs      = getComputedStyle(document.documentElement)
+refLine = cs.getPropertyValue("--bq-chart-stroke").trim()
+
+seasonColorMap = new Map([
+  ["2020-21", "#4DF884"],
+  ["2021-22", "#2F9DF5"],
+  ["2022-23", "#DEDD32"],
+  ["2023-24", "#E63946"],
+  ["2024-25", "#F65F18"],
+  ["2025-26", "#900C00"]
+])
+```
+
+```{ojs}
+//| echo: false
+viewof selectedWinters = {
+  const allSeasons = [
+    "2020-21","2021-22","2022-23","2023-24","2024-25","2025-26"
+  ];
+  const selected = new Set(allSeasons);
+
+  if (!document.getElementById("bq-season-cb-style")) {
+    const s = document.createElement("style");
+    s.id = "bq-season-cb-style";
+    s.textContent = `
+      .bq-season-cb {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+        margin: 0;
+        border: 1.5px solid #888;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: transparent;
+      }
+      .bq-season-cb:checked {
+        background-color: var(--season-color);
+        border-color: var(--season-color);
+      }
+      .bq-season-cb:checked::after {
+        content: "✓";
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .bq-season-cb:hover {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.15);
+      }
+      .bq-season-lbl {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  const root = document.createElement("div");
+  root.style.cssText = "font-family:var(--sans-serif,sans-serif);font-size:13.5px;";
+
+  const labelEl = document.createElement("div");
+  labelEl.textContent = "Saisons affichées";
+  labelEl.style.cssText = "font-weight:600;margin-bottom:3px;";
+
+  const hint = document.createElement("div");
+  hint.textContent = "Cliquez sur une saison pour l'afficher ou la masquer";
+  hint.style.cssText =
+    "font-size:11.5px;font-weight:400;color:#888;margin-bottom:6px;";
+
+  const row = document.createElement("div");
+  row.style.cssText =
+    "display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;";
+
+  for (const season of allSeasons) {
+    const color = seasonColorMap.get(season);
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.value = season; cb.checked = true;
+    cb.className = "bq-season-cb";
+    cb.style.setProperty("--season-color", color);
+
+    const txt = document.createElement("span");
+    txt.textContent = season;
+
+    const lbl = document.createElement("label");
+    lbl.className = "bq-season-lbl";
+    lbl.append(cb, txt);
+    row.append(lbl);
+
+    cb.addEventListener("change", () => {
+      if (cb.checked) selected.add(season); else selected.delete(season);
+      root.value = [...selected];
+      root.dispatchEvent(new Event("input"));
+    });
+  }
+
+  root.append(labelEl, hint, row);
+  root.value = allSeasons;
+  return root;
+}
+```
+
+```{ojs}
+//| echo: false
+//| output: false
+scSeasons = selectedWinters
+```
+
+:::{.callout-note collapse="false"}
+**Lecture du graphique.** Le graphique présente des données issues de jusqu'à
+six saisons froides (du 15 novembre au 15 avril), codées par couleur selon
+l'année hivernale. Les lignes verticales en arrière-plan font office de tapis
+de température — chaque ligne marque la température minimale nocturne enregistrée
+pour une nuit donnée, colorée selon sa saison. Là où ces lignes se concentrent,
+les données sont abondantes ; là où elles s'amenuisent (en dessous d'environ
+−15 °C), les nuits individuelles ont plus de poids. Utilisez les cases à cocher
+ci-dessus pour afficher ou masquer les saisons individuelles.
+:::
+
+```{ojs}
+//| echo: false
+{
+  const visibleBinned = binnedSC.filter(d => scSeasons.includes(d.winter_season))
+  const visibleRug    = seasonRug.filter(d => scSeasons.includes(d.winter_season))
+
+  return Plot.plot({
+    width:        720,
+    height:       400,
+    marginLeft:   70,
+    marginRight:  20,
+    marginTop:    20,
+    marginBottom: 50,
+    color: {
+      type:   "ordinal",
+      legend: true,
+      label:  "Saison hivernale",
+      domain: [...seasonColorMap.keys()],
+      range:  [...seasonColorMap.values()]
+    },
+    r: { range: [2, 8] },
+    x: {
+      label: "Température minimale nocturne (°C)",
+      labelAnchor: "center",
+      reverse: true
+    },
+    y: {
+      label: "Personnes sans place (individus seuls/couples, moyenne observée)",
+      labelAnchor: "top",
+      grid: true
+    },
+    marks: [
+      Plot.tickX(visibleRug, {
+        x: "min_temp",
+        stroke: "winter_season",
+        frameAnchor: "bottom",
+        strokeOpacity: 0.35,
+        strokeWidth: 1
+      }),
+      Plot.ruleX([0, -5, -10, -15], {
+        stroke: refLine,
+        strokeWidth: 1,
+        strokeDasharray: "4,3"
+      }),
+      Plot.dot(visibleBinned, {
+        x: "min_temp_bin",
+        y: "mean_unplaced",
+        fill: "winter_season",
+        r: "n"
+      }),
+      Plot.tip(visibleBinned, Plot.pointer({
+        x: "min_temp_bin",
+        y: "mean_unplaced",
+        title: d =>
+          `${d.winter_season}\n` +
+          `Intervalle ${d.min_temp_bin} °C  ·  ${d.n} nuits\n` +
+          `Moyenne observée : ${d.mean_unplaced.toFixed(1)} personne(s) sans place`
+      }))
+    ]
+  })
+}
+```
+
+*Figure 1 : Moyenne observée de personnes (individus seuls et couples) sans
+place à 4 h, par température minimale nocturne et saison froide, regroupée par
+intervalles de 2 °C. Les intervalles sont étiquetés par leur point médian
+(p. ex., le point à −3 °C couvre de −4 °C jusqu'à −2 °C exclu). Chaque point
+représente un intervalle de température pour un hiver ; la taille du point est
+proportionnelle au nombre de nuits dans cet intervalle (plus grand = davantage
+de nuits).*
+
+[Voir l'analyse complète : Laissés dans le froid →](projects/cold-response.qmd){.btn .btn-danger .btn-lg role="button"}
+
+:::
+
+## Les données que nous suivons
+
+<!-- SYNC FR: kept in sync with fr/projects/toronto-shelter.qmd -->
+
+::: {.callout-note collapse="true"}
+## Flux mensuel du réseau de refuges
+
+### Les tableaux de bord
+
+::: {.mobile-dashboard-links}
+Ouvrez chaque tableau de bord directement dans votre navigateur — ils sont
+conçus pour une utilisation interactive et fonctionnent mieux en plein écran
+sur téléphone.
+
+- [Portrait mensuel →](projects/monthly-snapshot.html)
+- [Comparaison année en cours →](projects/ytd-comparison.html)
+- [Tendances historiques →](projects/historical-trends.html)
+:::
+
+::: {.desktop-dashboard-tabs}
+
+Les trois onglets ci-dessous présentent différentes vues des données, avec
+des filtres interactifs sur chaque graphique.
+
+::: {.panel-tabset}
+
+#### Portrait mensuel
+
+Vue instantanée du réseau de refuges pour tout mois à partir de janvier
+2018. Utilisez le filtre de date en haut pour changer de mois.
+
+[Ouvrir dans un nouvel onglet →](projects/monthly-snapshot.html){target="_blank"}
+
+<iframe
+  src="projects/monthly-snapshot.html"
+  width="100%"
+  height="2800"
+  class="bq-embed"
+  loading="lazy">
+</iframe>
+
+#### Comparaison année en cours
+
+Compare les chiffres cumulatifs de l'année en cours avec la même période
+l'année précédente. Utile pour déterminer si le système est en voie de
+dépasser, d'égaler ou d'être en deçà de l'année dernière.
+
+[Ouvrir dans un nouvel onglet →](projects/ytd-comparison.html){target="_blank"}
+
+<iframe
+  src="projects/ytd-comparison.html"
+  width="100%"
+  height="900"
+  class="bq-embed"
+  loading="lazy">
+</iframe>
+
+#### Tendances historiques
+
+Séries chronologiques pluriannuelles pour les principaux indicateurs, avec
+filtres par groupe de population, année et mois. Utile pour repérer des
+tendances à long terme ou des patterns saisonniers.
+
+[Ouvrir dans un nouvel onglet →](projects/historical-trends.html){target="_blank"}
+
+<iframe
+  src="projects/historical-trends.html"
+  width="100%"
+  height="3800"
+  class="bq-embed"
+  loading="lazy">
+</iframe>
+
+:::
+
+:::
+
+```{=html}
+<style>
+.mobile-dashboard-links { display: none !important; }
+.desktop-dashboard-tabs { display: block; }
+@media (max-width: 768px) {
+  .desktop-dashboard-tabs iframe {
+    width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+}
+</style>
+```
+
+:::
+
+---
+
+::: {.callout-note .bq-green collapse="true" title="Occupation et capacité quotidiennes"}
+
+```{ojs}
+//| echo: false
+function fmtDate(s) {
+  const [y, m, d] = s.split("-").map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString("fr-CA", {
+    year: "numeric", month: "long", day: "numeric"
+  })
+}
+
+allDates = [...new Set(daily_occ.map(r => r.date))].sort().reverse()
+latestDate = allDates[0]
+```
+
+La version BonQuery de ce tableau ajoute deux fonctions absentes de la page
+de la Ville. Le **sélecteur de date** ci-dessous permet de consulter toute
+date depuis janvier 2021 jusqu'à aujourd'hui ; la page
+[Utilisation quotidienne des refuges et services d'hébergement de nuit](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/){target="_blank"}
+de la Ville n'affiche que sa date de publication la plus récente. La colonne
+**Hors service** (calculée comme `financé − réel`) signale les lits, chambres
+ou espaces temporairement indisponibles — voir la
+[page de validation des données](projects/data-validation.html){target="_blank"}
+pour une explication de ce que cela représente et pourquoi cela compte.
+
+## Occupation et capacité quotidiennes — ${fmtDate(selectedDate)}
+
+```{ojs}
+//| echo: false
+latestRows = daily_occ.filter(r => r.date === latestDate)
+
+function getVal(rows, key) {
+  const row = rows.find(r => r.key === key)
+  return row ? row.ind : null
+}
+
+validationChecks = {
+  const rows = latestRows
+  const checks = []
+
+  const expectedKeys = [
+    "all_shelter","room_based","singles_sector","singles_shelter","allied_summ",
+    "temp_summ","iso_summ","fam_total","fam_emerg","fam_trans_r","fam_hotel",
+    "sng_hotel","singles_total","emerg_total","mix_emerg","men_emerg","wom_emerg",
+    "yth_emerg","trans_total","mix_trans","fam_trans_b","men_trans","wom_trans",
+    "yth_trans","allied_total","respites","dropin","temp_resp","hotels","iso"
+  ]
+  const presentKeys = new Set(rows.map(r => r.key))
+  const missingKeys = expectedKeys.filter(k => !presentKeys.has(k))
+  checks.push({
+    name: "Toutes les lignes attendues présentes",
+    pass: missingKeys.length === 0,
+    detail: missingKeys.length > 0 ? `Manquantes : ${missingKeys.join(", ")}` : null
+  })
+
+  const allShelter = getVal(rows, "all_shelter")
+  const compSum = ["fam_total","sng_hotel","singles_total","allied_total","temp_resp","hotels","iso"]
+    .reduce((s, k) => s + (getVal(rows, k) ?? 0), 0)
+  checks.push({
+    name: "Le total Tous les programmes de refuge correspond aux composantes",
+    pass: allShelter === compSum,
+    detail: allShelter !== compSum
+      ? `all_shelter.ind=${allShelter}, somme des composantes=${compSum}, diff=${allShelter - compSum}`
+      : null
+  })
+
+  const singlesTotal = getVal(rows, "singles_total")
+  const emergTotal = getVal(rows, "emerg_total")
+  const transTotal = getVal(rows, "trans_total")
+  checks.push({
+    name: "Total secteurs individus : urgence + transition = total individus",
+    pass: singlesTotal === (emergTotal + transTotal),
+    detail: singlesTotal !== (emergTotal + transTotal)
+      ? `individus=${singlesTotal}, urgence+transition=${emergTotal + transTotal}`
+      : null
+  })
+
+  const capRows = rows.filter(r => r.cap !== null && r.cap > 0)
+  const arithFails = capRows.filter(r => Math.abs(r.occ + r.unocc - r.cap) > 0.5)
+  checks.push({
+    name: "Arithmétique interne : occupé + inoccupé = capacité réelle",
+    pass: arithFails.length === 0,
+    detail: arithFails.length > 0
+      ? arithFails.map(r => `${r.key}: ${r.occ}+${r.unocc}≠${r.cap}`).join("; ")
+      : null
+  })
+
+  return checks
+}
+
+allPass = validationChecks.every(c => c.pass)
+
+validationBanner = {
+  if (!allPass) {
+    const failedChecks = validationChecks.filter(c => !c.pass)
+    return html`<div style="
+      background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px">
+      <strong>⚠ Problème de validation détecté pour ${fmtDate(latestDate)}</strong>
+      <details style="margin-top:6px">
+        <summary style="cursor:pointer">Afficher les détails</summary>
+        <ul style="margin:6px 0 0;padding-left:20px">
+          ${failedChecks.map(c => html`<li>${c.name}${c.detail ? html` — <em>${c.detail}</em>` : ""}</li>`)}
+        </ul>
+      </details>
+    </div>`
+  }
+  return html``
+}
+```
+
+```{ojs}
+//| echo: false
+viewof selectedDate = Inputs.select(allDates, {
+  label: "Date",
+  format: d => fmtDate(d)
+})
+```
+
+```{ojs}
+//| echo: false
+html`<p class="bq-ckan-note">Dernière date disponible sur les données ouvertes de la Ville de Toronto : <strong>${fmtDate(latestDate)}</strong>.</p>`
+```
+
+```{ojs}
+//| echo: false
+dayRows = daily_occ.filter(r => r.date === selectedDate)
+
+function n(v) { return v !== null && v !== undefined ? v.toLocaleString("fr-CA") : "—" }
+function pct(v) { return v !== null && v !== undefined ? v.toFixed(1) + " %" : "—" }
+
+function offlineCell(r) {
+  if (r.cap === null || r.cap === undefined) return `<td></td>`
+  if (r.cap_funding === null || r.cap_funding === undefined) return `<td></td>`
+  const offline = r.cap_funding - r.cap
+  if (offline <= 0) {
+    return `<td class="bq-num">${offline.toLocaleString("fr-CA")}</td>`
+  }
+  return `<td class="bq-num bq-danger">${offline.toLocaleString("fr-CA")}</td>`
+}
+
+function tableRow(r, col1Label) {
+  const pad = (r.indent ?? 0) * 16
+  const cls = r.is_total ? "bq-row-total" : "bq-row"
+  const bld = r.is_total ? " bq-bold" : ""
+  if (r.col_type === "summary") {
+    return `<tr class="${cls}">
+      <td style="padding-left:${pad}px" class="${bld}">${r.label}</td>
+      <td class="bq-num${bld}">${n(r.ind)}</td>
+      <td></td><td></td><td></td><td></td><td></td>
+    </tr>`
+  }
+  return `<tr class="${cls}">
+    <td style="padding-left:${pad}px" class="${bld}">${r.label}</td>
+    <td class="bq-num${bld}">${n(r.ind)}</td>
+    <td class="bq-num">${n(r.occ)}</td>
+    <td class="bq-num">${n(r.unocc)}</td>
+    <td class="bq-num">${n(r.cap)}</td>
+    ${offlineCell(r)}
+    <td class="bq-num">${pct(r.rate)}</td>
+  </tr>`
+}
+
+function sectionHeader(label, col1, col2, col3, col4) {
+  return `<tr class="bq-th">
+    <td>${label}</td>
+    <td class="bq-num">Personnes</td>
+    <td class="bq-num">${col1}</td>
+    <td class="bq-num">${col2}</td>
+    <td class="bq-num">${col3}</td>
+    <td class="bq-num">${col4}</td>
+    <td class="bq-num">Taux d'occupation</td>
+  </tr>`
+}
+
+function summaryHeader() {
+  return `<tr class="bq-th">
+    <td>Résumé de l'occupation</td>
+    <td class="bq-num">Personnes</td>
+    <td colspan="5"></td>
+  </tr>`
+}
+
+dailyTable = {
+  const s = (key) => dayRows.find(r => r.key === key)
+
+  const allShelterInd = s("all_shelter") ? s("all_shelter").ind : null
+  const btEntry  = bt_data && bt_data.entries ? bt_data.entries[selectedDate] : null
+  const btInd    = btEntry ? btEntry.bridging_triage : null
+  const btStart  = bt_data && bt_data.first_captured
+    ? bt_data.first_captured
+    : "la date de début de la collecte"
+  const totalInd = (allShelterInd !== null && btInd !== null)
+    ? allShelterInd + btInd
+    : allShelterInd
+
+  const totalAccomRow = `<tr class="bq-row-total bq-bold">
+    <td>Total des personnes hébergées †</td>
+    <td class="bq-num">${n(totalInd)}</td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>`
+  const bridgingRow = btInd !== null
+    ? `<tr class="bq-row-alt">
+        <td style="padding-left:26px">Programmes de passerelle et de triage</td>
+        <td class="bq-num">${n(btInd)}</td>
+        <td></td><td></td><td></td><td></td><td></td>
+       </tr>`
+    : `<tr class="bq-row-na">
+        <td style="padding-left:26px">Programmes de passerelle et de triage</td>
+        <td class="bq-num" style="font-size:0.85em"
+          >Non disponible pour cette date</td>
+        <td></td><td></td><td></td><td></td><td></td>
+       </tr>`
+
+  const summaryKeys = ["all_shelter","room_based","singles_sector","singles_shelter","allied_summ","temp_summ","iso_summ"]
+  const roomKeys    = ["fam_total","fam_emerg","fam_trans_r","fam_hotel","sng_hotel"]
+  const bedKeys     = ["singles_total","emerg_total","mix_emerg","men_emerg","wom_emerg","yth_emerg",
+                       "trans_total","mix_trans","fam_trans_b","men_trans","wom_trans","yth_trans"]
+  const alliedKeys  = ["allied_total","respites","dropin"]
+
+  return html`
+    <div style="overflow-x:auto;margin:0 0 1rem">
+    <table class="bq-table">
+      ${summaryHeader()}
+      ${totalAccomRow}
+      ${bridgingRow}
+      ${summaryKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
+
+      ${sectionHeader("Programmes de refuge, base chambre", "Chambres occupées", "Chambres inoccupées", "Capacité réelle (chambres)", "Chambres hors service")}
+      ${roomKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
+
+      ${sectionHeader("Programmes de refuge, base lit", "Lits occupés", "Lits inoccupés", "Capacité réelle (lits)", "Lits hors service")}
+      ${bedKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
+
+      ${sectionHeader("Services complémentaires", "Espaces occupés", "Espaces inoccupés", "Capacité réelle (espaces)", "Espaces hors service")}
+      ${alliedKeys.map(k => s(k) ? tableRow(s(k)) : "").join("")}
+
+      <tr class="bq-th">
+        <td>Programmes temporaires, base lit/espace</td>
+        <td class="bq-num">Personnes</td>
+        <td class="bq-num">Lits/espaces occupés</td>
+        <td class="bq-num">Inoccupés</td>
+        <td class="bq-num">Capacité réelle</td>
+        <td class="bq-num">Lits/espaces hors service</td>
+        <td class="bq-num">Taux d'occupation</td>
+      </tr>
+      ${s("temp_resp") ? tableRow(s("temp_resp")) : ""}
+
+      ${sectionHeader("Programmes temporaires, base chambre/unité", "Chambres occupées", "Chambres inoccupées", "Capacité réelle (chambres)", "Chambres hors service")}
+      ${s("hotels") ? tableRow(s("hotels")) : ""}
+
+      ${sectionHeader("Programmes d'isolement/rétablissement temporaires", "Chambres occupées", "Chambres inoccupées", "Capacité réelle (chambres)", "Chambres hors service")}
+      ${s("iso") ? tableRow(s("iso")) : ""}
+    </table>
+    <p class="bq-footnote">
+      † Total des personnes hébergées = Tous les programmes de refuge + Programmes de
+      passerelle et de triage. Les chiffres des Programmes de passerelle et de triage ne
+      sont pas publiés dans les données ouvertes de la Ville de Toronto (CKAN). BonQuery
+      les collecte quotidiennement depuis la page du recensement des refuges de la Ville
+      lorsque la Ville publie le tableau ; les données sont disponibles depuis ${btStart}.
+      Les jours où la Ville n'a pas encore publié (fins de semaine, jours fériés ou
+      délais de publication), la ligne Passerelle et triage affichera
+      « Non disponible pour cette date » et le Total reflètera uniquement Tous les
+      programmes de refuge.
+    </p>
+    </div>`
+}
+```
+
+Ce tableau reproduit le rapport d'utilisation quotidienne des refuges et services
+d'hébergement de nuit de la Ville de Toronto à partir des données ouvertes de la
+Ville. Le sous-total **Tous les programmes de refuge** et toutes les lignes de
+détail sont dérivés de l'exportation des données ouvertes CKAN. Les
+**Programmes de passerelle et de triage** sont suivis dans le système opérationnel
+de la Ville mais ne sont pas publiés dans les données ouvertes ; BonQuery collecte
+ce chiffre quotidiennement depuis la page du recensement des refuges de la Ville
+et l'affiche lorsqu'il est disponible. Le **Total des personnes hébergées** égale
+Tous les programmes de refuge + Passerelle et triage lorsque les deux sont
+disponibles. Certains chiffres de capacité et de lits inoccupés peuvent différer
+légèrement du tableau de bord en direct de la Ville en raison de différences dans
+la déclaration des lits hors service entre l'exportation CKAN et le système
+opérationnel de la Ville. Une comparaison côte à côte complète est disponible sur
+la [page de validation des données](projects/data-validation.html){target="_blank"}.
+
+Contient des informations sous licence [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-licence/). Source : Données ouvertes de la Ville de Toronto — [Utilisation quotidienne des refuges et services d'hébergement de nuit, occupation et capacité](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Agrégées par [BonQuery](https://bonquery.ca).
+
+Les données agrégées de BonQuery sont disponibles en téléchargement de 2021 à aujourd'hui : [JSON](https://bonquery.ca/data/daily_occupancy.json) · [CSV](https://bonquery.ca/data/daily_occupancy.csv)
+
+:::
+
+---
+
+::: {.callout-note .bq-orange collapse="true"}
+## Détection historique de pics d'occupation
+
+Ces graphiques de détection de pics signalent les jours où le réseau de
+refuges de Toronto a hébergé beaucoup plus de personnes que ne l'auraient
+prédit son pattern saisonnier et sa tendance à long terme — et pas seulement
+des journées simplement achalandées. Les pics sont identifiés en supprimant
+deux forces prévisibles (saisonnalité et tendance à long terme) par une
+décomposition saisonnelle-tendance par LOESS (STL) et en mesurant ce qui
+reste.
+
+La bande ambre signale les anomalies modérées (2 MAD-ÉT au-dessus de la
+valeur attendue), la bande rouge les anomalies prononcées (3 MAD-ÉT).
+L'analyse compte les personnes hébergées plutôt que le taux d'occupation, et
+les deux seuils sont calibrés sur le comportement propre du système au cours
+des deux années précédentes. Elle est rétrospective et descriptive, non
+prédictive. La méthodologie complète et les mises en garde figurent sur la
+page liée.
+
+::: {.mobile-dashboard-links}
+- [Détection historique de pics d'occupation →](projects/spike-detection.html)
+:::
+
+::: {.desktop-dashboard-tabs}
+
+[Ouvrir dans un nouvel onglet →](projects/spike-detection.html){target="_blank"}
+
+<iframe
+  src="projects/spike-detection.html"
+  width="100%"
+  height="2800"
+  class="bq-embed"
+  loading="lazy">
+</iframe>
+
+:::
+
+Contient des informations sous licence [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-licence/). Source : Données ouvertes de la Ville de Toronto — [Utilisation quotidienne des refuges et services d'hébergement de nuit, occupation et capacité](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Analyse et graphiques par BonQuery.
+:::
+
+---
+
+::: {.callout-note .bq-purple collapse="true"}
+## Demandes d'orientation en refuge
+
+Moyenne quotidienne mensuelle des appels à la ligne d'orientation des refuges
+de Toronto (24 h/7 j) — appels orientés vers une place en refuge, appelants
+individuels sans jumelage et total des appels traités — avec contrôles de date
+interactifs. Reproduit et étend la page
+[Demandes d'orientation dans les refuges](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/)
+de la Ville. Données provenant de deux ressources CKAN distinctes (codes de
+clôture des appels et file d'attente des services) ; voir la page pour des
+mises en garde importantes sur la combinaison des deux séries.
+
+::: {.mobile-dashboard-links}
+- [Demandes d'orientation en refuge →](projects/central-intake.html)
+:::
+
+::: {.desktop-dashboard-tabs}
+
+[Ouvrir dans un nouvel onglet →](projects/central-intake.html){target="_blank"}
+
+<iframe
+  src="projects/central-intake.html"
+  width="100%"
+  height="4200"
+  class="bq-embed"
+  loading="lazy">
+</iframe>
+
+:::
+
+Contient des informations sous licence [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-licence/). Source : Données ouvertes de la Ville de Toronto — [Appels à l'Admission centrale](https://open.toronto.ca/dataset/central-intake-calls/). Analyse et graphiques par BonQuery.
+:::
+
+---
+
+*BonQuery est un audit de données indépendant du réseau de refuges de Toronto,
+fondé sur des documents publics et des méthodes reproductibles. Demandes de
+données et de méthodologie :
+[info@BonQuery.ca](mailto:info@BonQuery.ca).*

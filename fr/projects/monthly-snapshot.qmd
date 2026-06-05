@@ -1,16 +1,25 @@
 ---
-title: "Monthly Snapshot"
-subtitle: "Toronto Shelter System — current month at a glance"
-description: "Interactive monthly snapshot of Toronto's shelter system — actively homeless counts, flow metrics, and population group breakdowns for any month from January 2018 onward."
+title: "Portrait mensuel"
+subtitle: "Réseau de refuges de Toronto — tableau de bord du mois en cours"
+description: >
+  Portrait mensuel interactif du réseau de refuges de Toronto — dénombrements
+  de l'itinérance active, indicateurs de flux et répartitions par groupe de
+  population pour tout mois depuis janvier 2018.
 author: "Miriam Marling"
 open-graph:
-  title: "Monthly Snapshot — Toronto Shelter System"
-  description: "Interactive monthly snapshot of Toronto's shelter system — actively homeless counts, flow metrics, and population group breakdowns for any month from January 2018 onward."
-  site_name: "BonQuery — Data for the Greater Good"
+  title: "Portrait mensuel — Réseau de refuges de Toronto"
+  description: >
+    Portrait mensuel interactif du réseau de refuges de Toronto — dénombrements
+    de l'itinérance active, indicateurs de flux et répartitions par groupe de
+    population pour tout mois depuis janvier 2018.
+  site_name: "BonQuery — Des données pour le bien commun"
 twitter-card:
   card-style: summary
-  title: "Monthly Snapshot — Toronto Shelter System"
-  description: "Interactive monthly snapshot of Toronto's shelter system — actively homeless counts, flow metrics, and population group breakdowns for any month from January 2018 onward."
+  title: "Portrait mensuel — Réseau de refuges de Toronto"
+  description: >
+    Portrait mensuel interactif du réseau de refuges de Toronto — dénombrements
+    de l'itinérance active, indicateurs de flux et répartitions par groupe de
+    population pour tout mois depuis janvier 2018.
 format:
   html:
     page-layout: full
@@ -21,7 +30,6 @@ format:
         .quarto-container, .container-fluid, .container { max-width: none !important; }
         .cell-output-display { max-width: none !important; overflow: visible !important; }
         .cell-output-display svg .tick text { font-size: 13px; }
-        /* KPI card layout */
         .kpi-hero { text-align: center; padding: 1.5rem 0 1rem; }
         .kpi-hero .kpi-box { display: inline-block; background: var(--bq-kpi-bg); padding: 1rem 2.5rem; border-radius: 0.5rem; max-width: 100%; }
         .kpi-hero .kpi-label { font-size: 0.9rem; font-weight: 500; color: var(--bq-kpi-label); margin-bottom: 0.5rem; }
@@ -47,39 +55,38 @@ data = FileAttachment("../data/shelter_flow.json").json()
 
 ```{ojs}
 //| echo: false
-MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-fmtN = d => d.toLocaleString()
+MON = ["janv.","févr.","mars","avr.","mai","juin",
+       "juill.","août","sept.","oct.","nov.","déc."]
+fmtN = d => d.toLocaleString("fr-CA")
 
-// Build month dropdown in descending order (most recent first).
-// Display: "March 2026"  Return value: "2026-03-01" (the YYYY-MM-DD from DB)
 reportingMonthOptions = data
   .filter(d => d.population_group === "All Population")
   .sort((a, b) => b.flow_date.localeCompare(a.flow_date))
   .map(d => {
     const [y, m] = d.flow_date.split("-").map(Number)
     return {
-      label: new Date(y, m - 1, 15).toLocaleString("default", {month: "long", year: "numeric"}),
+      label: new Date(y, m - 1, 15).toLocaleString("fr-CA", {month: "long", year: "numeric"}),
       value: d.flow_date
     }
   })
 ```
 
-Toronto publishes monthly data on its taxed shelter system, and the
-City's own dashboards do a good job presenting the headline numbers.
-This section goes a step further: interactive filters on every chart, a
-clear note on what the data captures and what it leaves out, and
-findings that usually stay buried in technical documentation.
+La Ville de Toronto publie mensuellement des données sur son réseau de refuges,
+et ses propres tableaux de bord présentent bien les chiffres principaux. Cette
+section va plus loin : filtres interactifs sur chaque graphique, une note
+explicite sur ce que les données couvrent et ce qu'elles excluent, et des
+conclusions qui restent habituellement enfouies dans la documentation technique.
 
-The data covers every month from January 2018 to the most recent
-published month, sourced directly from the [City of Toronto's Shelter
-System Flow dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/){target="_blank"}.
-New data loads automatically each month, usually around the 15th,
-after the City publishes the prior month's figures.
+Les données couvrent chaque mois de janvier 2018 au mois le plus récemment
+publié, directement issues du [jeu de données Flux du réseau de refuges de la
+Ville de Toronto](https://open.toronto.ca/dataset/toronto-shelter-system-flow/){target="_blank"}.
+Les nouvelles données se chargent automatiquement chaque mois, généralement vers
+le 15, après que la Ville publie les chiffres du mois précédent.
 
 ```{ojs}
 //| echo: false
 viewof reportingDate = Inputs.select(reportingMonthOptions, {
-  label: "Reporting Month",
+  label: "Mois de référence",
   format: d => d.label,
   value: reportingMonthOptions[0]
 })
@@ -87,17 +94,14 @@ viewof reportingDate = Inputs.select(reportingMonthOptions, {
 
 ```{ojs}
 //| echo: false
-// Rows for the selected month
-snapshot  = data.find(d => d.flow_date === reportingDate.value && d.population_group === "All Population")
+snapshot   = data.find(d => d.flow_date === reportingDate.value && d.population_group === "All Population")
 chronicRow = data.find(d => d.flow_date === reportingDate.value && d.population_group === "Chronic")
 
-// KPI values
 activelyHomeless = snapshot ? snapshot.actively_homeless : 0
 inflowTotal  = snapshot ? snapshot.newly_identified + snapshot.returned_from_housing + snapshot.returned_to_shelter : 0
 outflowTotal = snapshot ? snapshot.moved_to_housing + snapshot.became_inactive : 0
 netChange    = inflowTotal - outflowTotal
 
-// For YTD charts
 reportingYear  = +reportingDate.value.slice(0, 4)
 reportingMonth = +reportingDate.value.slice(5, 7)
 ```
@@ -108,8 +112,8 @@ reportingMonth = +reportingDate.value.slice(5, 7)
 //| echo: false
 html`<div class="kpi-hero">
   <div class="kpi-box">
-    <div class="kpi-label">People actively homeless in the last 3 months</div>
-    <div class="kpi-value">${activelyHomeless.toLocaleString()}</div>
+    <div class="kpi-label">Personnes en situation d'itinérance active au cours des 3 derniers mois</div>
+    <div class="kpi-value">${activelyHomeless.toLocaleString("fr-CA")}</div>
   </div>
 </div>`
 ```
@@ -118,27 +122,29 @@ html`<div class="kpi-hero">
 //| echo: false
 html`<div class="kpi-row">
   <div class="kpi-card" style="background:var(--bq-kpi-inflow-bg);">
-    <div class="kpi-label">Shelter System Inflow</div>
-    <div class="kpi-value" style="color:var(--bq-kpi-inflow);">+${inflowTotal.toLocaleString()}</div>
+    <div class="kpi-label">Entrées dans le réseau de refuges</div>
+    <div class="kpi-value" style="color:var(--bq-kpi-inflow);">+${inflowTotal.toLocaleString("fr-CA")}</div>
   </div>
   <div class="kpi-card" style="background:${netChange > 0 ? 'var(--bq-kpi-net-pos-bg)' : netChange < 0 ? 'var(--bq-kpi-net-neg-bg)' : 'var(--bq-kpi-net-zero-bg)'};">
-    <div class="kpi-label">Change (Inflow − Outflow)</div>
+    <div class="kpi-label">Variation (Entrées − Sorties)</div>
     <div class="kpi-value" style="color:${netChange > 0 ? 'var(--bq-kpi-net-pos)' : netChange < 0 ? 'var(--bq-kpi-net-neg)' : 'var(--bq-kpi-net-zero)'};">
-      ${netChange >= 0 ? '+' : ''}${netChange.toLocaleString()}
+      ${netChange >= 0 ? '+' : ''}${netChange.toLocaleString("fr-CA")}
     </div>
   </div>
   <div class="kpi-card" style="background:var(--bq-kpi-outflow-bg);">
-    <div class="kpi-label">Shelter System Outflow</div>
-    <div class="kpi-value" style="color:var(--bq-kpi-outflow);">−${outflowTotal.toLocaleString()}</div>
+    <div class="kpi-label">Sorties du réseau de refuges</div>
+    <div class="kpi-value" style="color:var(--bq-kpi-outflow);">−${outflowTotal.toLocaleString("fr-CA")}</div>
   </div>
 </div>`
 ```
 
 ---
 
-### Chronic Homelessness
+### Itinérance chronique
 
-*Note: Oracle APEX renders this as a donut chart. Observable Plot does not support pie/donut natively — shown here as a percentage bar with the same data and colors.*
+*Note : Oracle APEX affiche ce graphique sous forme de donut. Observable Plot
+ne prend pas en charge les graphiques circulaires nativement — présenté ici
+sous forme de barre de pourcentage avec les mêmes données et couleurs.*
 
 ```{ojs}
 //| echo: false
@@ -148,8 +154,8 @@ _nonChronicFill = _cs.getPropertyValue("--bq-bg-alt").trim() || "#CCCCCC"
 _chartFg = _cs.getPropertyValue("--bq-fg").trim() || "#333"
 
 chronicData   = [
-  {label: "Chronic",     pct: chronicPct,       fill: "#5856D6"},
-  {label: "Non-Chronic", pct: 1 - chronicPct,   fill: _nonChronicFill}
+  {label: "Chronique",     pct: chronicPct,       fill: "#5856D6"},
+  {label: "Non chronique", pct: 1 - chronicPct,   fill: _nonChronicFill}
 ]
 
 Plot.plot({
@@ -159,14 +165,14 @@ Plot.plot({
   marginRight: 10,
   x: {domain: [0, 1], axis: null},
   y: {axis: null},
-  color: {domain: ["Chronic","Non-Chronic"], range: ["#5856D6", _nonChronicFill], legend: true},
+  color: {domain: ["Chronique","Non chronique"], range: ["#5856D6", _nonChronicFill], legend: true},
   marks: [
     Plot.barX(chronicData, Plot.stackX({x: "pct", y: () => "", fill: "label", inset: 0})),
     Plot.text(chronicData, Plot.stackX({
       x: "pct",
       y: () => "",
-      text: d => d.pct >= 0.04 ? `${d.label}\n${(d.pct * 100).toFixed(1)}%` : "",
-      fill: d => d.label === "Chronic" ? "white" : _chartFg,
+      text: d => d.pct >= 0.04 ? `${d.label}\n${(d.pct * 100).toFixed(1)} %` : "",
+      fill: d => d.label === "Chronique" ? "white" : _chartFg,
       textAnchor: "middle",
       lineWidth: 8,
       fontSize: 13,
@@ -178,11 +184,10 @@ Plot.plot({
 
 ---
 
-### Cumulative YTD comparison: Newly Identified
+### Comparaison cumulative annuelle : Nouvellement repérés
 
 ```{ojs}
 //| echo: false
-// Cumulative YTD sums for current year and prior year through selected month.
 ytdComputed = {
   const rows = data
     .filter(d => d.population_group === "All Population")
@@ -210,7 +215,6 @@ ytdComputed = {
   })
 }
 
-// Sort: by month, then prior year first (so bars appear: prior ↑ current ↓ within each month)
 ytdNI = ytdComputed
   .sort((a, b) => a.month - b.month || a.year - b.year)
   .map(d => ({...d, barLabel: `${d.monthLabel} ${d.yearLabel}`}))
@@ -222,7 +226,7 @@ Plot.plot({
   height: 60 + ytdNI.length * 22,
   marginLeft: 100,
   marginRight: 80,
-  x: {label: "Cumulative newly identified (YTD)", grid: true, tickFormat: fmtN},
+  x: {label: "Nouvellement repérés cumulatifs (ann. cours)", grid: true, tickFormat: fmtN},
   y: {label: null, domain: ytdNIDomain},
   color: {
     domain: [String(reportingYear - 1), String(reportingYear)],
@@ -235,7 +239,7 @@ Plot.plot({
                       insetTop: 1, insetBottom: 1}),
     Plot.text(ytdNI, {
       x: "ytd_ni", y: "barLabel",
-      text: d => d.ytd_ni.toLocaleString(),
+      text: d => d.ytd_ni.toLocaleString("fr-CA"),
       textAnchor: "start", dx: 5, fontSize: 11
     })
   ]
@@ -244,7 +248,7 @@ Plot.plot({
 
 ---
 
-### Cumulative YTD comparison: Moved to Permanent Housing
+### Comparaison cumulative annuelle : Accès au logement permanent
 
 ```{ojs}
 //| echo: false
@@ -257,7 +261,7 @@ Plot.plot({
   height: 60 + ytdMH.length * 22,
   marginLeft: 100,
   marginRight: 80,
-  x: {label: "Cumulative moved to permanent housing (YTD)", grid: true, tickFormat: fmtN},
+  x: {label: "Accès au logement permanent cumulatif (ann. cours)", grid: true, tickFormat: fmtN},
   y: {label: null, domain: ytdMH.map(d => d.barLabel)},
   color: {
     domain: [String(reportingYear - 1), String(reportingYear)],
@@ -270,7 +274,7 @@ Plot.plot({
                       insetTop: 1, insetBottom: 1}),
     Plot.text(ytdMH, {
       x: "ytd_mh", y: "barLabel",
-      text: d => d.ytd_mh.toLocaleString(),
+      text: d => d.ytd_mh.toLocaleString("fr-CA"),
       textAnchor: "start", dx: 5, fontSize: 11
     })
   ]
@@ -279,14 +283,14 @@ Plot.plot({
 
 ---
 
-### Inflow breakdown
+### Répartition des entrées
 
 ```{ojs}
 //| echo: false
 inflowBreakdown = snapshot ? [
-  {label: "Newly Identified",              value: snapshot.newly_identified,      fill: "#E63946"},
-  {label: "Returned from Permanent Housing", value: snapshot.returned_from_housing, fill: "#FFD600"},
-  {label: "Returned to Shelter",           value: snapshot.returned_to_shelter,   fill: "#FB8C00"}
+  {label: "Nouvellement repérés",           value: snapshot.newly_identified,      fill: "#E63946"},
+  {label: "Retour du logement permanent",   value: snapshot.returned_from_housing, fill: "#FFD600"},
+  {label: "Retour au refuge",               value: snapshot.returned_to_shelter,   fill: "#FB8C00"}
 ].sort((a, b) => b.value - a.value) : []
 
 inflowMax = d3.max(inflowBreakdown, d => d.value) || 1
@@ -305,7 +309,7 @@ inflowMax = d3.max(inflowBreakdown, d => d.value) || 1
     height: isMobile ? 190 : 130,
     marginLeft: isMobile ? 10 : 240,
     marginRight: 80,
-    x: {label: "People", grid: true, tickFormat: fmtN, domain: [0, inflowMax * 1.15]},
+    x: {label: "Personnes", grid: true, tickFormat: fmtN, domain: [0, inflowMax * 1.15]},
     y: {label: null, domain: inflowBreakdown.map(d => d.label), axis: isMobile ? null : "left"},
     ...colorOpts,
     marks: [
@@ -317,7 +321,7 @@ inflowMax = d3.max(inflowBreakdown, d => d.value) || 1
       }),
       Plot.text(inflowBreakdown, {
         x: "value", y: "label",
-        text: d => d.value.toLocaleString(),
+        text: d => d.value.toLocaleString("fr-CA"),
         textAnchor: "start", dx: 6, fontSize: 12
       })
     ]
@@ -327,13 +331,13 @@ inflowMax = d3.max(inflowBreakdown, d => d.value) || 1
 
 ---
 
-### Outflow breakdown
+### Répartition des sorties
 
 ```{ojs}
 //| echo: false
 outflowBreakdown = snapshot ? [
-  {label: "Moved to Permanent Housing", value: snapshot.moved_to_housing, fill: "#66CC66"},
-  {label: "Became Inactive",            value: snapshot.became_inactive,  fill: "#512DA8"}
+  {label: "Accès au logement permanent", value: snapshot.moved_to_housing, fill: "#66CC66"},
+  {label: "Devenus inactifs",            value: snapshot.became_inactive,  fill: "#512DA8"}
 ].sort((a, b) => b.value - a.value) : []
 
 outflowMax = d3.max(outflowBreakdown, d => d.value) || 1
@@ -352,7 +356,7 @@ outflowMax = d3.max(outflowBreakdown, d => d.value) || 1
     height: isMobile ? 160 : 100,
     marginLeft: isMobile ? 10 : 220,
     marginRight: 80,
-    x: {label: "People", grid: true, tickFormat: fmtN, domain: [0, outflowMax * 1.15]},
+    x: {label: "Personnes", grid: true, tickFormat: fmtN, domain: [0, outflowMax * 1.15]},
     y: {label: null, domain: outflowBreakdown.map(d => d.label), axis: isMobile ? null : "left"},
     ...colorOpts,
     marks: [
@@ -364,7 +368,7 @@ outflowMax = d3.max(outflowBreakdown, d => d.value) || 1
       }),
       Plot.text(outflowBreakdown, {
         x: "value", y: "label",
-        text: d => d.value.toLocaleString(),
+        text: d => d.value.toLocaleString("fr-CA"),
         textAnchor: "start", dx: 6, fontSize: 12
       })
     ]
@@ -374,12 +378,12 @@ outflowMax = d3.max(outflowBreakdown, d => d.value) || 1
 
 ---
 
-### Age of people actively homeless in the last 3 months
+### Âge des personnes en situation d'itinérance active au cours des 3 derniers mois
 
 ```{ojs}
 //| echo: false
 ageBandDefs2 = [
-  {key: "age_under_16", label: "Under 16"},
+  {key: "age_under_16", label: "Moins de 16 ans"},
   {key: "age_16_24",    label: "16–24"},
   {key: "age_25_34",    label: "25–34"},
   {key: "age_35_44",    label: "35–44"},
@@ -411,7 +415,7 @@ Plot.plot({
     Plot.barY(ageSnapshotData, {x: "band", y: "pct", fill: "band"}),
     Plot.text(ageSnapshotData, {
       x: "band", y: "pct",
-      text: d => (d.pct * 100).toFixed(1) + "%",
+      text: d => (d.pct * 100).toFixed(1) + " %",
       dy: -10, fontSize: 13, fontWeight: "600", textAnchor: "middle"
     }),
     Plot.ruleY([0])
@@ -421,14 +425,14 @@ Plot.plot({
 
 ---
 
-### Gender of people actively homeless in the last 3 months
+### Genre des personnes en situation d'itinérance active au cours des 3 derniers mois
 
 ```{ojs}
 //| echo: false
 genderDefs2 = [
-  {key: "gender_male",                label: "Men"},
-  {key: "gender_female",              label: "Women"},
-  {key: "gender_trans_nb_two_spirit", label: "Transgender, Non-Binary, or Two-Spirit"}
+  {key: "gender_male",                label: "Hommes"},
+  {key: "gender_female",              label: "Femmes"},
+  {key: "gender_trans_nb_two_spirit", label: "Trans, non binaires ou bispirituels"}
 ]
 
 genderSnapshotData = (() => {
@@ -448,8 +452,8 @@ genderSnapMax = d3.max(genderSnapshotData, d => d.pct) || 1
     height: isMobile ? 160 : 130,
     marginLeft: isMobile ? 10 : 260,
     marginRight: 80,
-    x: {label: "Share of gender total", grid: true,
-        tickFormat: d => (d * 100).toFixed(0) + "%",
+    x: {label: "Part du total par genre", grid: true,
+        tickFormat: d => (d * 100).toFixed(0) + " %",
         domain: [0, genderSnapMax * 1.15]},
     y: {label: null, domain: genderSnapshotData.map(d => d.gender), axis: isMobile ? null : "left"},
     color: {legend: true},
@@ -459,7 +463,7 @@ genderSnapMax = d3.max(genderSnapshotData, d => d.pct) || 1
                                      insetTop: 3, insetBottom: 3}),
       Plot.text(genderSnapshotData, {
         x: "pct", y: "gender",
-        text: d => (d.pct * 100).toFixed(1) + "%",
+        text: d => (d.pct * 100).toFixed(1) + " %",
         textAnchor: "start", dx: 6, fontSize: 12
       })
     ]
@@ -468,76 +472,84 @@ genderSnapMax = d3.max(genderSnapshotData, d => d.pct) || 1
 ```
 
 ::: {.mobile-page-nav}
-**Explore other dashboards:**
+**Consulter les autres tableaux de bord :**
 
-- [Historical Trends](historical-trends.html){target="_blank"}
-- [YTD Comparison](ytd-comparison.html){target="_blank"}
+- [Tendances historiques](historical-trends.html){target="_blank"}
+- [Comparaison annuelle cumulative](ytd-comparison.html){target="_blank"}
 :::
 
 ---
 
-*This dashboard is also available as an [Oracle APEX dashboard](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/monthly-snapshot){target="_blank"} built on the same database — useful if you want to see how the same data renders in Oracle's native low-code platform, or if you're curious about the SQL and APEX configuration behind it.*
+*Ce tableau de bord est également disponible en tant que [tableau de bord Oracle
+APEX](https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/monthly-snapshot){target="_blank"}
+reposant sur la même base de données — utile pour voir comment les mêmes données
+s'affichent dans la plateforme native à faible code d'Oracle, ou pour explorer
+le SQL et la configuration APEX sous-jacents.*
 
-### How to read this data
+### Comment lire ces données
 
-These numbers reflect the shelter *system*, not all homelessness. The
-data captures people who used a City-funded overnight service at
-least once in the past three months. It doesn't include people
-sleeping outside, in shelters that aren't City-funded, or staying
-temporarily with friends or family. The City [estimates](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}
-that roughly 18% of people experiencing absolute homelessness in
-Toronto aren't reflected in these numbers. Trends here reflect
-changes in the shelter system specifically — not in total homelessness
-in the city.
+Ces chiffres reflètent le réseau de refuges, et non l'ensemble du phénomène de
+l'itinérance. Les données recensent les personnes ayant utilisé un service
+d'hébergement de nuit financé par la Ville au moins une fois au cours des trois
+derniers mois. Elles n'incluent pas les personnes qui dorment à l'extérieur, dans
+des refuges non financés par la Ville, ou qui séjournent temporairement chez des
+amis ou de la famille. La Ville [estime](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}
+qu'environ 18 % des personnes en situation d'itinérance absolue à Toronto ne sont
+pas reflétées dans ces chiffres. Les tendances présentées ici reflètent les
+changements dans le réseau de refuges spécifiquement — et non dans l'ensemble de
+l'itinérance dans la ville.
 
-### Key terms
+### Définitions clés
 
-The dashboards use a few terms that have specific meanings worth
-knowing before you read the charts.
+Les tableaux de bord utilisent quelques termes ayant des significations précises
+qu'il vaut la peine de connaître avant de lire les graphiques.
 
-**Actively homeless.** A person who has used City-funded shelter
-services at least once in the past three months and hasn't been
-recorded as moving to permanent housing. This is the headline number
-on every dashboard. Because it looks back three months, the count
-includes people who may not be in shelter on any given night.
+**Itinérance active.** Une personne ayant utilisé les services d'hébergement
+financés par la Ville au moins une fois au cours des trois derniers mois et dont
+le déménagement vers un logement permanent n'a pas été enregistré. C'est le
+chiffre principal de chaque tableau de bord. Comme il remonte à trois mois en
+arrière, ce dénombrement inclut des personnes qui peuvent ne pas être en refuge
+un soir donné.
 
-**Chronic homelessness.** The federal definition: someone who has
-spent at least 180 nights in shelter over the past year, or at least
-546 nights over the past three years. A person can meet this
-definition while still actively in the shelter system — they don't
-need to have left and returned.
+**Itinérance chronique.** La définition fédérale : une personne ayant passé au
+moins 180 nuits en refuge au cours de l'année écoulée, ou au moins 546 nuits au
+cours des trois dernières années. Une personne peut satisfaire à cette définition
+tout en étant encore dans le réseau de refuges — elle n'a pas besoin d'être partie
+et revenue.
 
-**Inflow categories** (people entering the shelter system this month):
+**Catégories d'entrées** (personnes intégrant le réseau de refuges ce mois-ci) :
 
-- **Newly Identified.** People entering the shelter system for the
-  first time. One exception for the "Chronic" group: in that row,
-  this column counts people who became chronically homeless during
-  the reporting month, regardless of how long they'd already been
-  using the shelter system.
-- **Returned from Permanent Housing.** People who previously moved
-  to permanent housing and have come back to the shelter system.
-- **Returned to Shelter.** People who were in the system, didn't
-  use it for at least three months, and have now returned.
+- **Nouvellement repérés.** Personnes entrant dans le réseau de refuges pour la
+  première fois. Exception pour le groupe « Chronique » : dans ce cas, cette
+  colonne comptabilise les personnes devenues en situation d'itinérance chronique
+  au cours du mois de référence, quelle que soit la durée de leur utilisation
+  antérieure du réseau.
+- **Retour du logement permanent.** Personnes ayant précédemment accédé à un
+  logement permanent et revenues dans le réseau de refuges.
+- **Retour au refuge.** Personnes qui étaient dans le réseau, ne l'ont pas
+  utilisé pendant au moins trois mois, et y sont revenues.
 
-**Outflow categories** (people leaving the shelter system this month):
+**Catégories de sorties** (personnes quittant le réseau de refuges ce mois-ci) :
 
-- **Moved to Permanent Housing.** People who left the shelter system
-  for permanent housing.
-- **Became Inactive.** People who haven't used shelter services in
-  the past three months, including the reporting month.
+- **Accès au logement permanent.** Personnes ayant quitté le réseau de refuges
+  pour un logement permanent.
+- **Devenus inactifs.** Personnes n'ayant pas utilisé les services d'hébergement
+  au cours des trois derniers mois, y compris le mois de référence.
 
-Definitions are based on the [City of Toronto's Shelter System Flow
-Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}.
+Définitions basées sur la [page Données sur les flux du réseau de refuges de la
+Ville de Toronto](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}.
 
-[Read all data findings →](about-the-data.html){target="_blank"}
+[Lire toutes les conclusions →](about-the-data.html){target="_blank"}
 
-### Data source
+### Source des données
 
-All data comes from the City of Toronto's [Shelter System Flow
-dataset](https://open.toronto.ca/dataset/toronto-shelter-system-flow/){target="_blank"},
-published monthly on the City's open data portal.
+Toutes les données proviennent du [jeu de données Flux du réseau de refuges de
+Toronto](https://open.toronto.ca/dataset/toronto-shelter-system-flow/){target="_blank"}
+de la Ville de Toronto, publié mensuellement sur le portail de données ouvertes
+de la Ville.
 
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.
+Contient des informations sous licence [Licence du gouvernement ouvert –
+Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.
 
 ---
 
@@ -551,19 +563,17 @@ shelter_flow    = data
 ::: {.key-finding-box}
 
 ```{=html}
-<div class="key-finding-box-header">KEY DATA FINDING</div>
+<div class="key-finding-box-header">CONSTAT CLÉ</div>
 ```
 
-### The most affected group — and the one we hear least about
+### Le groupe le plus touché — et le moins entendu
 
 ```{ojs}
 //| echo: false
-// All months, All Population row — used for time-series statistics
 _allFlow = shelter_flow
   .filter(d => d.population_group === "All Population"
             && d.gender_male != null && d.gender_female != null)
 
-// Most recent month — for the hero ratio and sub-line
 _latestFlow = _allFlow.sort((a, b) => b.flow_date.localeCompare(a.flow_date))[0]
 
 _menCount   = _latestFlow ? _latestFlow.gender_male : 0
@@ -572,7 +582,7 @@ _transCount = _latestFlow ? _latestFlow.gender_trans_nb_two_spirit : 0
 _ratio      = _womenCount > 0 ? (_menCount / _womenCount).toFixed(1) : "—"
 _flowMonth  = _latestFlow
   ? new Date(_latestFlow.flow_date + "T00:00:00")
-      .toLocaleString("default", {month: "long", year: "numeric"})
+      .toLocaleString("fr-CA", {month: "long", year: "numeric"})
   : ""
 
 function _mean(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length }
@@ -626,7 +636,7 @@ _menShareSeries = _allFlow.map(d => d.gender_male / d.actively_homeless)
 _menShareMinPct = Math.floor(Math.min(..._menShareSeries) * 100)
 
 _gapAvg    = Math.round(_menMean - (_womenMean + _transMean))
-_gapAvgStr = _gapAvg.toLocaleString()
+_gapAvgStr = _gapAvg.toLocaleString("fr-CA")
 
 _recordStartYear = _allFlow.map(d => d.flow_date.slice(0, 4)).sort()[0]
 _recordEndYear   = _latestFlow.flow_date.slice(0, 4)
@@ -637,8 +647,8 @@ _recordEndYear   = _latestFlow.flow_date.slice(0, 4)
 html`<div class="crisis-hero">
   <div class="hero-number">${_ratio}×</div>
   <div class="hero-text">
-    <div class="hero-label">more <strong>men</strong> than women are actively homeless in Toronto's shelter system</div>
-    <div class="hero-sub"><strong>${_menCount.toLocaleString()} men</strong> · ${_womenCount.toLocaleString()} women · ${_transCount.toLocaleString()} transgender, non-binary, or two-spirit · ${_flowMonth}</div>
+    <div class="hero-label">plus d'<strong>hommes</strong> que de femmes en situation d'itinérance active dans les refuges de Toronto</div>
+    <div class="hero-sub"><strong>${_menCount.toLocaleString("fr-CA")} hommes</strong> · ${_womenCount.toLocaleString("fr-CA")} femmes · ${_transCount.toLocaleString("fr-CA")} personnes trans, non binaires ou bispirituelles · ${_flowMonth}</div>
   </div>
 </div>`
 ```
@@ -646,18 +656,18 @@ html`<div class="crisis-hero">
 ```{ojs}
 //| echo: false
 _genderStats = [
-  {label: "Men",          mean: _menMean,   ci_lo: _menMean   - 1.96 * _menSE,   ci_hi: _menMean   + 1.96 * _menSE,   isFocus: true},
-  {label: "Women",        mean: _womenMean, ci_lo: _womenMean - 1.96 * _womenSE, ci_hi: _womenMean + 1.96 * _womenSE, isFocus: false},
-  {label: "Trans/NB/2S",  mean: _transMean, ci_lo: _transMean - 1.96 * _transSE, ci_hi: _transMean + 1.96 * _transSE, isFocus: false}
+  {label: "Hommes",      mean: _menMean,   ci_lo: _menMean   - 1.96 * _menSE,   ci_hi: _menMean   + 1.96 * _menSE,   isFocus: true},
+  {label: "Femmes",      mean: _womenMean, ci_lo: _womenMean - 1.96 * _womenSE, ci_hi: _womenMean + 1.96 * _womenSE, isFocus: false},
+  {label: "Trans/NB/2S", mean: _transMean, ci_lo: _transMean - 1.96 * _transSE, ci_hi: _transMean + 1.96 * _transSE, isFocus: false}
 ].sort((a, b) => b.mean - a.mean)
 
 Plot.plot({
   width, height: 300, marginBottom: 36, marginLeft: 70, marginRight: 20,
-  title: `Mean monthly actively homeless count by gender — ${_yearRange} (${_n1} months)`,
-  caption: "Error bars show 95% confidence intervals of the monthly mean. Source: City of Toronto Shelter System Flow dataset (open.toronto.ca).",
+  title: `Nombre mensuel moyen de personnes en itinérance active, par genre — ${_yearRange} (${_n1} mois)`,
+  caption: "Les barres d'erreur indiquent les intervalles de confiance à 95 % de la moyenne mensuelle. Source : Données sur les flux du réseau de refuges de Toronto (open.toronto.ca).",
   x: {label: null, domain: _genderStats.map(d => d.label)},
-  y: {label: "Mean individuals actively homeless / month", grid: true,
-      tickFormat: d => d.toLocaleString(),
+  y: {label: "Moyenne d'individus en itinérance active / mois", grid: true,
+      tickFormat: d => d.toLocaleString("fr-CA"),
       domain: [0, Math.max(..._genderStats.map(d => d.ci_hi)) * 1.12]},
   marks: [
     Plot.barY(_genderStats, {
@@ -681,7 +691,7 @@ Plot.plot({
     }),
     Plot.text(_genderStats, {
       x: "label", y: "ci_hi",
-      text: d => Math.round(d.mean).toLocaleString(),
+      text: d => Math.round(d.mean).toLocaleString("fr-CA"),
       dy: -10, textAnchor: "middle", fontSize: 13,
       fill: d => d.isFocus ? "#cc1f15" : "#333",
       fontWeight: "600"
@@ -699,12 +709,12 @@ Plot.plot({
   const pd   = bg.pairwise_diffs
   const diag = bg.diagnostics
   const fmt1 = x => Number(x).toFixed(1)
-  const fmtN = x => Math.round(x).toLocaleString()
+  const fmtN = x => Math.round(x).toLocaleString("fr-CA")
 
   const bayesPairs = [
-    {comp: "Men vs Women",         rr: rr.men_vs_women,       diff: pd.men_vs_women,       note: false},
-    {comp: "Men vs Trans/NB/2S",   rr: rr.men_vs_transnb2s,   diff: pd.men_vs_transnb2s,   note: true},
-    {comp: "Women vs Trans/NB/2S", rr: rr.women_vs_transnb2s, diff: pd.women_vs_transnb2s, note: true}
+    {comp: "Hommes c. femmes",          rr: rr.men_vs_women,       diff: pd.men_vs_women,       note: false},
+    {comp: "Hommes c. Trans/NB/2S",     rr: rr.men_vs_transnb2s,   diff: pd.men_vs_transnb2s,   note: true},
+    {comp: "Femmes c. Trans/NB/2S",     rr: rr.women_vs_transnb2s, diff: pd.women_vs_transnb2s, note: true}
   ]
   const bayesRows = bayesPairs.map(p => html`<tr>
     <td style="padding:3px 10px 3px 0">${p.comp}${p.note ? html`<sup> †</sup>` : ""}</td>
@@ -718,44 +728,48 @@ Plot.plot({
 
   return html`<div class="bq-bayes">
     <p style="margin:0 0 0.3rem">
-      <strong>Bayesian analysis (negative-binomial regression, fit with
-      <code>brms</code> ${bg.brms_version} on ${bg.n_months} months of data):</strong>
-      Weakly informative priors were used throughout.
-      Sampling diagnostics: R&#x0302;&nbsp;${diag.max_rhat},
-      ESS&nbsp;${diag.min_ess_bulk.toLocaleString()},
-      ${diag.n_divergent} divergent transitions.
+      <strong>Analyse bayésienne (régression binomiale négative, ajustée avec
+      <code>brms</code> ${bg.brms_version} sur ${bg.n_months} mois de données) :</strong>
+      Des a priori faiblement informatifs ont été utilisés.
+      Diagnostics d'échantillonnage : R&#x0302;&nbsp;${diag.max_rhat},
+      ESS&nbsp;${diag.min_ess_bulk.toLocaleString("fr-CA")},
+      ${diag.n_divergent} transition(s) divergente(s).
     </p>
     <table>
       <thead><tr>
-        <th style="text-align:left;padding:3px 10px 3px 0;font-weight:600">Comparison</th>
-        <th style="text-align:right;padding:3px 10px;font-weight:600">Rate ratio (95% HDI)</th>
-        <th style="text-align:right;padding:3px 0;font-weight:600">Difference in count (95% HDI)</th>
+        <th style="text-align:left;padding:3px 10px 3px 0;font-weight:600">Comparaison</th>
+        <th style="text-align:right;padding:3px 10px;font-weight:600">Rapport de taux (IDC 95 %)</th>
+        <th style="text-align:right;padding:3px 0;font-weight:600">Différence de décompte (IDC 95 %)</th>
       </tr></thead>
       <tbody>${bayesRows}</tbody>
     </table>
     <p class="bq-note" style="margin:0 0 0.5rem">
-      † The Trans/NB/2S group averages ~${Math.round(_transMean)} individuals per month,
-      a small count that is also likely under-reported in administrative shelter records.
-      Tests involving this group should be interpreted with caution.
+      † Le groupe Trans/NB/2S représente en moyenne ~${Math.round(_transMean)} personnes par mois,
+      un effectif réduit qui est également susceptible d'être sous-déclaré dans les
+      dossiers administratifs des refuges. Les tests impliquant ce groupe doivent être
+      interprétés avec prudence.
     </p>
     <p style="margin:0 0 0.3rem">
-      <strong>Men vs Women:</strong>
-      Men's expected monthly count is roughly
-      <strong>${fmt1(rr.men_vs_women.median)}&times; that of women</strong>
-      (95% HDI ${fmt1(rr.men_vs_women.hdi[0])}&ndash;${fmt1(rr.men_vs_women.hdi[1])}&times;),
-      an average gap of about
-      <strong>${fmtN(pd.men_vs_women.median)} people per month</strong>
-      (95% HDI ${fmtN(pd.men_vs_women.hdi[0])}&ndash;${fmtN(pd.men_vs_women.hdi[1])}).
-      Across a wide range of reasonable priors, the posterior probability that the true mean
-      monthly count of men exceeds women is indistinguishable from 1.
+      <strong>Hommes c. femmes :</strong>
+      Le décompte mensuel attendu des hommes est d'environ
+      <strong>${fmt1(rr.men_vs_women.median)}&times; celui des femmes</strong>
+      (IDC 95 % ${fmt1(rr.men_vs_women.hdi[0])}&ndash;${fmt1(rr.men_vs_women.hdi[1])}&times;),
+      soit un écart moyen d'environ
+      <strong>${fmtN(pd.men_vs_women.median)} personnes par mois</strong>
+      (IDC 95 % ${fmtN(pd.men_vs_women.hdi[0])}&ndash;${fmtN(pd.men_vs_women.hdi[1])}).
+      Pour une large gamme d'a priori raisonnables, la probabilité a posteriori que le
+      vrai décompte mensuel moyen des hommes dépasse celui des femmes est
+      indiscernable de 1.
     </p>
     <div class="plain-eng">
-      <div class="pe-label">Plain English</div>
-      A posterior probability indistinguishable from 1 means the estimated probability is
-      close to 100% that men's true monthly count exceeds women's. The 95% HDI also indicates
-      the gap is consistently large — men's running about ${fmt1(rr.men_vs_women.median)}&times;
-      women's, or roughly ${fmtN(pd.men_vs_women.median)} more people per month.
-      <strong>Men are the largest and most consistently over-represented group in the city's shelter system.</strong>
+      <div class="pe-label">En clair</div>
+      Une probabilité a posteriori indiscernable de 1 signifie que la probabilité estimée
+      est proche de 100 % que le vrai décompte mensuel des hommes dépasse celui des femmes.
+      L'IDC à 95 % indique également que l'écart est constamment élevé — le décompte des
+      hommes représente environ ${fmt1(rr.men_vs_women.median)}&times; celui des femmes,
+      soit environ ${fmtN(pd.men_vs_women.median)} personnes de plus par mois.
+      <strong>Les hommes constituent le groupe le plus nombreux et le plus systématiquement
+      sur-représenté dans le réseau de refuges de Toronto.</strong>
     </div>
   </div>`
 }
@@ -763,7 +777,7 @@ Plot.plot({
 
 ```{ojs}
 //| echo: false
-md`Men have accounted for at least **${_menShareMinPct}%** of Toronto's actively homeless population every single month on record (${_recordStartYear} to ${_recordEndYear}). That figure is the **lowest single-month share of men observed across the entire data record**; in most months the share is higher. The average monthly gap between men and everyone else (women plus transgender, non-binary, and two-spirit individuals combined) is roughly **${_gapAvgStr} people**, and it has barely moved as the total has risen and fallen. The pattern is not new, not subtle, and not hidden in the data. Yet it rarely makes headlines, and few of the city's public conversations about homelessness lead with it.`
+md`Les hommes ont représenté au moins **${_menShareMinPct} %** de la population en itinérance active de Toronto chaque mois depuis le début de l'enregistrement des données (${_recordStartYear} à ${_recordEndYear}). Ce chiffre correspond à la **part mensuelle la plus faible jamais observée pour les hommes sur l'ensemble de la période** ; dans la plupart des mois, cette part est plus élevée. L'écart mensuel moyen entre les hommes et tous les autres (femmes, personnes trans, non binaires et bispirituelles confondues) est d'environ **${_gapAvgStr} personnes**, et il a à peine bougé à mesure que le total augmentait et diminuait. Ce schéma n'est ni nouveau, ni subtil, ni caché dans les données. Pourtant, il fait rarement la une des journaux, et peu de conversations publiques sur l'itinérance dans la ville s'ouvrent sur ce constat.`
 ```
 
 ```{ojs}
@@ -779,7 +793,7 @@ _spikeTopSector = (() => {
 })()
 
 _spikeTopSector === "men"
-  ? md`[The impact on men is also highlighted here: Occupancy Spike Detection →](spike-detection.html)`
+  ? md`[Ce constat est également mis en évidence ici : Détection de pics d'occupation →](spike-detection.html)`
   : html``
 ```
 

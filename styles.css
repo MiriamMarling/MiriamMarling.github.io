@@ -1,11 +1,136 @@
 /* css styles */
 
+/* ── Theme colour tokens ─────────────────────────────────────────────────
+   Light-mode defaults; dark-mode overrides in [data-bs-theme="dark"]. */
+:root {
+  /* Structure */
+  --bq-bg:              #ffffff;
+  --bq-bg-alt:          #f5f5f5;
+  --bq-bg-accent:       #e8edf5;
+  --bq-bg-control:      #f4f6f8;
+  --bq-border:          #ddd;
+  --bq-border-control:  #dee2e6;
+
+  /* Table headers */
+  --bq-th-bg:           #1a3c6b;
+  --bq-th-fg:           #ffffff;
+  --bq-th-sub-bg:       #2c5282;
+  --bq-th-sub-fg:       #cfe0f7;
+
+  /* Text */
+  --bq-fg:              #333;
+  --bq-fg-secondary:    #555;
+  --bq-fg-muted:        #666;
+  --bq-fg-faint:        #888;
+  --bq-fg-disabled:     #999;
+  --bq-fg-subtle:       #777;
+  --bq-fg-on-dark:      #ccd;
+
+  /* Semantic colours */
+  --bq-primary:         #cc0000;
+  --bq-danger:          #cc0000;
+  --bq-success:         #1a7a4a;
+  --bq-caution:         #b06000;
+
+  /* Chart palette — these stay consistent across themes for brand identity,
+     but strokes/axes adapt */
+  --bq-chart-stroke:    #333;
+  --bq-chart-axis:      #aaa;
+  --bq-chart-grid:      #ccc;
+  --bq-chart-blue:      #0066cc;
+
+  /* Crisis hero */
+  --bq-hero-bg:         #1a1a2e;
+  --bq-hero-fg:         #fff;
+  --bq-hero-accent:     #ff3b30;
+  --bq-hero-sub:        #aab;
+
+  /* KPI cards */
+  --bq-kpi-bg:          #E8E8E8;
+  --bq-kpi-label:       #666;
+  --bq-kpi-value:       #333;
+  --bq-kpi-label-sm:    #555;
+  --bq-kpi-inflow-bg:   #FBE4EB;
+  --bq-kpi-inflow:      #C2185B;
+  --bq-kpi-outflow-bg:  #E8F5E9;
+  --bq-kpi-outflow:     #2E7D32;
+  --bq-kpi-net-neg-bg:  #E8F5E9;
+  --bq-kpi-net-neg:     #2E7D32;
+  --bq-kpi-net-pos-bg:  #FFEBEE;
+  --bq-kpi-net-pos:     #C62828;
+  --bq-kpi-net-zero-bg: #E8E8E8;
+  --bq-kpi-net-zero:    #333333;
+}
+
+[data-bs-theme="dark"] {
+  /* Structure */
+  --bq-bg:              #212529;
+  --bq-bg-alt:          #2b3035;
+  --bq-bg-accent:       #1e2a3a;
+  --bq-bg-control:      #2b3035;
+  --bq-border:          #495057;
+  --bq-border-control:  #495057;
+
+  /* Table headers */
+  --bq-th-bg:           #1a3c6b;
+  --bq-th-fg:           #e0e8f0;
+  --bq-th-sub-bg:       #2c5282;
+  --bq-th-sub-fg:       #c0d0e8;
+
+  /* Text */
+  --bq-fg:              #dee2e6;
+  --bq-fg-secondary:    #bbb;
+  --bq-fg-muted:        #adb5bd;
+  --bq-fg-faint:        #8b929a;
+  --bq-fg-disabled:     #6c757d;
+  --bq-fg-subtle:       #9ca3ab;
+  --bq-fg-on-dark:      #aab;
+
+  /* Semantic colours */
+  --bq-primary:         #ff6b6b;
+  --bq-danger:          #ff6b6b;
+  --bq-success:         #51cf66;
+  --bq-caution:         #ffa94d;
+
+  /* Chart palette */
+  --bq-chart-stroke:    #dee2e6;
+  --bq-chart-axis:      #6c757d;
+  --bq-chart-grid:      #495057;
+  --bq-chart-blue:      #4da6ff;
+
+  /* Crisis hero */
+  --bq-hero-bg:         #0d0d1a;
+  --bq-hero-fg:         #e8e8f0;
+  --bq-hero-accent:     #ff5548;
+  --bq-hero-sub:        #8899aa;
+
+  /* KPI cards */
+  --bq-kpi-bg:          #343a40;
+  --bq-kpi-label:       #adb5bd;
+  --bq-kpi-value:       #dee2e6;
+  --bq-kpi-label-sm:    #9ca3ab;
+  --bq-kpi-inflow-bg:   #3d1a2a;
+  --bq-kpi-inflow:      #f48fb1;
+  --bq-kpi-outflow-bg:  #1a3d2a;
+  --bq-kpi-outflow:     #81c784;
+  --bq-kpi-net-neg-bg:  #1a3d2a;
+  --bq-kpi-net-neg:     #81c784;
+  --bq-kpi-net-pos-bg:  #3d1a1a;
+  --bq-kpi-net-pos:     #ef9a9a;
+  --bq-kpi-net-zero-bg: #343a40;
+  --bq-kpi-net-zero:    #dee2e6;
+}
+
+
+/* ── Global ──────────────────────────────────────────────────────────── */
+
 /* Hide the rendered author/date block — footer carries attribution site-wide.
    The author: YAML field is kept intact for SEO and OpenGraph metadata. */
 .quarto-title-meta { display: none !important; }
 
-/* Style the "Charts ↓" / "Tables ↓" section headers in the Projects dropdown.
-   Bootstrap renders bare Quarto menu text entries as .dropdown-header elements. */
+/* Style the "Audit Evidence ↓" / "Tables ↓" section headers in the Evidence
+   dropdown. Bootstrap renders bare Quarto menu text entries as .dropdown-header
+   elements. */
 .navbar .dropdown-menu .dropdown-header {
   color: #2780e3;
   font-weight: 600;
@@ -14,7 +139,31 @@
   padding-top: 0.6rem;
 }
 
-/* Callout accent colours for the four dataset sections */
+
+/* ── Featured nav link — "Left in the Cold" ─────────────────────────── */
+
+/* Class definition (applied via CSS attribute selector below, since Quarto's
+   YAML navbar spec does not support arbitrary class attributes on nav items). */
+.nav-link.featured-project {
+  font-weight: 700;
+  color: var(--bq-primary) !important;
+  border-bottom: 2px solid var(--bq-primary);
+}
+/* Href selector targets the rendered link until Quarto supports nav item classes */
+.navbar-nav a.nav-link[href$="cold-response.html"] {
+  font-weight: 700;
+  color: var(--bq-primary) !important;
+  border-bottom: 2px solid var(--bq-primary);
+  padding-bottom: 2px;
+}
+.navbar-nav a.nav-link[href$="cold-response.html"]:hover {
+  color: var(--bq-danger) !important;
+  border-bottom-color: var(--bq-danger);
+}
+
+
+/* ── Callout accent colours ──────────────────────────────────────────── */
+
 div.callout-note.bq-green.callout  { border-left-color: #28a062 !important; }
 div.callout-note.bq-green > .callout-header { background-color: rgba(40, 160, 98, 0.13) !important; }
 
@@ -23,3 +172,310 @@ div.callout-note.bq-orange > .callout-header { background-color: rgba(217, 119, 
 
 div.callout-note.bq-purple.callout { border-left-color: #7c3fbf !important; }
 div.callout-note.bq-purple > .callout-header { background-color: rgba(124, 63, 191, 0.13) !important; }
+
+
+/* ── Advocacy alert block ─────────────────────────────────────────────── */
+
+.bq-alert {
+  border: 2px solid var(--bq-danger);
+  border-left: 6px solid var(--bq-danger);
+  background-color: rgba(204, 0, 0, 0.06);
+  border-radius: 4px;
+  padding: 1.1rem 1.35rem;
+  margin: 1.5rem 0;
+  font-size: 1.06rem;
+  line-height: 1.65;
+  font-weight: 500;
+}
+.bq-alert p:last-child { margin-bottom: 0; }
+[data-bs-theme="dark"] .bq-alert {
+  background-color: rgba(255, 107, 107, 0.10);
+}
+
+/* Bilingual alert toggle (EN | FR) — both language strings render into the page;
+   a data-lang attribute on the container drives which one is visible. */
+.bq-bilingual { position: relative; }
+.bq-lang-toggle {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  line-height: 1;
+}
+.bq-lang-btn {
+  background: none;
+  border: none;
+  padding: 0 0.1rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--bq-danger);
+  cursor: pointer;
+  opacity: 0.5;
+}
+.bq-lang-btn:hover { opacity: 0.85; }
+.bq-lang-btn.active { opacity: 1; text-decoration: underline; }
+.bq-lang-sep { font-size: 0.78rem; opacity: 0.4; }
+/* Default shows English; French is hidden until toggled. */
+.bq-bilingual .bq-lang-fr { display: none; }
+.bq-bilingual[data-lang="fr"] .bq-lang-fr { display: block; }
+.bq-bilingual[data-lang="fr"] .bq-lang-en { display: none; }
+/* Reserve space so the toggle never overlaps the first line of text. */
+.bq-bilingual .bq-lang { padding-top: 1.5rem; }
+
+
+/* ── Occupancy table classes ─────────────────────────────────────────── */
+
+.bq-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.88em;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  min-width: 620px;
+}
+
+.bq-table td { padding: 5px 10px; }
+
+.bq-table .bq-th td {
+  background: var(--bq-th-bg);
+  color: var(--bq-th-fg);
+  font-weight: 600;
+  font-size: 0.85em;
+  padding: 7px 10px;
+}
+
+.bq-table .bq-row-total { background: var(--bq-bg-accent); }
+.bq-table .bq-row        { background: var(--bq-bg); }
+.bq-table .bq-row-alt    { background: var(--bq-bg-alt); }
+.bq-table .bq-row-na     { background: var(--bq-bg-alt); color: var(--bq-fg-disabled); font-style: italic; }
+
+.bq-table .bq-num    { text-align: right; }
+.bq-table .bq-bold   { font-weight: 600; }
+.bq-table .bq-danger  { color: var(--bq-danger); font-weight: 700; }
+.bq-table .bq-footnote {
+  font-size: 0.8em;
+  color: var(--bq-fg-muted);
+  margin: 4px 0 0;
+}
+
+/* Observable Plot — axis labels: semi-bold, high-contrast, consistent size.
+   Targets the direct <text> child of axis groups (label), not tick <text>
+   elements (which are nested inside per-tick <g> children). */
+.cell-output-display svg [aria-label="x-axis"] > text,
+.cell-output-display svg [aria-label="y-axis"] > text {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  fill: var(--bq-fg) !important;
+}
+
+/* Observable Plot — transparent SVG bg + dark-mode text + tooltip */
+.cell-output-display svg { background: transparent !important; }
+[data-bs-theme="dark"] .cell-output-display figure,
+[data-bs-theme="dark"] .cell-output-display svg { color: var(--bq-fg); }
+[data-bs-theme="dark"] .cell-output-display text { fill: var(--bq-fg); }
+[data-bs-theme="dark"] [class*="plot-"] [aria-label="tip"],
+[data-bs-theme="dark"] .plot-tip,
+[data-bs-theme="dark"] figure [role="tooltip"],
+[data-bs-theme="dark"] .cell-output-display foreignObject > div {
+  background: #2b3035 !important;
+  color: #dee2e6 !important;
+  border-color: #495057 !important;
+}
+
+/* ── Theme toggle styling ────────────────────────────────────────────── */
+.quarto-color-scheme-toggle {
+  order: 99;
+  margin-left: 0.5rem;
+}
+.quarto-color-scheme-toggle .bi {
+  font-size: 1.15rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.375rem;
+  transition: background 0.2s, color 0.2s;
+}
+.quarto-color-scheme-toggle .bi:hover {
+  background: rgba(255,255,255,0.12);
+}
+[data-bs-theme="dark"] .quarto-color-scheme-toggle .bi:hover {
+  background: rgba(255,255,255,0.15);
+}
+.bq-theme-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  margin-left: 0.2rem;
+  opacity: 0.75;
+  vertical-align: middle;
+}
+
+.bq-ckan-note {
+  font-size: 0.85em;
+  color: var(--bq-fg-muted);
+  margin-top: 0.25em;
+}
+
+/* iframe embed borders */
+.bq-embed {
+  border: 1px solid var(--bq-border);
+  border-radius: 4px;
+}
+
+
+/* ── Validation table classes ────────────────────────────────────────── */
+
+.bq-val-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.bq-val-table .bq-th td,
+.bq-val-table .bq-th th {
+  background: var(--bq-th-bg);
+  color: var(--bq-th-fg);
+  font-weight: 600;
+}
+
+.bq-val-table .bq-th-sub td,
+.bq-val-table .bq-th-sub th {
+  background: var(--bq-th-sub-bg);
+  color: var(--bq-th-sub-fg);
+}
+
+.bq-val-table .bq-city-col {
+  text-align: right;
+  color: var(--bq-fg-faint);
+}
+
+
+/* ── Central Intake control bar ──────────────────────────────────────── */
+
+.bq-control-bar {
+  background: var(--bq-bg-control);
+  border: 1px solid var(--bq-border-control);
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.bq-control-bar .bq-hint {
+  color: var(--bq-fg-muted);
+  font-size: 0.82em;
+  display: block;
+  margin-top: 2px;
+  max-width: 340px;
+}
+
+.bq-no-data {
+  padding: 1rem;
+  color: var(--bq-fg-faint);
+  font-style: italic;
+}
+
+
+/* ── Bayesian analysis table ─────────────────────────────────────────── */
+
+.bq-bayes {
+  font-size: 0.81rem;
+  color: var(--bq-fg);
+  margin: 0.6rem 0 0;
+  line-height: 1.6;
+}
+
+.bq-bayes table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.bq-bayes thead tr {
+  border-bottom: 1px solid var(--bq-chart-grid);
+  color: var(--bq-fg-muted);
+}
+
+.bq-bayes .bq-note {
+  color: var(--bq-fg-subtle);
+}
+
+
+/* ── Crisis hero — gender/cold-response finding block ────────────────── */
+
+.crisis-hero {
+  background: #1a1a2e; color: #fff;
+  border-radius: 0.75rem; padding: 2rem 2.5rem;
+  margin: 1.5rem 0 1rem;
+  display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
+}
+.crisis-hero .hero-number {
+  font-size: 5rem; font-weight: 800; color: #ff3b30;
+  line-height: 1; white-space: nowrap; flex-shrink: 0;
+}
+.crisis-hero .hero-text { max-width: 520px; }
+.crisis-hero .hero-text strong { color: #ff3b30; }
+.crisis-hero .hero-label {
+  font-size: 1.8rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.65rem;
+}
+.crisis-hero .hero-sub { font-size: 1.2rem; color: #ccd; line-height: 1.5; }
+
+/* Plain-English callout — appears after technical prose blocks */
+.plain-eng {
+  border-left: 3px solid #ff3b30;
+  background: rgba(255,59,48,0.04);
+  border-radius: 0 0.35rem 0.35rem 0;
+  padding: 0.55rem 0.9rem;
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #333;
+}
+.plain-eng .pe-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #ff3b30; margin-bottom: 0.2rem;
+}
+
+/* KEY FINDING / COLD-WEATHER ACCOUNTABILITY alert box */
+.key-finding-box {
+  border: 2px solid #ff3b30;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin: 1.5rem 0 2.5rem;
+  padding: 0 1.5rem 1.75rem;
+}
+.key-finding-box-header {
+  background: #ff3b30;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.5rem;
+  margin: 0 -1.5rem 1.5rem;
+}
+.key-finding-box h3 { margin-top: 0.4rem; }
+
+/* Advocacy hero — mission statement text */
+.bq-alert-hero {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 1.5rem 0;
+}
+
+/* Call-to-action wrapper */
+.bq-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+.bq-cta p { margin: 0; }

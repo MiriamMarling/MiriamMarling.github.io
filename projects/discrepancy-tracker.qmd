@@ -1,0 +1,38 @@
+---
+title: "Discrepancy Tracker"
+subtitle: "Suivi des divergences — nightly gaps between the City's reported capacity and the raw SMIS data"
+description: "A running log of discrepancies between the City of Toronto's official overnight shelter counts and the raw SMIS data published on the Open Data portal, by date."
+author: "Miriam Marling"
+date: 2026-06-04
+open-graph:
+  title: "Discrepancy Tracker — Toronto Shelter Audit"
+  description: "A running log of discrepancies between the City's official overnight shelter counts and the raw SMIS data, by date."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Discrepancy Tracker — Toronto Shelter Audit"
+  description: "A running log of discrepancies between the City's official overnight shelter counts and the raw SMIS data, by date."
+---
+
+This page logs, night by night, the gap between the City of Toronto's reported
+overnight capacity and the raw SMIS records published on the Open Data portal.
+Each row records the City's official figure, our raw-data audit figure, and the
+variance between them — so the public can see, on a daily basis, where the system
+fails to meet the zero-unplaced target on nights reaching −5 °C.
+
+*Cette page consigne, nuit après nuit, l'écart entre la capacité déclarée par la
+Ville de Toronto et les données brutes du SMIS. Chaque ligne indique le nombre
+officiel de la Ville, le nombre de notre audit, et l'écart entre les deux.*
+
+**Table 1.** *Logged discrepancies between the City's official overnight counts
+and the raw-data audit, by date. / Divergences consignées entre les nombres
+officiels de la Ville et l'audit des données brutes, par date.*
+
+| Date | City Official Count<br>*Nombre officiel de la Ville* | Raw Data Audit Count<br>*Nombre de l'audit (données brutes)* | Variance<br>*Écart* | Notes |
+|---|--:|--:|--:|---|
+| — | — | — | — | First audited entries forthcoming. / Premières entrées à venir. |
+
+*Note.* Counts are overnight figures at the 4 a.m. Central Intake closeout.
+Variance is the raw-data audit count minus the City's official count; a positive
+value indicates the raw data shows more unplaced households than the official
+figure reports. Source: City of Toronto Open Data (SMIS); BonQuery audit.

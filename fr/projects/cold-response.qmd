@@ -1,0 +1,357 @@
+---
+title: "Laissés dans le froid"
+subtitle: >
+  Réseau de refuges de Toronto — personnes sans place à 4 h lors des nuits
+  glaciales, et comment atteindre zéro
+description: >
+  Lors de 95,9 % des nuits sous −5 °C au cours de six hivers torontois, des
+  personnes étaient encore sans place à 4 h. La file d'attente nocturne a
+  triplé, puis diminué — preuve que zéro est un choix budgétaire que la ville
+  fait chaque été.
+author: "Miriam Marling"
+date: 2026-06-04
+open-graph:
+  title: "Laissés dans le froid — Réseau de refuges de Toronto"
+  description: >
+    Lors de 95,9 % des nuits sous −5 °C au cours de six hivers torontois,
+    des personnes étaient sans place à 4 h. Zéro est un choix budgétaire que
+    la ville fait chaque été.
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Laissés dans le froid — Réseau de refuges de Toronto"
+  description: >
+    Lors de 95,9 % des nuits sous −5 °C au cours de six hivers torontois,
+    des personnes étaient sans place à 4 h. Zéro est un choix budgétaire.
+format:
+  html:
+    include-in-header:
+      text: |
+        <script type="application/ld+json">
+        [{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Laissés dans le froid — Réseau de refuges de Toronto",
+          "author": {
+            "@type": "Person",
+            "name": "Miriam Marling",
+            "email": "miriam@BonQuery.ca"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "BonQuery",
+            "url": "https://bonquery.ca"
+          },
+          "datePublished": "2026-06-04",
+          "description": "Analyse des ménages sans place dans le réseau de refuges de Toronto lors des nuits glaciales, six saisons froides (2020-21 à 2025-26).",
+          "url": "https://bonquery.ca/fr/projects/cold-response.html"
+        }]
+        </script>
+---
+
+## Des personnes sont laissées dans le froid — et nous pouvons les compter
+
+Le réseau de refuges de Toronto enregistre un chiffre chaque nuit : le nombre
+de personnes ayant demandé un endroit sûr où dormir et qui se retrouvaient
+encore sans réponse à 4 h, au moment où l'Admission centrale ferme son
+relevé nocturne. Par les nuits douces, ce chiffre représente un problème
+logistique. Par les nuits glaciales, il représente des personnes dehors dans
+un temps que la ville elle-même a déclaré dangereux.
+
+::: {.bq-alert}
+La politique même de la Ville de Toronto reconnaît que les températures
+atteignant −5 °C sont suffisamment basses pour déclencher une action
+d'urgence — un seuil qui est effectivement une question de vie ou de mort.
+Pourtant, nos données révèlent un échec flagrant et répété : lors de **95,9 %**
+des nuits atteignant cette limite au cours des six derniers hivers, des personnes
+étaient encore sans place à 4 h. Il ne s'agit pas d'un événement météorologique ;
+c'est le choix d'exposer des résidents à un **préjudice grave**. Nous savons que
+c'est réparable : le dernier hiver a démontré que lorsque le système a un peu
+de marge, nous pouvons atteindre zéro. Cet hiver, c'est un choix de recommencer.
+:::
+
+Le graphique ci-dessous montre chacune de ces nuits.
+
+```{ojs}
+//| echo: false
+//| output: false
+
+// ── Data ────────────────────────────────────────────────────────────────────
+seasonRug = FileAttachment("../data/season_rug.csv").csv().then(rows =>
+  rows.map(d => ({
+    min_temp:      +d.min_temp,
+    winter_season: d.winter_season
+  }))
+)
+binnedSC = FileAttachment("../data/cold_response_binned_by_winter_sc.csv").csv()
+  .then(rows => rows.map(d => ({
+    min_temp_bin:  +d.min_temp_bin,
+    winter_season: d.winter_season,
+    mean_unplaced: +d.mean_unplaced,
+    n:             +d.n
+  })))
+
+// ── Theme-aware palette ──────────────────────────────────────────────────────
+cs      = getComputedStyle(document.documentElement)
+refLine = cs.getPropertyValue("--bq-chart-stroke").trim()
+
+// ── Season color map ─────────────────────────────────────────────────────────
+seasonColorMap = new Map([
+  ["2020-21", "#4DF884"],
+  ["2021-22", "#2F9DF5"],
+  ["2022-23", "#DEDD32"],
+  ["2023-24", "#E63946"],
+  ["2024-25", "#F65F18"],
+  ["2025-26", "#900C00"]
+])
+```
+
+```{ojs}
+//| echo: false
+viewof selectedWinters = {
+  const allSeasons = [
+    "2020-21","2021-22","2022-23","2023-24","2024-25","2025-26"
+  ];
+  const selected = new Set(allSeasons);
+
+  if (!document.getElementById("bq-season-cb-style")) {
+    const s = document.createElement("style");
+    s.id = "bq-season-cb-style";
+    s.textContent = `
+      .bq-season-cb {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+        margin: 0;
+        border: 1.5px solid #888;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: transparent;
+      }
+      .bq-season-cb:checked {
+        background-color: var(--season-color);
+        border-color: var(--season-color);
+      }
+      .bq-season-cb:checked::after {
+        content: "✓";
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .bq-season-cb:hover {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.15);
+      }
+      .bq-season-lbl {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  const root = document.createElement("div");
+  root.style.cssText = "font-family:var(--sans-serif,sans-serif);font-size:13.5px;";
+
+  const labelEl = document.createElement("div");
+  labelEl.textContent = "Saisons affichées";
+  labelEl.style.cssText = "font-weight:600;margin-bottom:3px;";
+
+  const hint = document.createElement("div");
+  hint.textContent = "Cliquez sur une saison pour l'afficher ou la masquer";
+  hint.style.cssText =
+    "font-size:11.5px;font-weight:400;color:#888;margin-bottom:6px;";
+
+  const row = document.createElement("div");
+  row.style.cssText =
+    "display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;";
+
+  for (const season of allSeasons) {
+    const color = seasonColorMap.get(season);
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.value = season; cb.checked = true;
+    cb.className = "bq-season-cb";
+    cb.style.setProperty("--season-color", color);
+
+    const txt = document.createElement("span");
+    txt.textContent = season;
+
+    const lbl = document.createElement("label");
+    lbl.className = "bq-season-lbl";
+    lbl.append(cb, txt);
+    row.append(lbl);
+
+    cb.addEventListener("change", () => {
+      if (cb.checked) selected.add(season); else selected.delete(season);
+      root.value = [...selected];
+      root.dispatchEvent(new Event("input"));
+    });
+  }
+
+  root.append(labelEl, hint, row);
+  root.value = allSeasons;
+  return root;
+}
+```
+
+```{ojs}
+//| echo: false
+//| output: false
+scSeasons = selectedWinters
+```
+
+:::{.callout-note collapse="false"}
+**Lecture du graphique.** Le graphique présente des données issues de jusqu'à
+six saisons froides (du 15 novembre au 15 avril), codées par couleur selon
+l'année hivernale. Les lignes verticales en arrière-plan font office de tapis
+de température — chaque ligne marque la température minimale nocturne enregistrée
+pour une nuit donnée, colorée selon sa saison. Là où ces lignes se concentrent,
+les données sont abondantes ; là où elles s'amenuisent (en dessous d'environ
+−15 °C), les nuits individuelles ont plus de poids. Utilisez les cases à cocher
+ci-dessus pour afficher ou masquer les saisons individuelles.
+:::
+
+```{ojs}
+//| echo: false
+//| label: fig-observed
+//| fig-cap: |
+//|   *Moyenne observée de personnes (individus seuls et couples) sans place à
+//|   4 h, par température minimale nocturne et saison froide, regroupée par
+//|   intervalles de 2 °C.* Les intervalles sont étiquetés par leur point
+//|   médian (p. ex., le point à −3 °C couvre de −4 °C jusqu'à −2 °C exclu).
+//|   Chaque point représente un intervalle de température pour un hiver ; la
+//|   taille du point est proportionnelle au nombre de nuits dans cet intervalle
+//|   (plus grand = davantage de nuits). La saison 2025–26 (groupe en bas à
+//|   droite) se situe nettement en dessous des hivers précédents pour des
+//|   températures comparables.
+
+{
+  const visibleBinned = binnedSC.filter(d => scSeasons.includes(d.winter_season))
+  const visibleRug    = seasonRug.filter(d => scSeasons.includes(d.winter_season))
+
+  return Plot.plot({
+    width:        720,
+    height:       400,
+    marginLeft:   70,
+    marginRight:  20,
+    marginTop:    20,
+    marginBottom: 50,
+    color: {
+      type:   "ordinal",
+      legend: true,
+      label:  "Saison hivernale",
+      domain: [...seasonColorMap.keys()],
+      range:  [...seasonColorMap.values()]
+    },
+    r: { range: [2, 8] },
+    x: {
+      label: "Température minimale nocturne (°C)",
+      labelAnchor: "center",
+      reverse: true
+    },
+    y: {
+      label: "Personnes sans place (individus seuls/couples, moyenne observée)",
+      labelAnchor: "top",
+      grid: true
+    },
+    marks: [
+      Plot.tickX(visibleRug, {
+        x: "min_temp",
+        stroke: "winter_season",
+        frameAnchor: "bottom",
+        strokeOpacity: 0.35,
+        strokeWidth: 1
+      }),
+      Plot.ruleX([0, -5, -10, -15], {
+        stroke: refLine,
+        strokeWidth: 1,
+        strokeDasharray: "4,3"
+      }),
+      Plot.dot(visibleBinned, {
+        x: "min_temp_bin",
+        y: "mean_unplaced",
+        fill: "winter_season",
+        r: "n"
+      }),
+      Plot.tip(visibleBinned, Plot.pointer({
+        x: "min_temp_bin",
+        y: "mean_unplaced",
+        title: d =>
+          `${d.winter_season}\n` +
+          `Intervalle ${d.min_temp_bin} °C  ·  ${d.n} nuits\n` +
+          `Moyenne observée : ${d.mean_unplaced.toFixed(1)} personne(s) sans place`
+      }))
+    ]
+  })
+}
+```
+
+## C'est un choix, et ce choix se fait en ce moment même
+
+Le chiffre n'est pas figé. Lors des hivers 2020–21 et 2021–22, la file
+d'attente nocturne était en moyenne d'environ **35 personnes par nuit**. Dès
+2022–23, ce nombre avait **triplé**, dépassant la centaine, et il est resté
+à ce niveau pendant trois hivers. Puis, l'hiver dernier, il est **redescendu
+à environ 34**.
+
+**Tableau 1.** *Nombre moyen de personnes (individus seuls et couples) sans
+place à 4 h, de décembre à février, réseau de refuges de Toronto
+(2020–21 à 2025–26).*
+
+| Saison froide | Moyenne de personnes sans place par nuit |
+|---|--:|
+| 2020–21 | 37,6 |
+| 2021–22 | 34,7 |
+| 2022–23 | 100,3 |
+| 2023–24 | 155,5 |
+| 2024–25 | 101,4 |
+| 2025–26 | 34,2 |
+
+*Note.* Les valeurs sont des moyennes nocturnes de personnes (individus seuls
+et couples) non jumelées à un lit à la fermeture de l'Admission centrale à
+4 h, calculées sur décembre, janvier et février. La hausse entre 2021–22 et
+2022–23 reflète un changement structurel dans la série ; ces deux périodes
+ne doivent pas être moyennées ensemble. Source : Admission centrale de
+Toronto (SMIS), analyse BonQuery.
+
+Qu'est-ce qui était différent lors des hivers où ce chiffre était faible ?
+Ni le froid — ces hivers n'étaient pas plus doux. Ni les haltes-chaleur
+d'urgence, qui étaient *plus grandes que jamais* l'hiver dernier. La
+différence tenait au fait que le réseau de refuges régulier avait **de la
+marge** : il fonctionnait à environ 97 % de sa capacité, au lieu d'être
+bloqué à 99 % ou plus comme lors des pires années. Lorsque le réseau
+ordinaire n'est pas déjà à pleine capacité, une vague de froid n'oblige pas
+nécessairement des gens à rester dehors.
+
+Voilà tout le levier. Et il est actionné en été — maintenant — lorsque le
+budget d'automne décide du nombre de lits qui existeront lors de la première
+nuit glaciale de novembre. Quand le froid arrive, la décision a déjà été
+prise.
+
+**Zéro est le seul nombre acceptable de personnes laissées dehors sous le
+point de congélation dans une ville aussi riche que Toronto.** Y parvenir
+l'hiver prochain ne requiert ni nouveau programme ni percée. Cela exige de
+décider, dans le budget de cet été, de financer une capacité d'hébergement
+permanente suffisante pour que le réseau dispose de la même marge que l'hiver
+dernier — *avant* la première nuit glaciale, pas après. La ville a déjà
+montré qu'elle pouvait faire baisser le chiffre. La seule question qui reste
+est de savoir si elle choisira de le faire.
+
+---
+
+*Données : registres d'appels de l'Admission centrale de Toronto (SMIS),
+six saisons froides du 15 novembre au 15 avril, 2020–21 à 2025–26. Analyse
+par [BonQuery](https://bonquery.ca). Météo : archives horaires d'Environnement
+et Changement climatique Canada, station de Toronto.*
+
+Contient des informations publiées sous la [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-license/).

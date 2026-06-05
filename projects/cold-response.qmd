@@ -1,0 +1,364 @@
+---
+title: "Left in the Cold"
+subtitle: "Toronto Shelter System — people unplaced at 4 a.m. on freezing
+  nights, and how we get to zero"
+description: "On 95.9% of nights below −5 °C across six Toronto winters, people
+  were left unplaced at 4 a.m. The overnight shelter queue tripled, then fell —
+  proof that zero is a budget choice the city makes each summer."
+author: "Miriam Marling"
+date: 2026-06-04
+open-graph:
+  title: "Left in the Cold — Toronto Shelter System"
+  description: "On 95.9% of nights below −5 °C across six Toronto winters,
+    people were left unplaced at 4 a.m. Zero is a budget choice the city makes
+    each summer."
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Left in the Cold — Toronto Shelter System"
+  description: "On 95.9% of nights below −5 °C across six Toronto winters,
+    people were left unplaced at 4 a.m. Zero is a budget choice."
+format:
+  html:
+    include-in-header:
+      text: |
+        <script type="application/ld+json">
+        [{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Left in the Cold — Toronto Shelter System",
+          "author": {
+            "@type": "Person",
+            "name": "Miriam Marling",
+            "email": "miriam@BonQuery.ca"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "BonQuery",
+            "url": "https://bonquery.ca"
+          },
+          "datePublished": "2026-06-04",
+          "description": "Analysis of unplaced households in Toronto's shelter system on freezing nights across six cold seasons (2020-21 through 2025-26).",
+          "about": {
+            "@type": "Dataset",
+            "name": "Toronto Central Intake — Overnight Unplaced Households",
+            "description": "Singles and couples households left unplaced at 4 a.m. Central Intake closeout, linked to overnight minimum temperature, across six cold seasons (November 15 to April 15, 2020 to 2026).",
+            "temporalCoverage": "2020-11-15/2026-04-15",
+            "spatialCoverage": {
+              "@type": "Place",
+              "name": "Toronto, Ontario, Canada"
+            },
+            "license": "https://open.toronto.ca/open-data-license/",
+            "creator": {
+              "@type": "Organization",
+              "name": "City of Toronto Shelter, Support and Housing Administration"
+            }
+          },
+          "url": "https://bonquery.ca/projects/cold-response.html",
+          "keywords": ["Toronto shelter system", "homelessness", "cold response",
+                       "winter services", "Central Intake", "unplaced households",
+                       "shelter capacity", "warming centres"]
+        }]
+        </script>
+---
+
+## People are being left in the cold — and we can count them
+
+Toronto's shelter system keeps a number every night: how many people asked
+for a safe place to sleep and were still without one at 4 a.m., when Central
+Intake closes its overnight count. On warm nights, that number is a logistics
+problem. On freezing nights, it is people outside in weather the city itself has
+declared dangerous.
+
+::: {.bq-alert}
+The City of Toronto's own policy recognizes temperatures at −5 °C as cold enough
+to trigger emergency action — a threshold that is effectively a matter of life
+and death. Yet our data reveals a stark, repeated failure: on **95.9%** of nights
+hitting this limit over the last six winters, people were still left unplaced
+at 4 a.m. This is not a weather event; it is a choice to expose residents to
+**severe harm**. We know this is fixable: last winter proved that when the system
+has room to breathe, we can reach zero. This winter, it is a choice to do it
+again.
+:::
+
+The chart below shows every one of those nights.
+
+```{ojs}
+//| echo: false
+//| output: false
+
+// ── Data ────────────────────────────────────────────────────────────────────
+// Numeric columns coerced explicitly; string columns kept as-is.
+seasonRug = FileAttachment("../data/season_rug.csv").csv().then(rows =>
+  rows.map(d => ({
+    min_temp:      +d.min_temp,
+    winter_season: d.winter_season
+  }))
+)
+binnedSC = FileAttachment("../data/cold_response_binned_by_winter_sc.csv").csv()
+  .then(rows => rows.map(d => ({
+    min_temp_bin:  +d.min_temp_bin,
+    winter_season: d.winter_season,
+    mean_unplaced: +d.mean_unplaced,
+    n:             +d.n
+  })))
+
+// ── Theme-aware palette ──────────────────────────────────────────────────────
+cs      = getComputedStyle(document.documentElement)
+refLine = cs.getPropertyValue("--bq-chart-stroke").trim()
+
+// ── Season color map ─────────────────────────────────────────────────────────
+// Explicit domain+range so the rug and dots share identical season → colour
+// bindings across any chart added to this page.
+seasonColorMap = new Map([
+  ["2020-21", "#4DF884"],
+  ["2021-22", "#2F9DF5"],
+  ["2022-23", "#DEDD32"],
+  ["2023-24", "#E63946"],
+  ["2024-25", "#F65F18"],
+  ["2025-26", "#900C00"]
+])
+```
+
+```{ojs}
+//| echo: false
+viewof selectedWinters = {
+  const allSeasons = [
+    "2020-21","2021-22","2022-23","2023-24","2024-25","2025-26"
+  ];
+  const selected = new Set(allSeasons);
+
+  // Inject custom checkbox styles once — guarded so OJS re-runs don't duplicate
+  if (!document.getElementById("bq-season-cb-style")) {
+    const s = document.createElement("style");
+    s.id = "bq-season-cb-style";
+    s.textContent = `
+      .bq-season-cb {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+        margin: 0;
+        border: 1.5px solid #888;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: transparent;
+      }
+      .bq-season-cb:checked {
+        background-color: var(--season-color);
+        border-color: var(--season-color);
+      }
+      .bq-season-cb:checked::after {
+        content: "✓";
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .bq-season-cb:hover {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.15);
+      }
+      .bq-season-lbl {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  const root = document.createElement("div");
+  root.style.cssText = "font-family:var(--sans-serif,sans-serif);font-size:13.5px;";
+
+  const labelEl = document.createElement("div");
+  labelEl.textContent = "Seasons shown";
+  labelEl.style.cssText = "font-weight:600;margin-bottom:3px;";
+
+  const hint = document.createElement("div");
+  hint.textContent = "Click a season to show or hide it";
+  hint.style.cssText =
+    "font-size:11.5px;font-weight:400;color:#888;margin-bottom:6px;";
+
+  const row = document.createElement("div");
+  row.style.cssText =
+    "display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;";
+
+  for (const season of allSeasons) {
+    const color = seasonColorMap.get(season);
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.value = season; cb.checked = true;
+    cb.className = "bq-season-cb";
+    cb.style.setProperty("--season-color", color);
+
+    const txt = document.createElement("span");
+    txt.textContent = season;
+
+    const lbl = document.createElement("label");
+    lbl.className = "bq-season-lbl";
+    lbl.append(cb, txt);
+    row.append(lbl);
+
+    cb.addEventListener("change", () => {
+      if (cb.checked) selected.add(season); else selected.delete(season);
+      root.value = [...selected];
+      root.dispatchEvent(new Event("input"));
+    });
+  }
+
+  root.append(labelEl, hint, row);
+  root.value = allSeasons;
+  return root;
+}
+```
+
+```{ojs}
+//| echo: false
+//| output: false
+scSeasons = selectedWinters
+```
+
+:::{.callout-note collapse="false"}
+**Reading the chart.** The chart shows data from up to six cold seasons
+(November 15 to April 15), colour-coded by winter year. The vertical lines
+across the background act as a temperature rug — each line marks one night's
+recorded overnight minimum temperature, coloured to match its season. Where
+these lines cluster together, data is plentiful; where they thin out (below
+about −15 °C), individual nights carry more weight. Use the checkboxes above
+to show or hide individual seasons.
+:::
+
+```{ojs}
+//| echo: false
+//| label: fig-observed
+//| fig-cap: |
+//|   *Observed mean unplaced people (singles and couples) at 4 a.m. by
+//|   overnight minimum temperature and cold season, binned in 2 °C intervals.*
+//|   Bins are labelled by their midpoint (e.g., the −3 °C dot covers −4 °C up
+//|   to but not including −2 °C). Each dot represents one temperature bin for
+//|   one winter; dot size scales with the number of nights in that bin
+//|   (larger = more nights). The 2025–26 season (bottom-right cluster) sits
+//|   visibly lower than earlier winters at comparable temperatures.
+
+{
+  const visibleBinned = binnedSC.filter(d => scSeasons.includes(d.winter_season))
+  const visibleRug    = seasonRug.filter(d => scSeasons.includes(d.winter_season))
+
+  return Plot.plot({
+    width:        720,
+    height:       400,
+    marginLeft:   70,
+    marginRight:  20,
+    marginTop:    20,
+    marginBottom: 50,
+    color: {
+      type:   "ordinal",
+      legend: true,
+      label:  "Winter season",
+      domain: [...seasonColorMap.keys()],
+      range:  [...seasonColorMap.values()]
+    },
+    r: { range: [2, 8] },
+    x: {
+      label: "Overnight minimum temperature (°C)",
+      labelAnchor: "center",
+      reverse: true
+    },
+    y: {
+      label: "Mean people unplaced (singles/couples, observed)",
+      labelAnchor: "top",
+      grid: true
+    },
+    marks: [
+      Plot.tickX(visibleRug, {
+        x: "min_temp",
+        stroke: "winter_season",
+        frameAnchor: "bottom",
+        strokeOpacity: 0.35,
+        strokeWidth: 1
+      }),
+      Plot.ruleX([0, -5, -10, -15], {
+        stroke: refLine,
+        strokeWidth: 1,
+        strokeDasharray: "4,3"
+      }),
+      Plot.dot(visibleBinned, {
+        x: "min_temp_bin",
+        y: "mean_unplaced",
+        fill: "winter_season",
+        r: "n"
+      }),
+      Plot.tip(visibleBinned, Plot.pointer({
+        x: "min_temp_bin",
+        y: "mean_unplaced",
+        title: d =>
+          `${d.winter_season}\n` +
+          `${d.min_temp_bin} °C bin  ·  ${d.n} nights\n` +
+          `Observed mean: ${d.mean_unplaced.toFixed(1)} unplaced`
+      }))
+    ]
+  })
+}
+```
+
+## This is a choice, and the choice is being made right now
+
+The number is not fixed. As recently as the winters of 2020–21 and 2021–22, the
+overnight queue averaged about **35 people a night**. By 2022–23 it had
+**tripled**, to over a hundred, and stayed there for three winters. Then, this
+past winter, it **fell back to roughly 34**.
+
+**Table 1.** *Average number of people (singles and couples) left unplaced at
+4 a.m., December through February, Toronto shelter system (2020–21 through
+2025–26).*
+
+| Cold season | Mean unplaced per night |
+|---|--:|
+| 2020–21 | 37.6 |
+| 2021–22 | 34.7 |
+| 2022–23 | 100.3 |
+| 2023–24 | 155.5 |
+| 2024–25 | 101.4 |
+| 2025–26 | 34.2 |
+
+*Note.* Values are nightly means of people (singles and couples) still
+unmatched to a bed at the 4 a.m. Central Intake closeout, averaged across
+December, January, and February. The increase between 2021–22 and 2022–23
+reflects a structural change in the series; the two periods should not be
+averaged together. Source: Toronto Central Intake (SMIS), BonQuery analysis.
+
+So what was different in the winters when the number was low? Not the cold —
+those winters were no milder. And not emergency warming centres, which were at
+their *largest ever* this past winter. The difference was that the regular
+shelter system had **room to breathe**: it ran near 97% full, instead of
+jammed against 99% or more as in the worst years. When the everyday system
+isn't already at capacity, a cold snap doesn't have to end with people on the
+street.
+
+That is the whole lever. And it is pulled in the summer — now — when the fall
+budget decides how many beds will exist on the first freezing night of November.
+By the time the cold arrives, the decision has already been made.
+
+**Zero is the only acceptable number of people left outside below freezing in a
+city as wealthy as Toronto.** Reaching it next winter does not require a new
+program or a breakthrough. It requires deciding, in this summer's budget, to
+fund enough standing shelter capacity that the system carries the same breathing
+room it had last winter — *before* the first freezing night, not after. The city
+has already shown it can get the number down. The only question left is whether
+it will choose to.
+
+---
+
+*Data: Toronto Central Intake call records (SMIS), six cold seasons
+November 15–April 15, 2020–21 through 2025–26. Analysis by
+[BonQuery](https://bonquery.ca). Weather: Environment and Climate Change Canada
+hourly records, Toronto station.*
+
+Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-license/).

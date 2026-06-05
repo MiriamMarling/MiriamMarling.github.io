@@ -1,0 +1,72 @@
+project:
+  render:
+    - fr/index.qmd
+    - fr/about.qmd
+    - fr/projects/about-the-data.qmd
+    - fr/projects/central-intake.qmd
+    - fr/projects/cold-response.qmd
+    - fr/projects/daily-occupancy.qmd
+    - fr/projects/data-validation.qmd
+    - fr/projects/data-validation-central-intake.qmd
+    - fr/projects/discrepancy-tracker.qmd
+    - fr/projects/historical-trends.qmd
+    - fr/projects/monthly-snapshot.qmd
+    - fr/projects/spike-detection.qmd
+    - fr/projects/toronto-shelter.qmd
+    - fr/projects/ytd-comparison.qmd
+
+format:
+  html:
+    lang: fr-CA
+
+website:
+  title: "BonQuery"
+  description: >
+    BonQuery utilise des données publiques pour examiner des enjeux
+    humanitaires urgents, notamment la capacité, la demande et les flux
+    du réseau de refuges de Toronto.
+  site-url: https://bonquery.ca
+  navbar:
+    left:
+      - href: fr/index.qmd
+        text: Accueil
+      - href: fr/projects/cold-response.qmd
+        text: "Laissés dans le froid"
+      - text: Audits
+        menu:
+          - text: "SURVEILLANCE INDÉPENDANTE"
+          - href: fr/projects/discrepancy-tracker.qmd
+            text: "Suivi des divergences"
+          - href: fr/projects/data-validation.qmd
+            text: "Audit de l'occupation d'urgence"
+          - href: fr/projects/data-validation-central-intake.qmd
+            text: "Audit de l'admission centrale"
+          - href: fr/projects/about-the-data.qmd
+            text: "Méthodologie de l'audit"
+      - text: Tableaux de bord
+        menu:
+          - href: fr/projects/toronto-shelter.qmd
+            text: "Le réseau de refuges de Toronto"
+          - href: fr/projects/monthly-snapshot.qmd
+            text: "Réplication du flux mensuel"
+          - href: fr/projects/ytd-comparison.qmd
+            text: "Concordance année en cours"
+          - href: fr/projects/historical-trends.qmd
+            text: "Tendances historiques"
+          - href: fr/projects/central-intake.qmd
+            text: "Analyse des demandes d'orientation"
+          - href: fr/projects/spike-detection.qmd
+            text: "Détection de pics d'occupation"
+          - href: fr/projects/daily-occupancy.qmd
+            text: "Occupation et capacité quotidiennes"
+      - href: fr/about.qmd
+        text: À propos
+    right:
+      - text: "EN"
+        href: /
+        id: bq-lang-toggle-nav
+  page-footer:
+    center: |
+      Un audit de données indépendant pour les résidents de Toronto. / An independent data audit for Toronto residents.
+      <br>
+      <span style="font-size: 0.85em; opacity: 0.7;">© 2026 Miriam Marling · BonQuery</span>

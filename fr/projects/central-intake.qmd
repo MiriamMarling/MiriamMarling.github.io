@@ -1,0 +1,422 @@
+---
+title: "Demandes d'orientation en refuge"
+subtitle: "Appels à l'Admission centrale de Toronto — moyennes mensuelles"
+description: >
+  Moyennes quotidiennes mensuelles des appels au service téléphonique
+  d'orientation en refuge de l'Admission centrale de Toronto, provenant
+  du portail de données ouvertes de la Ville de Toronto.
+author: "Miriam Marling"
+open-graph:
+  title: "Demandes d'orientation en refuge — Admission centrale de Toronto"
+  description: >
+    Moyennes quotidiennes mensuelles des appels au service téléphonique
+    d'orientation en refuge de l'Admission centrale de Toronto, provenant
+    du portail de données ouvertes de la Ville de Toronto.
+  site_name: "BonQuery — Des données pour le bien commun"
+twitter-card:
+  card-style: summary
+  title: "Demandes d'orientation en refuge — Admission centrale de Toronto"
+  description: >
+    Moyennes quotidiennes mensuelles des appels au service téléphonique
+    d'orientation en refuge de l'Admission centrale de Toronto, provenant
+    du portail de données ouvertes de la Ville de Toronto.
+format:
+  html:
+    page-layout: full
+    toc: false
+    include-in-header:
+      text: |
+        <style>
+        .quarto-container, .container-fluid, .container { max-width: none !important; }
+        .cell-output-display { max-width: none !important; overflow: visible !important; }
+        .cell-output-display svg .tick text { font-size: 13px; }
+        .cell-output-display svg text:not(.tick text) { font-size: 14px; font-weight: 500; }
+        @media (min-width: 769px) { .mobile-page-nav { display: none !important; } }
+        @media (max-width: 768px) {
+          .mobile-page-nav { display: block; padding: 1rem 0; margin-top: 1.5rem;
+            border-top: 1px solid #dee2e6; }
+          .mobile-page-nav p { font-weight: 600; margin-bottom: 0.5rem; }
+        }
+        </style>
+---
+
+L'Admission centrale est le service téléphonique 24 h/24, 7 j/7 de la Ville qui
+met en relation les personnes ayant besoin d'un refuge d'urgence avec les places
+disponibles dans le réseau. Lorsqu'une personne a besoin d'un lit, elle appelle
+l'Admission centrale, où des agents évaluent la demande et orientent les appelants
+vers les places disponibles dans l'ensemble du réseau. C'est la voie d'orientation
+principale — mais non la seule — vers les refuges d'urgence de Toronto. Les
+travailleurs de rue de Streets to Homes font également des orientations directes
+en dehors de l'Admission centrale.
+
+Cette page reproduit trois des quatre graphiques de la page [Demandes
+d'orientation vers le réseau de refuges](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/){target="_blank"}
+de la Ville. Le quatrième — taux d'occupation moyen par nuit — est exclu parce
+que l'exportation CKAN des données d'occupation quotidiennes omet les programmes
+de passerelle et de triage, produisant des valeurs systématiquement inférieures
+aux chiffres publiés par la Ville. BonQuery publie l'occupation nocturne
+séparément sur la [page Occupation et capacité quotidiennes](daily-occupancy.html){target="_blank"} ;
+une estimation mensuelle de l'écart lié aux programmes de passerelle et de triage
+se trouve sur la [page de validation — Admission centrale](data-validation-central-intake.html){target="_blank"}.
+
+La version BonQuery ajoute des contrôles interactifs absents des graphiques
+statiques de la Ville. Le bouton bascule ci-dessous permet de choisir entre la
+vue de réplication de la Ville (depuis avril 2024, correspondant au tableau publié
+par la Ville) et une plage de dates personnalisée couvrant l'ensemble des données
+depuis novembre 2020. Une case à cocher optionnelle ajoute des barres d'erreur
+±2 erreurs standard pour les lecteurs souhaitant visualiser la variabilité
+intra-mensuelle — les barres représentent l'incertitude autour de chaque moyenne
+mensuelle compte tenu de la variation quotidienne au cours de ce mois.
+
+```{ojs}
+//| echo: false
+data = FileAttachment("../data/central_intake.json").json()
+```
+
+```{ojs}
+//| echo: false
+MONTH_ABB = ["","janv.","févr.","mars","avr.","mai","juin",
+             "juill.","août","sept.","oct.","nov.","déc."]
+
+cityRange = data.monthly
+  .filter(d => d.year > 2024 || (d.year === 2024 && d.month >= 4))
+  .sort((a, b) => a.year * 100 + a.month - (b.year * 100 + b.month))
+
+xDomain = cityRange.map(d => d.month_label)
+
+xYearLabels = (() => {
+  const seen = new Set()
+  const first = []
+  xDomain.forEach(l => {
+    const yr = l.slice(-4)
+    if (!seen.has(yr)) { seen.add(yr); first.push(l) }
+  })
+  return first
+})()
+
+xTickFormat = l => xYearLabels.includes(l) ? l.slice(-4) : ""
+
+allMonthOpts = data.monthly
+  .map(d => ({
+    key: `${d.year}-${String(d.month).padStart(2, "0")}`,
+    label: d.month_label
+  }))
+  .sort((a, b) => a.key.localeCompare(b.key))
+```
+
+```{ojs}
+//| echo: false
+viewof controls = {
+  const jan2025 = allMonthOpts.find(o => o.key === "2025-01") ?? allMonthOpts[0]
+  const last     = allMonthOpts.at(-1)
+
+  const modeInput = Inputs.radio(
+    ["Réplication de la Ville", "Période personnalisée"],
+    {value: "Réplication de la Ville"}
+  )
+  const startInput = Inputs.select(allMonthOpts, {
+    label: "De",
+    format: o => o.label,
+    value: jan2025
+  })
+  const endInput = Inputs.select(allMonthOpts, {
+    label: "À",
+    format: o => o.label,
+    value: last
+  })
+  const seInput = Inputs.checkbox(
+    ["Afficher les barres ±2 ES (lecteurs techniques)"],
+    {value: []}
+  )
+
+  const rangeSpan = html`<span style="display:none;gap:12px;align-items:flex-end">
+    ${startInput}${endInput}
+  </span>`
+
+  const bar = html`<div class="bq-control-bar">
+    ${modeInput}
+    ${rangeSpan}
+    <div>
+      ${seInput}
+      <small class="bq-hint">
+        Erreur standard de la moyenne mensuelle, calculée à partir des valeurs
+        quotidiennes du mois. ±2 ES approxime un intervalle de confiance à 95 %.
+      </small>
+    </div>
+  </div>`
+
+  const getValue = () => ({
+    viewMode: modeInput.value,
+    startKey: startInput.value.key,
+    endKey:   endInput.value.key,
+    showSE:   seInput.value.length > 0
+  })
+
+  bar.value = getValue()
+
+  const fire = () => {
+    rangeSpan.style.display =
+      modeInput.value === "Période personnalisée" ? "inline-flex" : "none"
+    bar.value = getValue()
+    bar.dispatchEvent(new Event("input", {bubbles: true}))
+  }
+
+  modeInput.addEventListener("input",  fire)
+  startInput.addEventListener("input", fire)
+  endInput.addEventListener("input",   fire)
+  seInput.addEventListener("input",    fire)
+
+  return bar
+}
+```
+
+```{ojs}
+//| echo: false
+activeRange = {
+  if (controls.viewMode === "Réplication de la Ville") return cityRange
+
+  const {startKey, endKey} = controls
+  if (startKey > endKey) return []
+
+  return data.monthly
+    .filter(d => {
+      const k = `${d.year}-${String(d.month).padStart(2, "0")}`
+      return k >= startKey && k <= endKey
+    })
+    .sort((a, b) => a.year * 100 + a.month - (b.year * 100 + b.month))
+}
+
+activeDomain = activeRange.map(d => d.month_label)
+
+activeYearTicks = (() => {
+  const seen = new Set(), first = []
+  activeDomain.forEach(l => {
+    const yr = l.slice(-4)
+    if (!seen.has(yr)) { seen.add(yr); first.push(l) }
+  })
+  return first
+})()
+
+activeX = controls.viewMode === "Réplication de la Ville"
+  ? {
+      domain:     xDomain,
+      ticks:      xYearLabels,
+      tickSize:   10,
+      tickFormat: xTickFormat,
+      tickRotate: 0,
+      label:      null
+    }
+  : {
+      domain:     activeDomain,
+      ticks:      activeYearTicks,
+      tickSize:   10,
+      tickFormat: l => l.slice(-4),
+      tickRotate: 0,
+      label:      null
+    }
+
+activeMarginBottom = 40
+```
+
+<p style="font-size:0.88em;color:var(--bq-fg-secondary);margin:0 0 4px">
+Touchez ou survolez n'importe quelle barre pour voir le mois, l'année et la
+valeur moyenne.
+</p>
+
+```{ojs}
+//| echo: false
+{
+  if (activeRange.length === 0)
+    return html`<p class="bq-no-data">
+      ⚠ Le mois « De » doit être antérieur au mois « À ».</p>`
+
+  return Plot.plot({
+    title: "Appels orientés vers une place en refuge",
+    width,
+    marginTop: 40,
+    marginBottom: activeMarginBottom,
+    marginLeft: 55,
+    x: activeX,
+    y: {grid: true, label: "Appels quotidiens (moy.)"},
+    marks: [
+      Plot.barY(activeRange, {
+        x: "month_label",
+        y: "referred_mean",
+        fill: "#5BA75B",
+        tip: true
+      }),
+      ...(controls.showSE ? [Plot.ruleX(activeRange, {
+        x:           "month_label",
+        y1:          d => d.referred_se != null
+                       ? d.referred_mean - 2 * d.referred_se : null,
+        y2:          d => d.referred_se != null
+                       ? d.referred_mean + 2 * d.referred_se : null,
+        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
+        strokeWidth: 1.5
+      })] : [])
+    ]
+  })
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  if (activeRange.length === 0)
+    return html`<p class="bq-no-data">
+      ⚠ Le mois « De » doit être antérieur au mois « À ».</p>`
+
+  return Plot.plot({
+    title: "Appelants individuels sans jumelage",
+    width,
+    marginTop: 40,
+    marginBottom: activeMarginBottom,
+    marginLeft: 55,
+    x: activeX,
+    y: {grid: true, label: "Appelants quotidiens (moy.)"},
+    marks: [
+      Plot.barY(activeRange, {
+        x: "month_label",
+        y: "unmatched_mean",
+        fill: "#FF2D55",
+        tip: true
+      }),
+      ...(controls.showSE ? [Plot.ruleX(activeRange, {
+        x:           "month_label",
+        y1:          d => d.unmatched_se != null
+                       ? d.unmatched_mean - 2 * d.unmatched_se : null,
+        y2:          d => d.unmatched_se != null
+                       ? d.unmatched_mean + 2 * d.unmatched_se : null,
+        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
+        strokeWidth: 1.5
+      })] : [])
+    ]
+  })
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  if (activeRange.length === 0)
+    return html`<p class="bq-no-data">
+      ⚠ Le mois « De » doit être antérieur au mois « À ».</p>`
+
+  return Plot.plot({
+    title: "Appels traités",
+    width,
+    marginTop: 40,
+    marginBottom: activeMarginBottom,
+    marginLeft: 55,
+    x: activeX,
+    y: {grid: true, label: "Appels quotidiens (moy.)"},
+    marks: [
+      Plot.barY(activeRange, {
+        x: "month_label",
+        y: "handled_mean",
+        fill: "#4A90D9",
+        tip: true
+      }),
+      ...(controls.showSE ? [Plot.ruleX(activeRange, {
+        x:           "month_label",
+        y1:          d => d.handled_se != null
+                       ? d.handled_mean - 2 * d.handled_se : null,
+        y2:          d => d.handled_se != null
+                       ? d.handled_mean + 2 * d.handled_se : null,
+        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
+        strokeWidth: 1.5
+      })] : [])
+    ]
+  })
+}
+```
+
+Le tableau ci-dessous présente les mêmes moyennes mensuelles que le tableau
+publié par la Ville sur la page Demandes d'orientation vers le réseau de refuges,
+calculées indépendamment par BonQuery à partir des valeurs quotidiennes de
+l'exportation CKAN des données ouvertes de la Ville.
+
+```{ojs}
+//| echo: false
+thStyle = (extra = "") =>
+  `border-bottom:2px solid var(--bq-chart-grid);padding:6px 10px;text-align:center;` +
+  `background:var(--bq-bg-accent);${extra}`
+
+html`<table style="width:100%;border-collapse:collapse;font-size:0.9em">
+  <thead>
+    <tr>
+      <th style="${thStyle()}">Année</th>
+      <th style="${thStyle()}">Mois</th>
+      <th colspan="3" style="${thStyle()}">Quotidien moyen</th>
+    </tr>
+    <tr>
+      <th style="${thStyle()}"></th>
+      <th style="${thStyle()}"></th>
+      <th style="${thStyle()}">Appels orientés vers une place en refuge [1]</th>
+      <th style="${thStyle()}">Appelants individuels sans jumelage [2]</th>
+      <th style="${thStyle()}">Appels traités [3]</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${cityRange.map((d, i) => {
+      const bg = d.month === 1
+        ? "var(--bq-bg-accent)"
+        : (i % 2 === 0 ? "var(--bq-bg)" : "var(--bq-bg-alt)")
+      const fw = d.month === 1 ? "font-weight:600;" : ""
+      const td = () =>
+        `padding:5px 10px;border-bottom:1px solid var(--bq-border);` +
+        `text-align:center;background:${bg};${fw}`
+      return html`<tr>
+        <td style="${td()}">${d.year}</td>
+        <td style="${td()}">${MONTH_ABB[d.month]}</td>
+        <td style="${td()}">
+          ${d.referred_mean  != null ? d.referred_mean.toFixed(1)              : "—"}
+        </td>
+        <td style="${td()}">
+          ${d.unmatched_mean != null ? d.unmatched_mean.toFixed(1)             : "—"}
+        </td>
+        <td style="${td()}">
+          ${d.handled_mean   != null ? Math.round(d.handled_mean).toLocaleString("fr-CA") : "—"}
+        </td>
+      </tr>`
+    })}
+  </tbody>
+</table>`
+```
+
+[1] Source : Codes de résultat d'appel de l'Admission centrale — Code 1A
+(Orientation vers un espace d'hébergement ou de repos).\
+[2] Source : Données de la file d'attente de l'Admission centrale — Appelants
+individuels sans jumelage.\
+[3] Source : Codes de résultat d'appel de l'Admission centrale — Total des appels
+traités.
+
+### Notes sur les données
+
+Cette page s'appuie sur deux ressources du [jeu de données ouvertes des appels à
+l'Admission centrale](https://open.toronto.ca/dataset/central-intake-calls/){target="_blank"}
+de la Ville. Le jeu de données sur les codes de résultat d'appel constitue un
+registre du centre d'appels qui suit quotidiennement les résultats des appels par
+type : chaque appel traité par un agent se voit attribuer l'un des 13 codes de
+résultat. Le graphique intitulé « Appels orientés vers une place en refuge » utilise
+le code 1A (orientation vers un espace d'hébergement ou de repos) ; « Appels
+traités » utilise le champ du total des appels traités. Le jeu de données sur la
+file d'attente de service provient du Système d'information sur la gestion des
+refuges (SMIS) de Toronto et enregistre le nombre de personnes seules ou de couples
+qui n'ont toujours pas de place en refuge à la fin de chaque journée (4 h).
+Les deux jeux de données provenant de systèmes sources différents, suivant des
+unités différentes (appels c. individus) et couvrant des populations différentes,
+la documentation de la Ville précise qu'ils ne peuvent pas être combinés.
+
+### Source des données
+
+Toutes les données proviennent du jeu de données [Appels à l'Admission
+centrale](https://open.toronto.ca/dataset/central-intake-calls/){target="_blank"}
+de la Ville de Toronto, publié mensuellement sur le portail de données ouvertes de
+la Ville. Les moyennes mensuelles sont calculées par BonQuery à partir des valeurs
+quotidiennes dans les deux ressources du jeu de données : les données sur les codes
+de résultat d'appel et les données sur la file d'attente de service de l'Admission
+centrale.
+
+Contient des informations sous licence [Licence du gouvernement ouvert –
+Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.

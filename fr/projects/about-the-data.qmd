@@ -1,0 +1,222 @@
+---
+title: "Méthodologie de l'audit"
+subtitle: >
+  Sources de données, vérifications d'intégrité et limites structurelles des
+  données du réseau de refuges de Toronto
+description: >
+  Méthodologie de l'audit des données du réseau de refuges de Toronto — sources,
+  vérifications d'intégrité, divergences de déclaration et limites structurelles
+  à connaître avant de tirer des conclusions.
+author: "Miriam Marling"
+open-graph:
+  title: "Méthodologie de l'audit — Réseau de refuges de Toronto"
+  description: >
+    Méthodologie de l'audit des données du réseau de refuges de Toronto — sources,
+    vérifications d'intégrité, divergences et limites structurelles.
+  site_name: "BonQuery — Data for the Greater Good"
+twitter-card:
+  card-style: summary
+  title: "Méthodologie de l'audit — Réseau de refuges de Toronto"
+  description: >
+    Méthodologie de l'audit des données du réseau de refuges de Toronto — sources,
+    vérifications d'intégrité, divergences et limites structurelles.
+---
+
+::::: {.bq-alert .bq-alert-hero .bq-bilingual}
+
+```{=html}
+<div class="bq-lang-toggle" role="group" aria-label="Language / Langue">
+<button type="button" class="bq-lang-btn" data-set="fr">FR</button><span
+class="bq-lang-sep">|</span><button type="button" class="bq-lang-btn"
+data-set="en">EN</button>
+</div>
+```
+
+::: {.bq-lang .bq-lang-fr}
+**AUDIT ACTIF : SAISON HIVERNALE 2026–2027.** Nous suivons l'écart entre la
+capacité déclarée par la Ville et les données brutes. Les écarts sont consignés
+dans notre [Suivi des divergences](discrepancy-tracker.qmd). Nous exigeons zéro
+ménage sans place lorsque la température atteint −5 °C.
+:::
+
+::: {.bq-lang .bq-lang-en}
+**ACTIVE AUDIT: 2026–2027 WINTER SEASON.** We are tracking the gap between the
+City's reported capacity and the raw data. Discrepancies are being logged in our
+[Discrepancy Tracker](discrepancy-tracker.qmd). We are demanding zero unplaced
+households on nights reaching −5 °C.
+:::
+
+:::::
+
+Les chiffres présentés dans
+[l'audit du réseau de refuges](toronto-shelter.qmd)
+proviennent d'un seul jeu de données publié par la Ville de Toronto. Comme
+tout jeu de données, il reflète certaines réalités avec précision, en omet
+d'autres et présente des particularités structurelles qu'il importe de
+connaître avant d'en tirer des conclusions. Cette page documente la
+méthodologie de l'audit : d'où viennent les données, comment elles sont
+vérifiées, et où une lecture attentive s'impose.
+
+Les observations ci-dessous ne constituent pas des conclusions sur le réseau
+de refuges de Toronto lui-même — celles-ci figurent dans les pages de
+l'audit. Ce sont des notes sur les données : ce qu'elles représentent, ce
+qu'elles ne représentent pas, et où une lecture attentive est nécessaire.
+
+## Intégrité des données et signalement des divergences
+
+Notre analyse repose exclusivement sur les données brutes du SMIS publiées
+par la Ville via le portail des données ouvertes. Nous avons observé des
+divergences constantes entre ces données brutes et les chiffres présentés
+dans les tableaux de bord publics de la Ville. Nous effectuons un audit
+nocturne de ces divergences afin que le public dispose d'une vue précise et
+granulaire du rendement du réseau de refuges, sans que celle-ci soit
+obscurcie par des moyennes mensuelles lissées et agrégées.
+
+## Le sous-dénombrement de 18 %
+
+Les données recensent les personnes ayant utilisé un service d'hébergement
+de nuit financé par la Ville au cours des trois derniers mois. Les personnes
+qui ont dormi à l'extérieur, utilisé un refuge non financé par la Ville ou
+séjourné temporairement chez des proches ne figurent pas dans ce jeu de
+données.
+
+La Ville [estime](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/)
+qu'environ 18 % des personnes en situation d'itinérance absolue à Toronto
+n'apparaissent pas dans ces chiffres. Cette estimation provient de
+l'évaluation des besoins de la rue de la Ville, un dénombrement périodique
+distinct de l'itinérance non abritée.
+
+En pratique : lorsque ce jeu de données indique une hausse ou une baisse du
+nombre de personnes en situation d'itinérance active, le changement reflète
+le réseau de refuges en particulier. La question de savoir si l'itinérance
+totale à Toronto augmente ou diminue au même rythme dépend de ce qui se
+passe dans les parties de la population itinérante que ces données ne
+saisissent pas — et c'est une question à laquelle ce jeu de données seul ne
+peut pas répondre.
+
+## Trois chiffres différents pour l'« itinérance »
+
+Toronto publie plusieurs dénombrements liés à l'itinérance, qui mesurent des
+réalités différentes. Un lecteur comparant des chiffres entre sources peut
+facilement croire que deux nombres se contredisent, alors qu'ils mesurent en
+fait des populations distinctes.
+
+Les trois dénombrements les plus courants :
+
+- **Occupation nocturne.** Le nombre de personnes occupant un lit de refuge
+  lors d'une nuit donnée. Tiré du jeu de données distinct de la Ville sur
+  [l'utilisation quotidienne des refuges et services d'hébergement de nuit](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/).
+- **Personnes en situation d'itinérance active.** Le nombre de personnes
+  ayant utilisé le réseau de refuges au moins une fois au cours des trois
+  derniers mois et n'ayant pas accédé à un logement permanent. C'est le
+  chiffre principal de chaque tableau de bord de l'audit du réseau de refuges.
+- **Individus distincts annuels.** Le nombre de personnes différentes ayant
+  utilisé le réseau de refuges à un moment donné au cours d'une année
+  civile. Publié par la Ville dans des rapports occasionnels plutôt que dans
+  un jeu de données régulier.
+
+Les trois mesures sont valides et portent sur des populations connexes mais
+distinctes. Le nombre de personnes en situation d'itinérance active se situe
+généralement entre l'occupation nocturne (qui est plus faible, car elle ne
+compte qu'une seule nuit) et les individus distincts annuels (qui est plus
+élevé, car il compte toutes les personnes passées par le système sur une
+période plus longue). Toute analyse qui traite ces mesures comme
+interchangeables les interprète incorrectement.
+
+## Les données constituent un instantané mensuel avec un recul de trois mois
+
+La Ville génère ces données le dernier jour de chaque mois et les publie
+vers le 15 du mois suivant. Les chiffres de chaque mois tiennent compte
+rétroactivement de toutes les personnes ayant utilisé les services de refuge
+au cours des trois mois précédents.
+
+Deux conséquences en découlent :
+
+Premièrement, le nombre de personnes en situation d'itinérance active pour
+un mois donné inclut les personnes ayant utilisé le réseau de refuges une
+seule fois dans cette fenêtre de trois mois — et pas seulement les personnes
+en refuge ce mois-là. La même personne peut apparaître dans trois
+dénombrements mensuels consécutifs même si elle n'a utilisé le refuge
+qu'une seule fois.
+
+Deuxièmement, les variations d'un mois à l'autre peuvent être plus faibles
+qu'elles n'y paraissent. Chaque dénombrement incluant les deux mois
+d'activité précédents, les mois adjacents se chevauchent fortement. Un
+lecteur comparant les chiffres de janvier et de février juxtapose deux
+groupes qui se recoupent largement, et non deux groupes distincts.
+
+## Certaines catégories se chevauchent ; d'autres non
+
+Le jeu de données ventile les personnes selon des groupes de population :
+Toutes populations, Réfugiés, Non-réfugiés, Chroniques, Familles, Adultes
+seuls, Jeunes et Autochtones. Ces groupes n'entretiennent pas tous les mêmes
+relations entre eux, ce qui est important pour toute analyse les comparant.
+
+Les groupes Réfugiés et Non-réfugiés comptent ensemble toutes les personnes
+du groupe « Toutes populations », sans chevauchement. Si un graphique
+superpose les deux groupes, leur somme doit égaler le total. Cette identité
+se vérifie dans chaque mois du jeu de données.
+
+Les autres groupes — Chroniques, Familles, Adultes seuls, Jeunes et
+Autochtones — se chevauchent entre eux et avec les groupes de réfugiés. Une
+personne de 23 ans, autochtone, réfugiée et en situation d'itinérance
+chronique est comptée dans cinq groupes simultanément : Chroniques,
+Autochtones, Réfugiés, Jeunes et Toutes populations. Il est impossible
+d'isoler, à partir de ce seul jeu de données, les personnes appartenant à un
+seul de ces groupes.
+
+En pratique : additionner ou empiler les cinq groupes qui se chevauchent
+produit un chiffre supérieur à la population réelle, car les mêmes personnes
+sont comptées plusieurs fois. Les pourcentages par groupe publiés par la
+Ville le reflètent d'ailleurs — leur somme dépasse largement 100 % pour
+l'ensemble des sept sous-groupes de population.
+
+## La colonne « Nouvellement repérés » a une signification différente pour
+le groupe Chroniques
+
+Pour la plupart des groupes de population, « Nouvellement repérés » recense
+les personnes entrant dans le réseau de refuges pour la première fois. Pour
+le groupe Chroniques, cette même colonne recense les personnes devenues
+chroniquement sans abri au cours du mois de référence — indépendamment de la
+durée pendant laquelle elles utilisaient déjà le réseau. La plupart des
+personnes comprises dans ce décompte étaient déjà dans le système ; elles
+venaient simplement de satisfaire à la définition fédérale de l'itinérance
+chronique.
+
+Cela est expliqué dans
+[l'audit du réseau de refuges](toronto-shelter.qmd#termes-clés)
+et dans la propre documentation de la Ville, mais il vaut la peine de le
+souligner à nouveau ici, car le libellé de la colonne prête à confusion.
+Toute comparaison inter-groupes des chiffres « Nouvellement repérés »
+incluant la rangée Chroniques mélange deux mesures différentes.
+
+## Un détail technique utile : la dimension réfugiés constitue une partition
+nette
+
+Pour les analystes et chercheurs travaillant de plus près avec ces données,
+une caractéristique structurelle mérite d'être signalée. La dimension
+réfugiés — la répartition entre Réfugiés et Non-réfugiés — se comporte
+comme une partition mathématique nette du jeu de données, et ce non
+seulement pour le nombre de personnes en situation d'itinérance active, mais
+pour chaque colonne de flux du jeu de données.
+
+Dans chaque mois de janvier 2018 à aujourd'hui, les dénombrements de Réfugiés
+et de Non-réfugiés s'additionnent exactement au dénombrement de Toutes
+populations pour chaque colonne vérifiée : entrées, sorties et stock de
+personnes en situation d'itinérance active. Cette identité ne se vérifie pour
+aucune autre dimension de population.
+
+En pratique : si une analyse nécessite des groupes disjoints — pour des
+graphiques à barres empilées, des calculs de pourcentage du total ou toute
+opération requérant des catégories mutuellement exclusives — la dimension
+réfugiés est le seul endroit du jeu de données où cela est mathématiquement
+valide.
+
+## Sources
+
+Toutes les observations structurelles de cette page ont été vérifiées par
+interrogation directe du jeu de données. Les définitions et l'estimation du
+sous-dénombrement de 18 % proviennent de la [page Données sur les flux du
+réseau de refuges de la Ville de Toronto](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/).
+Le jeu de données lui-même est publié sur le [portail des données ouvertes](https://open.toronto.ca/dataset/toronto-shelter-system-flow/)
+de la Ville.

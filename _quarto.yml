@@ -1,8 +1,25 @@
 project:
   type: website
   output-dir: _site   # built HTML goes here — not committed to main
+  render:
+    - index.qmd
+    - about.qmd
+    - projects/about-the-data.qmd
+    - projects/central-intake.qmd
+    - projects/cold-response.qmd
+    - projects/daily-occupancy.qmd
+    - projects/data-validation.qmd
+    - projects/data-validation-central-intake.qmd
+    - projects/discrepancy-tracker.qmd
+    - projects/historical-trends.qmd
+    - projects/monthly-snapshot.qmd
+    - projects/spike-detection.qmd
+    - projects/toronto-shelter.qmd
+    - projects/ytd-comparison.qmd
   resources:
-    - data/daily_occupancy.csv   # not FileAttachment-referenced, must be listed explicitly
+    - data/daily_occupancy.csv                    # not FileAttachment-referenced
+    - data/season_rug.csv                         # cold-response: temperature rug
+    - data/cold_response_binned_by_winter_sc.csv  # cold-response: observed means
 
 website:
   title: "BonQuery"
@@ -12,41 +29,137 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - text: Projects
+      - href: projects/cold-response.qmd
+        text: "Left in the Cold"
+      - text: Audits
+        menu:
+          - text: "INDEPENDENT OVERSIGHT"
+          - href: projects/discrepancy-tracker.qmd
+            text: "Discrepancy Tracker"
+          - href: projects/data-validation.qmd
+            text: "Emergency Occupancy Audit"
+          - href: projects/data-validation-central-intake.qmd
+            text: "Central Intake Audit"
+          - href: projects/about-the-data.qmd
+            text: "Audit Methodology"
+      - text: Shelter Dashboards
         menu:
           - href: projects/toronto-shelter.qmd
             text: "Inside Toronto's Shelter System"
-          - href: projects/about-the-data.qmd
-            text: "About the Data"
-          - href: projects/data-validation.qmd
-            text: "Occupancy Validation"
-          - href: projects/data-validation-central-intake.qmd
-            text: "Central Intake Validation"
-          - text: "---"
-          - text: "Charts ↓"
-          - href: projects/historical-trends.qmd
-            text: "Historical Trends"
           - href: projects/monthly-snapshot.qmd
-            text: "Monthly Snapshot"
+            text: "Monthly System Flow Replication"
           - href: projects/ytd-comparison.qmd
-            text: "YTD Comparison"
+            text: "Year-to-Date Capacity Match"
+          - href: projects/historical-trends.qmd
+            text: "Historical Trend Lines"
           - href: projects/central-intake.qmd
-            text: "Shelter System Requests for Referrals"
+            text: "Referral Requests Analysis"
           - href: projects/spike-detection.qmd
             text: "Occupancy Spike Detection"
-          - text: "---"
-          - text: "Tables ↓"
           - href: projects/daily-occupancy.qmd
             text: "Daily Occupancy & Capacity"
       - href: about.qmd
         text: About
+    right:
+      - text: "FR"
+        href: /fr/
+        id: bq-lang-toggle-nav
   page-footer:
-    left: "© 2026 Miriam Marling · BonQuery"
-    right: "Built with [Quarto](https://quarto.org)"
+    center: |
+      An independent data audit for Toronto residents. / Un audit de données indépendant pour les résidents de Toronto.
+      <br>
+      <span style="font-size: 0.85em; opacity: 0.7;">© 2026 Miriam Marling · BonQuery</span>
 
 format:
   html:
-    theme: cosmo   # clean, readable — can be swapped in Stage 3
+    theme:
+      light: cosmo
+      dark: darkly
     css: styles.css
     toc: true
-    toc-location: right   # sidebar TOC on project pages and about-the-data
+    toc-location: right
+    include-after-body:
+      text: |
+        <script>
+        // Label the theme toggle with "Light" / "Dark"
+        (function() {
+          const tog = document.querySelector(".quarto-color-scheme-toggle");
+          if (!tog) return;
+          const label = document.createElement("span");
+          label.className = "bq-theme-label";
+          const update = () => {
+            const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+            label.textContent = isDark ? "Light" : "Dark";
+          };
+          tog.appendChild(label);
+          update();
+          new MutationObserver(update).observe(
+            document.documentElement, {attributes: true, attributeFilter: ["data-bs-theme"]}
+          );
+        })();
+
+        // Bilingual alert toggle (EN | FR) — sets data-lang on each .bq-bilingual
+        // block; CSS in styles.css controls which language string is shown.
+        document.querySelectorAll(".bq-bilingual").forEach(function (block) {
+          var btns = block.querySelectorAll(".bq-lang-btn");
+          function setLang(lang) {
+            block.setAttribute("data-lang", lang);
+            btns.forEach(function (b) {
+              b.classList.toggle("active", b.dataset.set === lang);
+            });
+          }
+          btns.forEach(function (b) {
+            b.addEventListener("click", function () { setLang(b.dataset.set); });
+          });
+          setLang(block.getAttribute("data-lang") || "en");
+        });
+
+        // Language toggle + hreflang injection.
+        // Runs on both EN and FR renders. Computes the mirror URL from the
+        // current pathname and updates the static navbar toggle link so it
+        // points at the exact FR/EN counterpart of this page.  Also injects
+        // hreflang <link> tags so search engines understand the relationship.
+        (function () {
+          var root  = "/";
+          var frPfx = "/fr/";
+          var path  = location.pathname;
+          var isFR  = path.startsWith(frPfx) ||
+                      path === "/fr" || path === "/fr/";
+
+          // Compute the mirror path
+          var enPath, frPath;
+          if (isFR) {
+            enPath = path === "/fr" || path === "/fr/"
+              ? "/"
+              : path.replace(frPfx, "/");
+            frPath = path.endsWith("/") ? path : path + "/";
+          } else {
+            enPath = path;
+            frPath = frPfx + path.replace(/^\//, "");
+          }
+          // Normalise index: /path/ → /path/index.html only if already .html
+          function abs(p) {
+            return location.origin + p;
+          }
+
+          // Update the navbar toggle link (#bq-lang-toggle-nav)
+          var tog = document.getElementById("bq-lang-toggle-nav") ||
+                    document.querySelector("a[href='/fr/'],a[href='/']");
+          if (tog) {
+            tog.href = isFR ? enPath : frPath;
+            tog.textContent = isFR ? "EN" : "FR";
+          }
+
+          // Inject hreflang tags
+          function addLink(rel, hreflang, href) {
+            var el = document.createElement("link");
+            el.rel = rel;
+            if (hreflang) el.setAttribute("hreflang", hreflang);
+            el.href = href;
+            document.head.appendChild(el);
+          }
+          addLink("alternate", "en-CA",    abs(enPath));
+          addLink("alternate", "fr-CA",    abs(frPath));
+          addLink("alternate", "x-default", abs(enPath));
+        })();
+        </script>
