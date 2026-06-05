@@ -387,11 +387,20 @@ jobs:
         if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Render and publish to GitHub Pages
+      - name: Render EN site
+        if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
+        run: quarto render
+
+      - name: Render FR site
+        if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
+        run: quarto render --profile fr
+
+      - name: Publish to GitHub Pages
         if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
+          render: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

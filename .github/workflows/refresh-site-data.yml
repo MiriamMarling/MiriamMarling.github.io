@@ -71,10 +71,17 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
+      - name: Render EN site
+        run: quarto render
+
+      - name: Render FR site
+        run: quarto render --profile fr
+
       # Publish to gh-pages branch. GITHUB_TOKEN auth is automatic.
-      - name: Render and publish to GitHub Pages
+      - name: Publish to GitHub Pages
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
+          render: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

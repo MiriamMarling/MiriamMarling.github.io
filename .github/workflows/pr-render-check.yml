@@ -65,5 +65,8 @@ jobs:
       # Render the full site to _site/. Fails (exit ≠ 0) on broken .qmd
       # cross-references, missing FileAttachment targets, OJS syntax errors,
       # or malformed Observable Plot code. Does not deploy anything.
-      - name: Render site
+      - name: Render EN site
         run: quarto render
+
+      - name: Render FR site
+        run: quarto render --profile fr
