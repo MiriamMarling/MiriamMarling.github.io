@@ -41,7 +41,7 @@ website:
           - href: projects/data-validation-central-intake.qmd
             text: "Central Intake Audit"
           - href: projects/about-the-data.qmd
-            text: "Audit Methodology"
+            text: "About the Data"
       - text: Shelter Dashboards
         menu:
           - href: projects/toronto-shelter.qmd

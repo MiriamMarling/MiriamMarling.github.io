@@ -74,8 +74,12 @@ jobs:
       - name: Render EN site
         run: quarto render
 
+      # Scoped to fr/ so this profile pass only touches FR-pathed output —
+      # `quarto render --profile fr` (no path) merges both project.render
+      # lists and re-renders every EN page too, overwriting it with the FR
+      # profile's lang and navbar.
       - name: Render FR site
-        run: quarto render --profile fr
+        run: quarto render fr --profile fr
 
       # Publish to gh-pages branch. GITHUB_TOKEN auth is automatic.
       - name: Publish to GitHub Pages

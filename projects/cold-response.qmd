@@ -359,6 +359,7 @@ it will choose to.
 *Data: Toronto Central Intake call records (SMIS), six cold seasons
 November 15–April 15, 2020–21 through 2025–26. Analysis by
 [BonQuery](https://bonquery.ca). Weather: Environment and Climate Change Canada
-hourly records, Toronto station.*
+hourly records, Toronto station, retrieved via the
+[weathercan](https://docs.ropensci.org/weathercan/){target="_blank"} R package.*
 
 Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).

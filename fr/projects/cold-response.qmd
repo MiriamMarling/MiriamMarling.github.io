@@ -352,6 +352,7 @@ est de savoir si elle choisira de le faire.
 *Données : registres d'appels de l'Admission centrale de Toronto (SMIS),
 six saisons froides du 15 novembre au 15 avril, 2020–21 à 2025–26. Analyse
 par [BonQuery](https://bonquery.ca). Météo : archives horaires d'Environnement
-et Changement climatique Canada, station de Toronto.*
+et Changement climatique Canada, station de Toronto, récupérées au moyen du
+package R [weathercan](https://docs.ropensci.org/weathercan/){target="_blank"}.*
 
 Contient des informations publiées sous la [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-licence/).

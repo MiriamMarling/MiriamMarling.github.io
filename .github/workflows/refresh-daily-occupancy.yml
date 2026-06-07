@@ -391,9 +391,13 @@ jobs:
         if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
         run: quarto render
 
+      # Scoped to fr/ so this profile pass only touches FR-pathed output —
+      # `quarto render --profile fr` (no path) merges both project.render
+      # lists and re-renders every EN page too, overwriting it with the FR
+      # profile's lang and navbar.
       - name: Render FR site
         if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
-        run: quarto render --profile fr
+        run: quarto render fr --profile fr
 
       - name: Publish to GitHub Pages
         if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'

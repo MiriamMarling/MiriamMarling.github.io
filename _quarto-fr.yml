@@ -43,7 +43,7 @@ website:
           - href: fr/projects/data-validation-central-intake.qmd
             text: "Audit de l'admission centrale"
           - href: fr/projects/about-the-data.qmd
-            text: "Méthodologie de l'audit"
+            text: "À propos des données"
       - text: Tableaux de bord
         menu:
           - href: fr/projects/toronto-shelter.qmd

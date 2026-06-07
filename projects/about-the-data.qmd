@@ -1,16 +1,16 @@
 ---
-title: "Audit Methodology"
-subtitle: "Data sources, integrity checks, and the structural limits of Toronto's shelter system data"
-description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, reporting discrepancies, and structural limits worth knowing before drawing conclusions."
+title: "About the Data"
+subtitle: "How to read Toronto's shelter numbers, and where the data has limits"
+description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, and structural limits worth knowing before drawing conclusions."
 author: "Miriam Marling"
 open-graph:
-  title: "Audit Methodology — Toronto Shelter System"
-  description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, reporting discrepancies, and structural limits worth knowing before drawing conclusions."
+  title: "About the Data — Toronto Shelter System"
+  description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, and structural limits worth knowing before drawing conclusions."
   site_name: "BonQuery — Data for the Greater Good"
 twitter-card:
   card-style: summary
-  title: "Audit Methodology — Toronto Shelter System"
-  description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, reporting discrepancies, and structural limits worth knowing before drawing conclusions."
+  title: "About the Data — Toronto Shelter System"
+  description: "Audit methodology for Toronto's shelter system data — sources, integrity checks, and structural limits worth knowing before drawing conclusions."
 ---
 
 ::::: {.bq-alert .bq-alert-hero .bq-bilingual}
@@ -32,163 +32,153 @@ débutera à l'ouverture de la saison froide 2026–2027 en novembre.
 
 :::::
 
-The numbers on the [shelter system audit](toronto-shelter.qmd)
-come from a single dataset published by the City of Toronto. Like any
-dataset, it captures some things well, leaves other things out, and
-has structural quirks worth knowing before drawing conclusions from
-it. This page documents the methodology behind the audit: where the
-data comes from, how it is checked, and where careful reading matters.
+The figures across BonQuery's dashboards come from open data the City of
+Toronto publishes about its shelter system. This page explains what that data
+is, where it comes from, and the few places where careful reading changes the
+conclusion you should draw. These are notes about the data itself, not findings
+about Toronto's shelter system; the findings are on the audit and dashboard
+pages. How these numbers are checked against the City's own published figures is
+documented separately on the [Emergency Occupancy Audit](data-validation.qmd){target="_blank"}
+and [Central Intake Audit](data-validation-central-intake.qmd){target="_blank"} pages.
 
-The notes below are not findings about Toronto's shelter system
-itself — those are reported in the audit pages. These are notes about
-the data: what it represents, what it doesn't, and where careful
-reading matters.
+## Where the data comes from
 
-## Data Integrity & Reporting Discrepancies
+BonQuery draws on three datasets, all published by the City of Toronto on its
+[Open Data portal](https://open.toronto.ca/){target="_blank"} under the Open Government Licence –
+Toronto. Each is an aggregated product derived from the City's internal Shelter
+Management Information System (SMIS); none is a raw feed of individual case
+records.
 
-Our analysis relies exclusively on raw SMIS data published by the City
-via the Open Data portal. We have observed consistent discrepancies
-between these raw records and the figures presented in the City's
-public-facing dashboards. We perform a nightly audit of these
-discrepancies to ensure the public has an accurate, granular view of
-shelter performance that is not obscured by smoothed, aggregated
-monthly averages.
+- **[Shelter System Flow](https://open.toronto.ca/dataset/toronto-shelter-system-flow/){target="_blank"}**:
+  a monthly summary of how many people enter, leave, and remain in the shelter
+  system. This is the source of the headline actively homeless count.
+- **[Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/){target="_blank"}**:
+  a nightly snapshot of occupancy and capacity, program by program, from 2021 to
+  the present.
+- **[Central Intake Calls](https://open.toronto.ca/dataset/central-intake-calls/){target="_blank"}**:
+  records from the City's 24/7 shelter referral line, including call outcomes and
+  the count of callers still waiting for a space.
 
-## The 18% undercount
+BonQuery's cold-weather analysis also draws on hourly weather records for the
+Toronto station, published by Environment and Climate Change Canada and
+retrieved via the
+[weathercan](https://docs.ropensci.org/weathercan/){target="_blank"} R package.
 
-The data counts people who used a City-funded overnight service in
-the past three months. People who slept outside, used a shelter that
-isn't City-funded, or stayed temporarily with friends or family are
-not in this dataset.
+## A monthly snapshot with a three-month lookback
 
-The City [estimates](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/)
-that roughly 18% of people experiencing absolute homelessness in
-Toronto aren't reflected in these numbers. That estimate comes from
-the City's Street Needs Assessment, a separate periodic count of
-unsheltered homelessness.
+The City generates the Shelter System Flow data on the last day of each month
+and publishes it around the 15th of the following month. Each month's figures
+retroactively consider everyone who used shelter services in the previous three
+months.
 
-What this means in practice: when this data shows the actively
-homeless count rising or falling, the change reflects the shelter
-system specifically. Whether total homelessness in Toronto is rising
-or falling at the same rate depends on what's happening in the parts
-of the homeless population this data doesn't capture — and that's a
-question this dataset can't answer on its own.
+Two things follow. First, the actively homeless count for any month includes
+anyone who used the system even once in that three-month window, not only people
+in shelter during that month; the same person can appear in three consecutive
+monthly counts after a single stay. Second, month-over-month changes are smaller
+than they look, because adjacent months share two-thirds of their lookback
+window. Comparing January and February side by side compares two heavily
+overlapping groups, not two distinct ones.
 
 ## Three different "homelessness" numbers
 
-Toronto publishes several different counts related to homelessness,
-and they measure different things. A reader comparing figures across
-sources can easily think two numbers contradict each other when they
-actually measure different populations.
+Toronto publishes several counts related to homelessness, and they measure
+different populations. Comparing figures across sources, a reader can easily
+think two numbers contradict each other when they simply count different things.
 
-The three most common counts:
-
-- **Nightly occupancy.** How many people are in a shelter bed on a
-  given night. Comes from the City's separate [Daily Shelter and
-  Overnight Service Usage](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/)
+- **Nightly occupancy**: how many people are in a shelter space on a given
+  night, from the
+  [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/){target="_blank"}
   dataset.
-- **Actively homeless.** How many people used the shelter system at
-  least once in the past three months and haven't moved to permanent
-  housing. This is the headline number on every dashboard in the
-  shelter system audit.
-- **Annual unique individuals.** How many different people used the
-  shelter system at any point during a calendar year. Published by
-  the City in occasional reports rather than in a regular dataset.
+- **Actively homeless**: how many people used the shelter system at least once
+  in the past three months and have not since been recorded as housed or
+  otherwise inactive. This is the headline number on the dashboards.
+- **Annual unique individuals**: how many different people used the shelter
+  system at any point in a calendar year, published by the City in occasional
+  reports rather than a standing dataset.
 
-All three are valid measurements of related-but-different
-populations. The "actively homeless" count typically sits between
-nightly occupancy (which is smaller, since it only counts one night)
-and annual unique individuals (which is larger, since it counts
-everyone who passed through over a longer period). Any analysis that
-treats these as interchangeable is misreading them.
+All three are valid measures of related but different populations. The actively
+homeless count normally sits between nightly occupancy, which is smaller because
+it counts a single night, and annual unique individuals, which is larger because
+it counts a whole year. Treating any of the three as interchangeable misreads
+them.
 
-## The data is a monthly snapshot with a three-month lookback
+## What the headline number leaves out: the 18% undercount
 
-The City generates this data on the last day of each month and
-publishes it around the 15th of the following month. Each month's
-figures retroactively consider everyone who used shelter services in
-the past three months.
+Every count above describes people who used a City-funded overnight service.
+People sleeping outside, using a service the City does not fund, or staying
+temporarily with friends or family are not in this data.
 
-Two things follow from this:
+The City
+[estimates](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}
+that roughly 18% of people experiencing absolute homelessness in Toronto are not
+reflected in these numbers, an estimate drawn from its Street Needs Assessment, a
+separate periodic count of unsheltered homelessness.
 
-First, the "actively homeless" count for any given month includes
-people who used the shelter system once in that three-month window —
-not just people in shelter during that month. The same person can
-appear in three consecutive monthly counts even if they only used
-shelter once.
+In practice: when the actively homeless count rises or falls, the change
+describes the shelter system specifically. Whether total homelessness is moving
+at the same rate depends on the part of the population this data does not see,
+which this dataset cannot answer on its own.
 
-Second, month-over-month changes can be smaller than they appear.
-Because each count includes the previous two months of activity,
-adjacent months overlap heavily. A reader looking at January and
-February counts side by side is comparing two largely overlapping
-groups, not two distinct ones.
+## How the population groups relate
 
-## Some categories overlap; others don't
+The data breaks people into population groups: All Population, Refugees,
+Non-refugees, Chronic, Families, Single Adult, Youth, and Indigenous. These
+groups do not all relate to the total in the same way, which matters whenever an
+analysis compares them.
 
-The dataset breaks people down into population groups: All
-Population, Refugees, Non-refugees, Chronic, Families, Single Adult,
-Youth, and Indigenous. These groups don't all relate to each other
-in the same way, which matters for any analysis that compares them.
+Refugees and Non-refugees together account for every person in All Population,
+with no overlap. Stack the two and the result equals the total. This holds in
+every month of the data.
 
-The Refugees and Non-refugees groups together account for every
-person in the "All Population" group, with no overlap. If a chart
-shows the two groups stacked, the stack should equal the total. This
-holds in every month of the dataset.
+The other groups, Chronic, Families, Single Adult, Youth, and Indigenous, are
+overlapping attributes rather than divisions of the total. One person can belong
+to several at once. For example, an Indigenous youth experiencing chronic
+homelessness is counted in the Indigenous, Youth, and Chronic groups
+simultaneously, and also sits on the Non-refugees side of the refugee split and
+within the All Population total. There is no way to isolate people who belong to
+only one of these groups from this data alone.
 
-The other groups — Chronic, Families, Single Adult, Youth, and
-Indigenous — overlap with each other and with the refugee groups.
-[content removed] There is no way to isolate
-people who fall into only one of these groups from this dataset
-alone.
+In practice: summing or stacking these overlapping groups produces a number
+larger than the real population, because each person is counted once in every
+group they belong to. This is why the City's own per-group percentages for these
+groups add up to well beyond 100%.
 
-What this means in practice: summing or stacking the five
-overlapping groups produces a number larger than the actual
-population, because the same people are counted multiple times.
-The City's own per-group percentages reflect this — they sum to
-well over 100% across the seven sub-population groups.
+### "Newly Identified" means something different for the Chronic group
 
-## The "Newly Identified" column means something different for the Chronic group
+For most groups, Newly Identified counts people entering the shelter system for
+the first time. For the Chronic group, the same column counts people who became
+chronically homeless during the reporting month, regardless of how long they had
+already been in the system. Most of those people were already using shelters;
+they had just newly crossed the federal threshold for chronic homelessness (180
+nights in a year, or 546 over three years).
 
-For most population groups, "Newly Identified" counts people
-entering the shelter system for the first time. For the Chronic
-group, the same column counts people who became chronically
-homeless during the reporting month — regardless of how long
-they'd already been using the shelter system. Most of the people
-in that count were already in the system; they just newly met
-the federal definition of chronic homelessness.
+This is noted in the shelter system audit and in
+the City's own documentation, but it is worth repeating because the column name
+invites the wrong reading. Any cross-group comparison of Newly Identified figures
+that includes the Chronic row mixes two different measurements.
 
-This is explained in the
-[shelter system audit](toronto-shelter.qmd#key-terms) and in the
-City's own documentation, but it's worth flagging again here because
-the column name is misleading. Any cross-group comparison of "Newly
-Identified" figures that includes the Chronic row is mixing two
-different measurements.
+## For analysts: the refugee split is a clean partition
 
-## A useful technical detail: the refugee dimension is a clean split
+One structural feature is worth stating precisely for anyone working with the
+data closely. The split between Refugees and Non-refugees behaves as a clean
+mathematical partition, and not only for the headline actively homeless count: it
+holds for every flow column as well.
 
-For analysts and researchers working with this data more closely,
-one structural feature is worth knowing. The refugee dimension —
-the split between Refugees and Non-refugees — behaves as a clean
-mathematical partition of the dataset, not just for the headline
-"actively homeless" count but for every flow column in the dataset.
+In every month from January 2018 to the present, the Refugees and Non-refugees
+values sum exactly to the All Population value for every column checked: people
+entering, people leaving, and the actively homeless stock. No other population
+dimension behaves this way.
 
-In every month from January 2018 to the present, the Refugees and
-Non-refugees counts sum exactly to the All Population count for
-every column we've checked: inflows, outflows, and the actively
-homeless stock. The same identity does not hold for any of the
-other population dimensions.
-
-What this means in practice: if you need to compare disjoint
-groups in an analysis — for stacked bar charts, percentage-of-total
-calculations, or anything that requires mutually exclusive
-categories — the refugee dimension is the one place in this
-dataset where that's mathematically safe.
+In practice: if an analysis needs mutually exclusive categories, for a stacked
+bar chart, a share-of-total calculation, or anything that assumes groups do not
+overlap, the refugee split is the one place in this data where that is
+mathematically safe.
 
 ## Sources
 
-All structural observations on this page were verified by querying
-the dataset directly. Definitions and the 18% undercount estimate
-come from the [City of Toronto's Shelter System Flow Data
-page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/).
-The dataset itself is published on the City's [Open Data
-portal](https://open.toronto.ca/dataset/toronto-shelter-system-flow/).
+The structural observations on this page were verified by querying the data
+directly. Definitions and the 18% undercount estimate come from the City of
+Toronto's
+[Shelter System Flow Data page](https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/){target="_blank"}.
+The three datasets are published on the City's Open Data portal, all under the
+[Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.

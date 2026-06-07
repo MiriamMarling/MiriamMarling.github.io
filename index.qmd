@@ -40,18 +40,21 @@ binnedSC     = FileAttachment("data/cold_response_binned_by_winter_sc.csv").csv(
 ## Winter Accountability Monitor
 
 ::: {.bq-alert .bq-alert-hero}
-**WINTER ACCOUNTABILITY MONITOR: 2026–2027.** Our core mandate is tracking
-whether the City of Toronto meets its humanitarian obligation: zero people
-left unplaced when temperatures drop to −5 °C or below. Six winters of Central
-Intake data show the city has failed this standard on 95.9% of qualifying nights.
-Daily monitoring resumes when the 2026–2027 cold season opens in November.
+**WINTER ACCOUNTABILITY MONITOR: 2026–2027.** The City of Toronto
+[activates its cold-weather response](https://www.toronto.ca/community-people/housing-shelter/homeless-help/warming-centres/){target="_blank"}
+when temperatures reach −5 °C. Its own data shows what
+follows: across six winters, at least one person or couple was still unplaced at
+the 4 a.m. closeout on 257 of 268 nights at or below −5 °C (95.9%). A couple
+counts once in these figures, so the number of people left outside is higher
+still. Our standard is simple: no one left unplaced. Daily monitoring resumes
+when the 2026–2027 cold season opens in November.
 :::
 
 ::: {.bq-cta}
 [View the Data Audit & Evidence →](projects/cold-response.qmd){.btn .btn-danger .btn-lg
 role="button"}
 
-[View Audit Methodology & Reporting Discrepancies →](projects/about-the-data.qmd){.btn
+[About the Data: How to Read These Numbers →](projects/about-the-data.qmd){.btn
 .btn-outline-danger .btn-lg role="button"}
 :::
 
@@ -61,7 +64,7 @@ role="button"}
 <div class="key-finding-box-header">COLD-WEATHER ACCOUNTABILITY</div>
 ```
 
-### People left unplaced on freezing nights — six winters of evidence
+### Singles and couples left unplaced on freezing nights — six winters of evidence
 
 ```{ojs}
 //| echo: false
@@ -220,7 +223,7 @@ to show or hide individual seasons.
       reverse: true
     },
     y: {
-      label: "Mean people unplaced (singles/couples, observed)",
+      label: "Mean singles & couples unplaced (observed)",
       labelAnchor: "top",
       grid: true
     },
@@ -249,18 +252,19 @@ to show or hide individual seasons.
         title: d =>
           `${d.winter_season}\n` +
           `${d.min_temp_bin} °C bin  ·  ${d.n} nights\n` +
-          `Observed mean: ${d.mean_unplaced.toFixed(1)} unplaced`
+          `Observed mean: ${d.mean_unplaced.toFixed(1)} singles/couples unplaced`
       }))
     ]
   })
 }
 ```
 
-*Figure 1: Observed mean unplaced people (singles and couples) at 4 a.m. by
-overnight minimum temperature and cold season, binned in 2 °C intervals. Bins
-are labelled by their midpoint (e.g., the −3 °C dot covers −4 °C up to but not
-including −2 °C). Each dot represents one temperature bin for one winter; dot
-size scales with the number of nights in that bin (larger = more nights).*
+*Figure 1: Observed mean number of singles and couples unplaced at 4 a.m. by
+overnight minimum temperature and cold season, binned in 2 °C intervals. A
+couple is counted once in the City's data, so each unit represents one or two
+people and the number of people affected is at least this high. Bins are
+labelled by their midpoint (e.g., the −3 °C dot covers −4 °C up to but not
+including −2 °C). Dot size scales with the number of nights in that bin.*
 
 [See the full analysis: Left in the Cold →](projects/cold-response.qmd){.btn .btn-danger .btn-lg role="button"}
 

@@ -34,18 +34,20 @@
     });
   }
 
-  // Right nav: on FR pages, remove the self-referential FR toggle link
-  // (the EN config's "FR" link merges in alongside the FR config's "EN" link).
-  if (isFR) {
-    var rightNav = document.querySelector(".navbar-nav.ms-auto");
-    if (rightNav) {
-      Array.from(rightNav.querySelectorAll("li")).forEach(function (li) {
-        var a = li.querySelector("a[href]");
-        if (a && (a.getAttribute("href") || "").indexOf("fr/") !== -1) {
-          li.remove();
-        }
-      });
-    }
+  // Right nav: remove the self-referential language-toggle link that merges
+  // in from the other profile (the EN config's "FR" link rides along with
+  // the FR config's "EN" link, and vice versa).
+  var rightNav = document.querySelector(".navbar-nav.ms-auto");
+  if (rightNav) {
+    Array.from(rightNav.querySelectorAll("li")).forEach(function (li) {
+      var a = li.querySelector("a[href]");
+      var hasFRLink = a && (a.getAttribute("href") || "").indexOf("fr/") !== -1;
+      if (isFR) {
+        if (hasFRLink) li.remove();
+      } else {
+        if (!hasFRLink) li.remove();
+      }
+    });
   }
 })();
 
@@ -68,6 +70,8 @@
 
 // ── Bilingual alert toggle (EN | FR) ─────────────────────────────────────
 // Sets data-lang on each .bq-bilingual block; CSS controls visibility.
+var pageLang = (location.pathname.startsWith("/fr/") || location.pathname === "/fr")
+  ? "fr" : "en";
 document.querySelectorAll(".bq-bilingual").forEach(function (block) {
   var btns = block.querySelectorAll(".bq-lang-btn");
   function setLang(lang) {
@@ -79,7 +83,7 @@ document.querySelectorAll(".bq-bilingual").forEach(function (block) {
   btns.forEach(function (b) {
     b.addEventListener("click", function () { setLang(b.dataset.set); });
   });
-  setLang(block.getAttribute("data-lang") || "en");
+  setLang(block.getAttribute("data-lang") || pageLang);
 });
 
 // ── Language toggle link + hreflang injection ─────────────────────────────

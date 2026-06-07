@@ -52,7 +52,8 @@ binnedSC     = FileAttachment("data/cold_response_binned_by_winter_sc.csv").csv(
 ::: {.bq-alert .bq-alert-hero}
 **MONITEUR DE RESPONSABILITÉ HIVERNALE : 2026–2027.** Notre mandat principal
 consiste à vérifier si la Ville de Toronto respecte son obligation humanitaire :
-zéro personne sans place lorsque la température descend à −5 °C ou en dessous.
+zéro personne sans place lorsque
+[la température descend à −5 °C ou en dessous](https://www.toronto.ca/community-people/housing-shelter/homeless-help/warming-centres/){target="_blank"}.
 Six hivers de données de l'Admission centrale montrent que la Ville n'a respecté
 cette norme que lors de 4,1 % des nuits admissibles. La surveillance quotidienne
 reprendra à l'ouverture de la saison froide 2026–2027 en novembre.
