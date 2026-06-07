@@ -51,7 +51,7 @@ when the 2026–2027 cold season opens in November.
 :::
 
 ::: {.bq-cta}
-[View the Data Audit & Evidence →](projects/cold-response.qmd){.btn .btn-danger .btn-lg
+[View the Cold-Weather Evidence →](projects/cold-response.qmd){.btn .btn-danger .btn-lg
 role="button"}
 
 [About the Data: How to Read These Numbers →](projects/about-the-data.qmd){.btn
