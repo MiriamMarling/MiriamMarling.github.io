@@ -4,7 +4,8 @@ BonQuery breathes life into humanitarian-related data — turning numbers that s
 
 We use publicly available data to investigate urgent humanitarian issues, starting with Toronto’s shelter system. The work is open, reproducible, and built for journalists, researchers, advocates, policymakers, and anyone paying attention.
 
-Live site: https://bonquery.ca  
+
+🌐 **Website :**  https://bonquery.ca  
 
 **Note:** This repository contains only the front-end website files, aggregated chart data, and rendering configurations for BonQuery.ca. The raw data pipelines, backend processing, and primary analysis scripts are currently kept in a separate, private repository
 
@@ -34,4 +35,4 @@ Les pipelines de traitement des données brutes, les scripts d'analyse principau
 - Les résultats présentés sur le site sont reproductibles à partir des données sources.
 - L'objectif est de rendre les données publiques plus accessibles, compréhensibles et utiles.
 
-*Site web développé avec l'aide de Claude Code.*
+  *Site web développé avec l'aide de Claude Code.*
