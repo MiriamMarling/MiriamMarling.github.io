@@ -36,3 +36,4 @@ Les pipelines de traitement des données brutes, les scripts d'analyse principau
 - L'objectif est de rendre les données publiques plus accessibles, compréhensibles et utiles.
 
   *Site web développé avec l'aide de Claude Code.*
+  📬 Vous pouvez me contacter à miriam@bonquery.ca pour toute question ou pour demander l’accès au dépôt privé (analyses plus approfondies).
