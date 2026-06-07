@@ -1,0 +1,46 @@
+{
+  "note": "Bridging & Triage Programs and Total People Accommodated are not published to the City of Toronto open data (CKAN) export. These figures are scraped daily from the City's shelter census page (toronto.ca/shelter-census) when the City posts them. Data is available from 2026-05-26 onward. Days where the City did not publish a table (weekends, holidays) will be absent unless the City retroactively posts catch-up tables on a subsequent day.",
+  "first_captured": "2026-05-26",
+  "entries": {
+    "2026-05-26": {
+      "bridging_triage": 30,
+      "total_people": 7948
+    },
+    "2026-05-27": {
+      "bridging_triage": 30,
+      "total_people": 7948
+    },
+    "2026-05-28": {
+      "bridging_triage": 30,
+      "total_people": 7943
+    },
+    "2026-05-29": {
+      "bridging_triage": 30,
+      "total_people": 7938
+    },
+    "2026-05-30": {
+      "bridging_triage": 31,
+      "total_people": 7938
+    },
+    "2026-05-31": {
+      "bridging_triage": 31,
+      "total_people": 7933
+    },
+    "2026-06-01": {
+      "bridging_triage": 31,
+      "total_people": 7933
+    },
+    "2026-06-02": {
+      "bridging_triage": 38,
+      "total_people": 7873
+    },
+    "2026-06-03": {
+      "bridging_triage": 38,
+      "total_people": 7862
+    },
+    "2026-06-04": {
+      "bridging_triage": 38,
+      "total_people": 7856
+    }
+  }
+}

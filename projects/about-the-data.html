@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-CA" xml:lang="en-CA"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Miriam Marling">
-<meta name="description" content="Data notes for Toronto’s shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions.">
+<meta name="description" content="Audit methodology for Toronto’s shelter system data — sources, integrity checks, and structural limits worth knowing before drawing conclusions.">
 
 <title>About the Data – BonQuery</title>
 <style>
@@ -41,10 +41,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-94b323657c735dfe3b1bf6ebb2c33a55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-bf3f322ac8d240d639fe1d97eccc3f5a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-94b323657c735dfe3b1bf6ebb2c33a55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -76,14 +80,176 @@ ul.task-list li input[type="checkbox"] {
 
 <link rel="stylesheet" href="../styles.css">
 <meta property="og:title" content="About the Data — Toronto Shelter System">
-<meta property="og:description" content="Data notes for Toronto’s shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions.">
+<meta property="og:description" content="Audit methodology for Toronto’s shelter system data — sources, integrity checks, and structural limits worth knowing before drawing conclusions.">
 <meta property="og:site_name" content="BonQuery">
 <meta name="twitter:title" content="About the Data — Toronto Shelter System">
-<meta name="twitter:description" content="Data notes for Toronto’s shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions.">
+<meta name="twitter:description" content="Audit methodology for Toronto’s shelter system data — sources, integrity checks, and structural limits worth knowing before drawing conclusions.">
 <meta name="twitter:card" content="summary">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -104,39 +270,66 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../projects/cold-response.html"> 
+<span class="menu-text">Left in the Cold</span></a>
+  </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Projects</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-audits" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Audits</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-audits">    
+        <li class="dropdown-header">INDEPENDENT OVERSIGHT</li>
         <li>
-    <a class="dropdown-item" href="../projects/toronto-shelter.html">
- <span class="dropdown-text">Inside Toronto’s Shelter System</span></a>
+    <a class="dropdown-item" href="../projects/discrepancy-tracker.html">
+ <span class="dropdown-text">Discrepancy Tracker</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/data-validation.html">
+ <span class="dropdown-text">Emergency Occupancy Audit</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/data-validation-central-intake.html">
+ <span class="dropdown-text">Central Intake Audit</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/about-the-data.html">
  <span class="dropdown-text">About the Data</span></a>
   </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-shelter-dashboards" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Shelter Dashboards</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-shelter-dashboards">    
         <li>
-    <a class="dropdown-item" href="../projects/data-validation.html">
- <span class="dropdown-text">Data Validation</span></a>
-  </li>  
-        <li><hr class="dropdown-divider"></li>
-        <li>
-    <a class="dropdown-item" href="../projects/historical-trends.html">
- <span class="dropdown-text">Historical Trends</span></a>
+    <a class="dropdown-item" href="../projects/toronto-shelter.html">
+ <span class="dropdown-text">Inside Toronto’s Shelter System</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/monthly-snapshot.html">
- <span class="dropdown-text">Monthly Snapshot</span></a>
+ <span class="dropdown-text">Monthly System Flow Replication</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/ytd-comparison.html">
- <span class="dropdown-text">YTD Comparison</span></a>
+ <span class="dropdown-text">Year-to-Date Capacity Match</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/historical-trends.html">
+ <span class="dropdown-text">Historical Trend Lines</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/central-intake.html">
+ <span class="dropdown-text">Referral Requests Analysis</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/spike-detection.html">
  <span class="dropdown-text">Occupancy Spike Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/daily-occupancy.html">
+ <span class="dropdown-text">Daily Occupancy &amp; Capacity</span></a>
   </li>  
     </ul>
   </li>
@@ -145,8 +338,15 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../fr/"> 
+<span class="menu-text">FR</span></a>
+  </li>  
+</ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -160,12 +360,15 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#the-18-undercount" id="toc-the-18-undercount" class="nav-link active" data-scroll-target="#the-18-undercount">The 18% undercount</a></li>
+  <li><a href="#where-the-data-comes-from" id="toc-where-the-data-comes-from" class="nav-link active" data-scroll-target="#where-the-data-comes-from">Where the data comes from</a></li>
+  <li><a href="#a-monthly-snapshot-with-a-three-month-lookback" id="toc-a-monthly-snapshot-with-a-three-month-lookback" class="nav-link" data-scroll-target="#a-monthly-snapshot-with-a-three-month-lookback">A monthly snapshot with a three-month lookback</a></li>
   <li><a href="#three-different-homelessness-numbers" id="toc-three-different-homelessness-numbers" class="nav-link" data-scroll-target="#three-different-homelessness-numbers">Three different “homelessness” numbers</a></li>
-  <li><a href="#the-data-is-a-monthly-snapshot-with-a-three-month-lookback" id="toc-the-data-is-a-monthly-snapshot-with-a-three-month-lookback" class="nav-link" data-scroll-target="#the-data-is-a-monthly-snapshot-with-a-three-month-lookback">The data is a monthly snapshot with a three-month lookback</a></li>
-  <li><a href="#some-categories-overlap-others-dont" id="toc-some-categories-overlap-others-dont" class="nav-link" data-scroll-target="#some-categories-overlap-others-dont">Some categories overlap; others don’t</a></li>
-  <li><a href="#the-newly-identified-column-means-something-different-for-the-chronic-group" id="toc-the-newly-identified-column-means-something-different-for-the-chronic-group" class="nav-link" data-scroll-target="#the-newly-identified-column-means-something-different-for-the-chronic-group">The “Newly Identified” column means something different for the Chronic group</a></li>
-  <li><a href="#a-useful-technical-detail-the-refugee-dimension-is-a-clean-split" id="toc-a-useful-technical-detail-the-refugee-dimension-is-a-clean-split" class="nav-link" data-scroll-target="#a-useful-technical-detail-the-refugee-dimension-is-a-clean-split">A useful technical detail: the refugee dimension is a clean split</a></li>
+  <li><a href="#what-the-headline-number-leaves-out-the-18-undercount" id="toc-what-the-headline-number-leaves-out-the-18-undercount" class="nav-link" data-scroll-target="#what-the-headline-number-leaves-out-the-18-undercount">What the headline number leaves out: the 18% undercount</a></li>
+  <li><a href="#how-the-population-groups-relate" id="toc-how-the-population-groups-relate" class="nav-link" data-scroll-target="#how-the-population-groups-relate">How the population groups relate</a>
+  <ul class="collapse">
+  <li><a href="#newly-identified-means-something-different-for-the-chronic-group" id="toc-newly-identified-means-something-different-for-the-chronic-group" class="nav-link" data-scroll-target="#newly-identified-means-something-different-for-the-chronic-group">“Newly Identified” means something different for the Chronic group</a></li>
+  </ul></li>
+  <li><a href="#for-analysts-the-refugee-split-is-a-clean-partition" id="toc-for-analysts-the-refugee-split-is-a-clean-partition" class="nav-link" data-scroll-target="#for-analysts-the-refugee-split-is-a-clean-partition">For analysts: the refugee split is a clean partition</a></li>
   <li><a href="#sources" id="toc-sources" class="nav-link" data-scroll-target="#sources">Sources</a></li>
   </ul>
 </nav>
@@ -173,15 +376,16 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">About the Data</h1>
-<p class="subtitle lead">What Toronto’s shelter system flow data does and doesn’t tell us</p>
+<p class="subtitle lead">How to read Toronto’s shelter numbers, and where the data has limits</p>
 </div>
 
 <div>
   <div class="description">
-    Data notes for Toronto’s shelter system flow dataset — what it captures, what it leaves out, and structural quirks worth knowing before drawing conclusions.
+    Audit methodology for Toronto’s shelter system data — sources, integrity checks, and structural limits worth knowing before drawing conclusions.
   </div>
 </div>
 
@@ -204,60 +408,226 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The numbers on the <a href="../projects/toronto-shelter.html">shelter system project page</a> come from a single dataset published by the City of Toronto. Like any dataset, it captures some things well, leaves other things out, and has structural quirks worth knowing before drawing conclusions from it. This page covers what we’ve noticed.</p>
-<p>The notes below are not findings about Toronto’s shelter system itself — those will come later, as statistical analyses are added to the site. These are notes about the data: what it represents, what it doesn’t, and where careful reading matters.</p>
-<section id="the-18-undercount" class="level2">
-<h2 class="anchored" data-anchor-id="the-18-undercount">The 18% undercount</h2>
-<p>The data counts people who used a City-funded overnight service in the past three months. People who slept outside, used a shelter that isn’t City-funded, or stayed temporarily with friends or family are not in this dataset.</p>
-<p>The City <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/">estimates</a> that roughly 18% of people experiencing absolute homelessness in Toronto aren’t reflected in these numbers. That estimate comes from the City’s Street Needs Assessment, a separate periodic count of unsheltered homelessness.</p>
-<p>What this means in practice: when this data shows the actively homeless count rising or falling, the change reflects the shelter system specifically. Whether total homelessness in Toronto is rising or falling at the same rate depends on what’s happening in the parts of the homeless population this data doesn’t capture — and that’s a question this dataset can’t answer on its own.</p>
+<div class="bq-alert bq-alert-hero bq-bilingual">
+<div class="bq-lang bq-lang-en">
+<p><strong>ACTIVE AUDIT: 2026–2027 WINTER SEASON.</strong> We are tracking the gap between the City’s reported capacity and the raw data. Discrepancies are being logged in our <a href="../projects/discrepancy-tracker.html">Discrepancy Tracker</a>. We are demanding zero unplaced people on nights reaching −5 °C. Daily monitoring will start when the 2026–2027 cold season opens in November.</p>
+</div>
+<div class="bq-lang bq-lang-fr">
+<p><strong>AUDIT ACTIF : SAISON HIVERNALE 2026–2027.</strong> Nous suivons l’écart entre la capacité déclarée par la Ville et les données brutes. Les écarts sont consignés dans notre <a href="../projects/discrepancy-tracker.html">Suivi des divergences</a>. Nous exigeons zéro personne sans place lorsque la température atteint −5 °C. Le suivi quotidien débutera à l’ouverture de la saison froide 2026–2027 en novembre.</p>
+</div>
+</div>
+<p>The figures across BonQuery’s dashboards come from open data the City of Toronto publishes about its shelter system. This page explains what that data is, where it comes from, and the few places where careful reading changes the conclusion you should draw. These are notes about the data itself, not findings about Toronto’s shelter system; the findings are on the audit and dashboard pages. How these numbers are checked against the City’s own published figures is documented separately on the <a href="../projects/data-validation.html" target="_blank">Emergency Occupancy Audit</a> and <a href="../projects/data-validation-central-intake.html" target="_blank">Central Intake Audit</a> pages.</p>
+<section id="where-the-data-comes-from" class="level2">
+<h2 class="anchored" data-anchor-id="where-the-data-comes-from">Where the data comes from</h2>
+<p>BonQuery draws on three datasets, all published by the City of Toronto on its <a href="https://open.toronto.ca/" target="_blank">Open Data portal</a> under the Open Government Licence – Toronto. Each is an aggregated product derived from the City’s internal Shelter Management Information System (SMIS); none is a raw feed of individual case records.</p>
+<ul>
+<li><strong><a href="https://open.toronto.ca/dataset/toronto-shelter-system-flow/" target="_blank">Shelter System Flow</a></strong>: a monthly summary of how many people enter, leave, and remain in the shelter system. This is the source of the headline actively homeless count.</li>
+<li><strong><a href="https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/" target="_blank">Daily Shelter &amp; Overnight Service Occupancy &amp; Capacity</a></strong>: a nightly snapshot of occupancy and capacity, program by program, from 2021 to the present.</li>
+<li><strong><a href="https://open.toronto.ca/dataset/central-intake-calls/" target="_blank">Central Intake Calls</a></strong>: records from the City’s 24/7 shelter referral line, including call outcomes and the count of callers still waiting for a space.</li>
+</ul>
+<p>BonQuery’s cold-weather analysis also draws on hourly weather records for the Toronto station, published by Environment and Climate Change Canada and retrieved via the <a href="https://docs.ropensci.org/weathercan/" target="_blank">weathercan</a> R package.</p>
+</section>
+<section id="a-monthly-snapshot-with-a-three-month-lookback" class="level2">
+<h2 class="anchored" data-anchor-id="a-monthly-snapshot-with-a-three-month-lookback">A monthly snapshot with a three-month lookback</h2>
+<p>The City generates the Shelter System Flow data on the last day of each month and publishes it around the 15th of the following month. Each month’s figures retroactively consider everyone who used shelter services in the previous three months.</p>
+<p>Two things follow. First, the actively homeless count for any month includes anyone who used the system even once in that three-month window, not only people in shelter during that month; the same person can appear in three consecutive monthly counts after a single stay. Second, month-over-month changes are smaller than they look, because adjacent months share two-thirds of their lookback window. Comparing January and February side by side compares two heavily overlapping groups, not two distinct ones.</p>
 </section>
 <section id="three-different-homelessness-numbers" class="level2">
 <h2 class="anchored" data-anchor-id="three-different-homelessness-numbers">Three different “homelessness” numbers</h2>
-<p>Toronto publishes several different counts related to homelessness, and they measure different things. A reader comparing figures across sources can easily think two numbers contradict each other when they actually measure different populations.</p>
-<p>The three most common counts:</p>
+<p>Toronto publishes several counts related to homelessness, and they measure different populations. Comparing figures across sources, a reader can easily think two numbers contradict each other when they simply count different things.</p>
 <ul>
-<li><strong>Nightly occupancy.</strong> How many people are in a shelter bed on a given night. Comes from the City’s separate <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/">Daily Shelter and Overnight Service Usage</a> dataset.</li>
-<li><strong>Actively homeless.</strong> How many people used the shelter system at least once in the past three months and haven’t moved to permanent housing. This is the headline number on every dashboard on the shelter system project page.</li>
-<li><strong>Annual unique individuals.</strong> How many different people used the shelter system at any point during a calendar year. Published by the City in occasional reports rather than in a regular dataset.</li>
+<li><strong>Nightly occupancy</strong>: how many people are in a shelter space on a given night, from the <a href="https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/" target="_blank">Daily Shelter &amp; Overnight Service Occupancy &amp; Capacity</a> dataset.</li>
+<li><strong>Actively homeless</strong>: how many people used the shelter system at least once in the past three months and have not since been recorded as housed or otherwise inactive. This is the headline number on the dashboards.</li>
+<li><strong>Annual unique individuals</strong>: how many different people used the shelter system at any point in a calendar year, published by the City in occasional reports rather than a standing dataset.</li>
 </ul>
-<p>All three are valid measurements of related-but-different populations. The “actively homeless” count typically sits between nightly occupancy (which is smaller, since it only counts one night) and annual unique individuals (which is larger, since it counts everyone who passed through over a longer period). Any analysis that treats these as interchangeable is misreading them.</p>
+<p>All three are valid measures of related but different populations. The actively homeless count normally sits between nightly occupancy, which is smaller because it counts a single night, and annual unique individuals, which is larger because it counts a whole year. Treating any of the three as interchangeable misreads them.</p>
 </section>
-<section id="the-data-is-a-monthly-snapshot-with-a-three-month-lookback" class="level2">
-<h2 class="anchored" data-anchor-id="the-data-is-a-monthly-snapshot-with-a-three-month-lookback">The data is a monthly snapshot with a three-month lookback</h2>
-<p>The City generates this data on the last day of each month and publishes it around the 15th of the following month. Each month’s figures retroactively consider everyone who used shelter services in the past three months.</p>
-<p>Two things follow from this:</p>
-<p>First, the “actively homeless” count for any given month includes people who used the shelter system once in that three-month window — not just people in shelter during that month. The same person can appear in three consecutive monthly counts even if they only used shelter once.</p>
-<p>Second, month-over-month changes can be smaller than they appear. Because each count includes the previous two months of activity, adjacent months overlap heavily. A reader looking at January and February counts side by side is comparing two largely overlapping groups, not two distinct ones.</p>
+<section id="what-the-headline-number-leaves-out-the-18-undercount" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-headline-number-leaves-out-the-18-undercount">What the headline number leaves out: the 18% undercount</h2>
+<p>Every count above describes people who used a City-funded overnight service. People sleeping outside, using a service the City does not fund, or staying temporarily with friends or family are not in this data.</p>
+<p>The City <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/" target="_blank">estimates</a> that roughly 18% of people experiencing absolute homelessness in Toronto are not reflected in these numbers, an estimate drawn from its Street Needs Assessment, a separate periodic count of unsheltered homelessness.</p>
+<p>In practice: when the actively homeless count rises or falls, the change describes the shelter system specifically. Whether total homelessness is moving at the same rate depends on the part of the population this data does not see, which this dataset cannot answer on its own.</p>
 </section>
-<section id="some-categories-overlap-others-dont" class="level2">
-<h2 class="anchored" data-anchor-id="some-categories-overlap-others-dont">Some categories overlap; others don’t</h2>
-<p>The dataset breaks people down into population groups: All Population, Refugees, Non-refugees, Chronic, Families, Single Adult, Youth, and Indigenous. These groups don’t all relate to each other in the same way, which matters for any analysis that compares them.</p>
-<p>The Refugees and Non-refugees groups together account for every person in the “All Population” group, with no overlap. If a chart shows the two groups stacked, the stack should equal the total. This holds in every month of the dataset.</p>
-<p>The other groups — Chronic, Families, Single Adult, Youth, and Indigenous — overlap with each other and with the refugee groups. [content removed] There is no way to isolate people who fall into only one of these groups from this dataset alone.</p>
-<p>What this means in practice: summing or stacking the five overlapping groups produces a number larger than the actual population, because the same people are counted multiple times. The City’s own per-group percentages reflect this — they sum to well over 100% across the seven sub-population groups.</p>
+<section id="how-the-population-groups-relate" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-population-groups-relate">How the population groups relate</h2>
+<p>The data breaks people into population groups: All Population, Refugees, Non-refugees, Chronic, Families, Single Adult, Youth, and Indigenous. These groups do not all relate to the total in the same way, which matters whenever an analysis compares them.</p>
+<p>Refugees and Non-refugees together account for every person in All Population, with no overlap. Stack the two and the result equals the total. This holds in every month of the data.</p>
+<p>The other groups, Chronic, Families, Single Adult, Youth, and Indigenous, are overlapping attributes rather than divisions of the total. One person can belong to several at once. For example, an Indigenous youth experiencing chronic homelessness is counted in the Indigenous, Youth, and Chronic groups simultaneously, and also sits on the Non-refugees side of the refugee split and within the All Population total. There is no way to isolate people who belong to only one of these groups from this data alone.</p>
+<p>In practice: summing or stacking these overlapping groups produces a number larger than the real population, because each person is counted once in every group they belong to. This is why the City’s own per-group percentages for these groups add up to well beyond 100%.</p>
+<section id="newly-identified-means-something-different-for-the-chronic-group" class="level3">
+<h3 class="anchored" data-anchor-id="newly-identified-means-something-different-for-the-chronic-group">“Newly Identified” means something different for the Chronic group</h3>
+<p>For most groups, Newly Identified counts people entering the shelter system for the first time. For the Chronic group, the same column counts people who became chronically homeless during the reporting month, regardless of how long they had already been in the system. Most of those people were already using shelters; they had just newly crossed the federal threshold for chronic homelessness (180 nights in a year, or 546 over three years).</p>
+<p>This is noted in the shelter system audit and in the City’s own documentation, but it is worth repeating because the column name invites the wrong reading. Any cross-group comparison of Newly Identified figures that includes the Chronic row mixes two different measurements.</p>
 </section>
-<section id="the-newly-identified-column-means-something-different-for-the-chronic-group" class="level2">
-<h2 class="anchored" data-anchor-id="the-newly-identified-column-means-something-different-for-the-chronic-group">The “Newly Identified” column means something different for the Chronic group</h2>
-<p>For most population groups, “Newly Identified” counts people entering the shelter system for the first time. For the Chronic group, the same column counts people who became chronically homeless during the reporting month — regardless of how long they’d already been using the shelter system. Most of the people in that count were already in the system; they just newly met the federal definition of chronic homelessness.</p>
-<p>This is explained on the <a href="../projects/toronto-shelter.html#key-terms">project page</a> and in the City’s own documentation, but it’s worth flagging again here because the column name is misleading. Any cross-group comparison of “Newly Identified” figures that includes the Chronic row is mixing two different measurements.</p>
 </section>
-<section id="a-useful-technical-detail-the-refugee-dimension-is-a-clean-split" class="level2">
-<h2 class="anchored" data-anchor-id="a-useful-technical-detail-the-refugee-dimension-is-a-clean-split">A useful technical detail: the refugee dimension is a clean split</h2>
-<p>For analysts and researchers working with this data more closely, one structural feature is worth knowing. The refugee dimension — the split between Refugees and Non-refugees — behaves as a clean mathematical partition of the dataset, not just for the headline “actively homeless” count but for every flow column in the dataset.</p>
-<p>In every month from January 2018 to the present, the Refugees and Non-refugees counts sum exactly to the All Population count for every column we’ve checked: inflows, outflows, and the actively homeless stock. The same identity does not hold for any of the other population dimensions.</p>
-<p>What this means in practice: if you need to compare disjoint groups in an analysis — for stacked bar charts, percentage-of-total calculations, or anything that requires mutually exclusive categories — the refugee dimension is the one place in this dataset where that’s mathematically safe.</p>
+<section id="for-analysts-the-refugee-split-is-a-clean-partition" class="level2">
+<h2 class="anchored" data-anchor-id="for-analysts-the-refugee-split-is-a-clean-partition">For analysts: the refugee split is a clean partition</h2>
+<p>One structural feature is worth stating precisely for anyone working with the data closely. The split between Refugees and Non-refugees behaves as a clean mathematical partition, and not only for the headline actively homeless count: it holds for every flow column as well.</p>
+<p>In every month from January 2018 to the present, the Refugees and Non-refugees values sum exactly to the All Population value for every column checked: people entering, people leaving, and the actively homeless stock. No other population dimension behaves this way.</p>
+<p>In practice: if an analysis needs mutually exclusive categories, for a stacked bar chart, a share-of-total calculation, or anything that assumes groups do not overlap, the refugee split is the one place in this data where that is mathematically safe.</p>
 </section>
 <section id="sources" class="level2">
 <h2 class="anchored" data-anchor-id="sources">Sources</h2>
-<p>All structural observations on this page were verified by querying the dataset directly. Definitions and the 18% undercount estimate come from the <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/">City of Toronto’s Shelter System Flow Data page</a>. The dataset itself is published on the City’s <a href="https://open.toronto.ca/dataset/toronto-shelter-system-flow/">Open Data portal</a>.</p>
+<p>The structural observations on this page were verified by querying the data directly. Definitions and the 18% undercount estimate come from the City of Toronto’s <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/" target="_blank">Shelter System Flow Data page</a>. The three datasets are published on the City’s Open Data portal, all under the <a href="https://open.toronto.ca/open-data-licence/" target="_blank">Open Government Licence – Toronto</a>.</p>
 
 
 </section>
 
 </main> <!-- /main -->
+<script>
+// ── Mobile language toggle ────────────────────────────────────────────────
+// Uses location.pathname so the correct label appears regardless of whether
+// Quarto renders the navbar id attribute (it does not).
+(function () {
+  var darkTog = document.querySelector(".quarto-color-scheme-toggle");
+  if (!darkTog) return;
+  var isFR  = location.pathname.startsWith("/fr/") || location.pathname === "/fr";
+  var clone = document.createElement("a");
+  clone.className = "bq-lang-mobile";
+  clone.href      = isFR ? "/" : "/fr/";
+  clone.textContent = isFR ? "EN" : "FR";
+  darkTog.parentNode.insertBefore(clone, darkTog.nextSibling);
+})();
+
+// ── Nav cleanup ───────────────────────────────────────────────────────────
+// The Quarto FR profile render re-renders all pages with a merged navbar
+// (EN items + FR items concatenated). This script removes the wrong-language
+// items at runtime on every page load.
+(function () {
+  var isFR = location.pathname.startsWith("/fr/") || location.pathname === "/fr";
+
+  // Left nav: keep items whose links match the current language.
+  // Each top-level <li> contains only same-language hrefs, so checking for
+  // "fr/" is a reliable discriminator.
+  var leftNav = document.querySelector(".navbar-nav.me-auto");
+  if (leftNav) {
+    Array.from(leftNav.querySelectorAll(":scope > li")).forEach(function (li) {
+      var links = Array.from(li.querySelectorAll("a[href]"));
+      var hasFRLink = links.some(function (a) {
+        return (a.getAttribute("href") || "").indexOf("fr/") !== -1;
+      });
+      if (isFR ? !hasFRLink : hasFRLink) li.remove();
+    });
+  }
+
+  // Right nav: remove the self-referential language-toggle link that merges
+  // in from the other profile (the EN config's "FR" link rides along with
+  // the FR config's "EN" link, and vice versa).
+  var rightNav = document.querySelector(".navbar-nav.ms-auto");
+  if (rightNav) {
+    Array.from(rightNav.querySelectorAll("li")).forEach(function (li) {
+      var a = li.querySelector("a[href]");
+      var hasFRLink = a && (a.getAttribute("href") || "").indexOf("fr/") !== -1;
+      if (isFR) {
+        if (hasFRLink) li.remove();
+      } else {
+        if (!hasFRLink) li.remove();
+      }
+    });
+  }
+})();
+
+// ── Theme toggle label ("Light" / "Dark") ────────────────────────────────
+(function () {
+  var tog = document.querySelector(".quarto-color-scheme-toggle");
+  if (!tog) return;
+  var label = document.createElement("span");
+  label.className = "bq-theme-label";
+  var update = function () {
+    var isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+    label.textContent = isDark ? "Light" : "Dark";
+  };
+  tog.appendChild(label);
+  update();
+  new MutationObserver(update).observe(
+    document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] }
+  );
+})();
+
+// ── Bilingual alert toggle (EN | FR) ─────────────────────────────────────
+// Sets data-lang on each .bq-bilingual block; CSS controls visibility.
+var pageLang = (location.pathname.startsWith("/fr/") || location.pathname === "/fr")
+  ? "fr" : "en";
+document.querySelectorAll(".bq-bilingual").forEach(function (block) {
+  var btns = block.querySelectorAll(".bq-lang-btn");
+  function setLang(lang) {
+    block.setAttribute("data-lang", lang);
+    btns.forEach(function (b) {
+      b.classList.toggle("active", b.dataset.set === lang);
+    });
+  }
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () { setLang(b.dataset.set); });
+  });
+  setLang(block.getAttribute("data-lang") || pageLang);
+});
+
+// ── Language toggle link + hreflang injection ─────────────────────────────
+// Computes the exact mirror URL from the current pathname and updates the
+// navbar toggle link, then injects hreflang <link> tags for search engines.
+(function () {
+  var frPfx = "/fr/";
+  var path  = location.pathname;
+  var isFR  = path.startsWith(frPfx) || path === "/fr";
+
+  var enPath, frPath;
+  if (isFR) {
+    enPath = (path === "/fr" || path === "/fr/")
+      ? "/"
+      : path.replace(frPfx, "/");
+    frPath = path.endsWith("/") ? path : path + "/";
+  } else {
+    enPath = path;
+    frPath = frPfx + path.replace(/^\//, "");
+  }
+
+  function abs(p) { return location.origin + p; }
+
+  // Update the navbar toggle link. After nav cleanup the right nav has
+  // exactly one <a>: the link to the other language.
+  var rightNav = document.querySelector(".navbar-nav.ms-auto");
+  if (rightNav) {
+    var tog = rightNav.querySelector("a.nav-link");
+    if (tog) {
+      tog.href        = isFR ? abs(enPath) : abs(frPath);
+      tog.textContent = isFR ? "EN" : "FR";
+    }
+  }
+
+  // Also sync the mobile clone's href to the specific counterpart page.
+  var mobileClone = document.querySelector(".bq-lang-mobile");
+  if (mobileClone) {
+    mobileClone.href = isFR ? abs(enPath) : abs(frPath);
+  }
+
+  // Hreflang <link> tags for search engines.
+  function addLink(rel, hreflang, href) {
+    var el = document.createElement("link");
+    el.rel = rel;
+    if (hreflang) el.setAttribute("hreflang", hreflang);
+    el.href = href;
+    document.head.appendChild(el);
+  }
+  addLink("alternate", "en-CA",    abs(enPath));
+  addLink("alternate", "fr-CA",    abs(frPath));
+  addLink("alternate", "x-default", abs(enPath));
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -660,14 +1030,14 @@ ul.task-list li input[type="checkbox"] {
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>© 2026 Miriam Marling · BonQuery</p>
-</div>   
+      &nbsp;
+    </div>   
     <div class="nav-footer-center">
+<p>An independent data audit for Toronto residents. / Un audit de données indépendant pour les résidents de Toronto. <br> <span style="font-size: 0.85em; opacity: 0.7;">© 2026 Miriam Marling · BonQuery</span></p>
+</div>
+    <div class="nav-footer-right">
       &nbsp;
     </div>
-    <div class="nav-footer-right">
-<p>Built with <a href="https://quarto.org">Quarto</a></p>
-</div>
   </div>
 </footer>
 

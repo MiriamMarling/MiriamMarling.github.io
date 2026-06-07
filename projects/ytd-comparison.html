@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-CA" xml:lang="en-CA"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Miriam Marling">
-<meta name="description" content="Year-to-date comparison of Toronto’s shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates.">
+<meta name="description" content="Year-to-date (YTD) comparison of Toronto’s shelter system — see whether the YTD selected in the dropdown is tracking above or below prior years on the inflow/outflow categories: Newly Identified and Moved to Permanent Housing.">
 
 <title>YTD Comparison – BonQuery</title>
 <style>
@@ -76,10 +76,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-94b323657c735dfe3b1bf6ebb2c33a55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-bf3f322ac8d240d639fe1d97eccc3f5a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-94b323657c735dfe3b1bf6ebb2c33a55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -124,14 +128,176 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <link rel="stylesheet" href="../styles.css">
 <meta property="og:title" content="YTD Comparison — Toronto Shelter System">
-<meta property="og:description" content="Year-to-date comparison of Toronto’s shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates.">
+<meta property="og:description" content="Year-to-date (YTD) comparison of Toronto’s shelter system — see whether the YTD selected in the dropdown is tracking above or below prior years on the inflow/outflow categories: Newly Identified and Moved to Permanent Housing.">
 <meta property="og:site_name" content="BonQuery">
 <meta name="twitter:title" content="YTD Comparison — Toronto Shelter System">
-<meta name="twitter:description" content="Year-to-date comparison of Toronto’s shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates.">
+<meta name="twitter:description" content="Year-to-date (YTD) comparison of Toronto’s shelter system — see whether the YTD selected in the dropdown is tracking above or below prior years on the inflow/outflow categories: Newly Identified and Moved to Permanent Housing.">
 <meta name="twitter:card" content="summary">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -152,39 +318,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../projects/cold-response.html"> 
+<span class="menu-text">Left in the Cold</span></a>
+  </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Projects</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-audits" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Audits</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-audits">    
+        <li class="dropdown-header">INDEPENDENT OVERSIGHT</li>
         <li>
-    <a class="dropdown-item" href="../projects/toronto-shelter.html">
- <span class="dropdown-text">Inside Toronto’s Shelter System</span></a>
+    <a class="dropdown-item" href="../projects/discrepancy-tracker.html">
+ <span class="dropdown-text">Discrepancy Tracker</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/data-validation.html">
+ <span class="dropdown-text">Emergency Occupancy Audit</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/data-validation-central-intake.html">
+ <span class="dropdown-text">Central Intake Audit</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/about-the-data.html">
  <span class="dropdown-text">About the Data</span></a>
   </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-shelter-dashboards" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Shelter Dashboards</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-shelter-dashboards">    
         <li>
-    <a class="dropdown-item" href="../projects/data-validation.html">
- <span class="dropdown-text">Data Validation</span></a>
-  </li>  
-        <li><hr class="dropdown-divider"></li>
-        <li>
-    <a class="dropdown-item" href="../projects/historical-trends.html">
- <span class="dropdown-text">Historical Trends</span></a>
+    <a class="dropdown-item" href="../projects/toronto-shelter.html">
+ <span class="dropdown-text">Inside Toronto’s Shelter System</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/monthly-snapshot.html">
- <span class="dropdown-text">Monthly Snapshot</span></a>
+ <span class="dropdown-text">Monthly System Flow Replication</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/ytd-comparison.html">
- <span class="dropdown-text">YTD Comparison</span></a>
+ <span class="dropdown-text">Year-to-Date Capacity Match</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/historical-trends.html">
+ <span class="dropdown-text">Historical Trend Lines</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/central-intake.html">
+ <span class="dropdown-text">Referral Requests Analysis</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/spike-detection.html">
  <span class="dropdown-text">Occupancy Spike Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/daily-occupancy.html">
+ <span class="dropdown-text">Daily Occupancy &amp; Capacity</span></a>
   </li>  
     </ul>
   </li>
@@ -193,8 +386,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../fr/"> 
+<span class="menu-text">FR</span></a>
+  </li>  
+</ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -207,6 +407,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content column-page" id="quarto-document-content">
 
+
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">YTD Comparison</h1>
@@ -215,7 +416,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    Year-to-date comparison of Toronto’s shelter system — see whether 2026 is tracking above or below prior years on key metrics like actively homeless and flow rates.
+    Year-to-date (YTD) comparison of Toronto’s shelter system — see whether the YTD selected in the dropdown is tracking above or below prior years on the inflow/outflow categories: Newly Identified and Moved to Permanent Housing.
   </div>
 </div>
 
@@ -439,17 +640,174 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="mobile-page-nav">
 <p><strong>Explore other dashboards:</strong></p>
 <ul>
-<li><a href="historical-trends.html">Historical Trends</a></li>
-<li><a href="monthly-snapshot.html">Monthly Snapshot</a></li>
+<li><a href="historical-trends.html" target="_blank">Historical Trends</a></li>
+<li><a href="monthly-snapshot.html" target="_blank">Monthly Snapshot</a></li>
 </ul>
 </div>
 <hr>
 <p><em>This dashboard is also available as an <a href="https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/ytd-comparison" target="_blank">Oracle APEX dashboard</a> built on the same database — useful if you want to see how the same data renders in Oracle’s native low-code platform, or if you’re curious about the SQL and APEX configuration behind it.</em></p>
+</section>
+<section id="key-terms" class="level3">
+<h3 class="anchored" data-anchor-id="key-terms">Key terms</h3>
+<p><strong>Inflow categories</strong> (people entering the shelter system this month):</p>
+<ul>
+<li><strong>Newly Identified.</strong> People entering the shelter system for the first time. One exception for the “Chronic” group: in that row, this column counts people who became chronically homeless during the reporting month, regardless of how long they’d already been using the shelter system.</li>
+</ul>
+<p><strong>Outflow categories</strong> (people leaving the shelter system this month):</p>
+<ul>
+<li><strong>Moved to Permanent Housing.</strong> People who left the shelter system for permanent housing.</li>
+</ul>
+<p>Definitions are based on the <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/" target="_blank">City of Toronto’s Shelter System Flow Data page</a>.</p>
+<p><a href="about-the-data.html" target="_blank">Read all data findings →</a></p>
+</section>
+<section id="data-source" class="level3">
+<h3 class="anchored" data-anchor-id="data-source">Data source</h3>
+<p>All data comes from the City of Toronto’s <a href="https://open.toronto.ca/dataset/toronto-shelter-system-flow/" target="_blank">Shelter System Flow dataset</a>, published monthly on the City’s open data portal.</p>
+<p>Contains information licensed under the <a href="https://open.toronto.ca/open-data-licence/" target="_blank">Open Government Licence – Toronto</a>.</p>
 
 
 </section>
 
 </main> <!-- /main -->
+<script>
+// ── Mobile language toggle ────────────────────────────────────────────────
+// Uses location.pathname so the correct label appears regardless of whether
+// Quarto renders the navbar id attribute (it does not).
+(function () {
+  var darkTog = document.querySelector(".quarto-color-scheme-toggle");
+  if (!darkTog) return;
+  var isFR  = location.pathname.startsWith("/fr/") || location.pathname === "/fr";
+  var clone = document.createElement("a");
+  clone.className = "bq-lang-mobile";
+  clone.href      = isFR ? "/" : "/fr/";
+  clone.textContent = isFR ? "EN" : "FR";
+  darkTog.parentNode.insertBefore(clone, darkTog.nextSibling);
+})();
+
+// ── Nav cleanup ───────────────────────────────────────────────────────────
+// The Quarto FR profile render re-renders all pages with a merged navbar
+// (EN items + FR items concatenated). This script removes the wrong-language
+// items at runtime on every page load.
+(function () {
+  var isFR = location.pathname.startsWith("/fr/") || location.pathname === "/fr";
+
+  // Left nav: keep items whose links match the current language.
+  // Each top-level <li> contains only same-language hrefs, so checking for
+  // "fr/" is a reliable discriminator.
+  var leftNav = document.querySelector(".navbar-nav.me-auto");
+  if (leftNav) {
+    Array.from(leftNav.querySelectorAll(":scope > li")).forEach(function (li) {
+      var links = Array.from(li.querySelectorAll("a[href]"));
+      var hasFRLink = links.some(function (a) {
+        return (a.getAttribute("href") || "").indexOf("fr/") !== -1;
+      });
+      if (isFR ? !hasFRLink : hasFRLink) li.remove();
+    });
+  }
+
+  // Right nav: remove the self-referential language-toggle link that merges
+  // in from the other profile (the EN config's "FR" link rides along with
+  // the FR config's "EN" link, and vice versa).
+  var rightNav = document.querySelector(".navbar-nav.ms-auto");
+  if (rightNav) {
+    Array.from(rightNav.querySelectorAll("li")).forEach(function (li) {
+      var a = li.querySelector("a[href]");
+      var hasFRLink = a && (a.getAttribute("href") || "").indexOf("fr/") !== -1;
+      if (isFR) {
+        if (hasFRLink) li.remove();
+      } else {
+        if (!hasFRLink) li.remove();
+      }
+    });
+  }
+})();
+
+// ── Theme toggle label ("Light" / "Dark") ────────────────────────────────
+(function () {
+  var tog = document.querySelector(".quarto-color-scheme-toggle");
+  if (!tog) return;
+  var label = document.createElement("span");
+  label.className = "bq-theme-label";
+  var update = function () {
+    var isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+    label.textContent = isDark ? "Light" : "Dark";
+  };
+  tog.appendChild(label);
+  update();
+  new MutationObserver(update).observe(
+    document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] }
+  );
+})();
+
+// ── Bilingual alert toggle (EN | FR) ─────────────────────────────────────
+// Sets data-lang on each .bq-bilingual block; CSS controls visibility.
+var pageLang = (location.pathname.startsWith("/fr/") || location.pathname === "/fr")
+  ? "fr" : "en";
+document.querySelectorAll(".bq-bilingual").forEach(function (block) {
+  var btns = block.querySelectorAll(".bq-lang-btn");
+  function setLang(lang) {
+    block.setAttribute("data-lang", lang);
+    btns.forEach(function (b) {
+      b.classList.toggle("active", b.dataset.set === lang);
+    });
+  }
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () { setLang(b.dataset.set); });
+  });
+  setLang(block.getAttribute("data-lang") || pageLang);
+});
+
+// ── Language toggle link + hreflang injection ─────────────────────────────
+// Computes the exact mirror URL from the current pathname and updates the
+// navbar toggle link, then injects hreflang <link> tags for search engines.
+(function () {
+  var frPfx = "/fr/";
+  var path  = location.pathname;
+  var isFR  = path.startsWith(frPfx) || path === "/fr";
+
+  var enPath, frPath;
+  if (isFR) {
+    enPath = (path === "/fr" || path === "/fr/")
+      ? "/"
+      : path.replace(frPfx, "/");
+    frPath = path.endsWith("/") ? path : path + "/";
+  } else {
+    enPath = path;
+    frPath = frPfx + path.replace(/^\//, "");
+  }
+
+  function abs(p) { return location.origin + p; }
+
+  // Update the navbar toggle link. After nav cleanup the right nav has
+  // exactly one <a>: the link to the other language.
+  var rightNav = document.querySelector(".navbar-nav.ms-auto");
+  if (rightNav) {
+    var tog = rightNav.querySelector("a.nav-link");
+    if (tog) {
+      tog.href        = isFR ? abs(enPath) : abs(frPath);
+      tog.textContent = isFR ? "EN" : "FR";
+    }
+  }
+
+  // Also sync the mobile clone's href to the specific counterpart page.
+  var mobileClone = document.querySelector(".bq-lang-mobile");
+  if (mobileClone) {
+    mobileClone.href = isFR ? abs(enPath) : abs(frPath);
+  }
+
+  // Hreflang <link> tags for search engines.
+  function addLink(rel, hreflang, href) {
+    var el = document.createElement("link");
+    el.rel = rel;
+    if (hreflang) el.setAttribute("hreflang", hreflang);
+    el.href = href;
+    document.head.appendChild(el);
+  }
+  addLink("alternate", "en-CA",    abs(enPath));
+  addLink("alternate", "fr-CA",    abs(frPath));
+  addLink("alternate", "x-default", abs(enPath));
+})();
+</script>
 <script type="ojs-module-contents">
 eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImRhdGEgPSBGaWxlQXR0YWNobWVudChcIi4uL2RhdGEvc2hlbHRlcl9mbG93Lmpzb25cIikuanNvbigpXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJNT04gPSBbXCJKYW5cIixcIkZlYlwiLFwiTWFyXCIsXCJBcHJcIixcIk1heVwiLFwiSnVuXCIsXCJKdWxcIixcIkF1Z1wiLFwiU2VwXCIsXCJPY3RcIixcIk5vdlwiLFwiRGVjXCJdXG5mbXROID0gZCA9PiBkLnRvTG9jYWxlU3RyaW5nKClcblxuLy8gTW9udGggZHJvcGRvd246IGRpc3BsYXkgXCJNYXJjaCAyMDI2XCIsIHJldHVybiBcIjIwMjYtMDMtMDFcIiwgZGVmYXVsdCA9IG1vc3QgcmVjZW50LlxucmVwb3J0aW5nTW9udGhPcHRpb25zID0gZGF0YVxuICAuZmlsdGVyKGQgPT4gZC5wb3B1bGF0aW9uX2dyb3VwID09PSBcIkFsbCBQb3B1bGF0aW9uXCIpXG4gIC5zb3J0KChhLCBiKSA9PiBiLmZsb3dfZGF0ZS5sb2NhbGVDb21wYXJlKGEuZmxvd19kYXRlKSlcbiAgLm1hcChkID0+IHtcbiAgICBjb25zdCBbeSwgbV0gPSBkLmZsb3dfZGF0ZS5zcGxpdChcIi1cIikubWFwKE51bWJlcilcbiAgICByZXR1cm4ge1xuICAgICAgbGFiZWw6IG5ldyBEYXRlKHksIG0gLSAxLCAxNSkudG9Mb2NhbGVTdHJpbmcoXCJkZWZhdWx0XCIsIHttb250aDogXCJsb25nXCIsIHllYXI6IFwibnVtZXJpY1wifSksXG4gICAgICB2YWx1ZTogZC5mbG93X2RhdGVcbiAgICB9XG4gIH0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2YgcmVwb3J0aW5nRGF0ZSA9IElucHV0cy5zZWxlY3QocmVwb3J0aW5nTW9udGhPcHRpb25zLCB7XG4gIGxhYmVsOiBcIlJlcG9ydGluZyBNb250aFwiLFxuICBmb3JtYXQ6IGQgPT4gZC5sYWJlbCxcbiAgdmFsdWU6IHJlcG9ydGluZ01vbnRoT3B0aW9uc1swXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InJlcG9ydGluZ1llYXIgID0gK3JlcG9ydGluZ0RhdGUudmFsdWUuc2xpY2UoMCwgNClcbnJlcG9ydGluZ01vbnRoID0gK3JlcG9ydGluZ0RhdGUudmFsdWUuc2xpY2UoNSwgNylcblxuLy8gWVREIGN1bXVsYXRpdmUgc3VtcyBmb3IgY3VycmVudCB5ZWFyIGFuZCBwcmlvciB5ZWFyIHRocm91Z2ggc2VsZWN0ZWQgbW9udGguXG55dGRDb21wdXRlZCA9IHtcbiAgY29uc3Qgcm93cyA9IGRhdGFcbiAgICAuZmlsdGVyKGQgPT4gZC5wb3B1bGF0aW9uX2dyb3VwID09PSBcIkFsbCBQb3B1bGF0aW9uXCIpXG4gICAgLmZpbHRlcihkID0+IHtcbiAgICAgIGNvbnN0IHkgPSArZC5mbG93X2RhdGUuc2xpY2UoMCwgNClcbiAgICAgIGNvbnN0IG0gPSArZC5mbG93X2RhdGUuc2xpY2UoNSwgNylcbiAgICAgIHJldHVybiAoeSA9PT0gcmVwb3J0aW5nWWVhciB8fCB5ID09PSByZXBvcnRpbmdZZWFyIC0gMSkgJiYgbSA8PSByZXBvcnRpbmdNb250aFxuICAgIH0pXG4gICAgLnNvcnQoKGEsIGIpID0+IGEuZmxvd19kYXRlLmxvY2FsZUNvbXBhcmUoYi5mbG93X2RhdGUpKVxuXG4gIGNvbnN0IGFjY05JID0ge30sIGFjY01IID0ge31cbiAgcmV0dXJuIHJvd3MubWFwKGQgPT4ge1xuICAgIGNvbnN0IHkgPSArZC5mbG93X2RhdGUuc2xpY2UoMCwgNClcbiAgICBjb25zdCBtID0gK2QuZmxvd19kYXRlLnNsaWNlKDUsIDcpXG4gICAgYWNjTklbeV0gPSAoYWNjTklbeV0gfHwgMCkgKyBkLm5ld2x5X2lkZW50aWZpZWRcbiAgICBhY2NNSFt5XSA9IChhY2NNSFt5XSB8fCAwKSArIGQubW92ZWRfdG9faG91c2luZ1xuICAgIHJldHVybiB7XG4gICAgICB5ZWFyOiB5LCBtb250aDogbSxcbiAgICAgIG1vbnRoTGFiZWw6IE1PTlttIC0gMV0sXG4gICAgICB5ZWFyTGFiZWw6IFN0cmluZyh5KSxcbiAgICAgIGlzQ3VycmVudFllYXI6IHkgPT09IHJlcG9ydGluZ1llYXIsXG4gICAgICB5dGRfbmk6IGFjY05JW3ldLFxuICAgICAgeXRkX21oOiBhY2NNSFt5XVxuICAgIH1cbiAgfSlcbn1cblxuLy8gU29ydDogYnkgbW9udGgsIHByaW9yIHllYXIgZmlyc3Qgd2l0aGluIGVhY2ggbW9udGgg4oCUIGNyZWF0ZXMgdmlzdWFsIGJhciBncm91cGluZ1xueXRkU29ydGVkID0geXRkQ29tcHV0ZWRcbiAgLnNvcnQoKGEsIGIpID0+IGEubW9udGggLSBiLm1vbnRoIHx8IGEueWVhciAtIGIueWVhcilcbiAgLm1hcChkID0+ICh7Li4uZCwgYmFyTGFiZWw6IGAke2QubW9udGhMYWJlbH0gJHtkLnllYXJMYWJlbH1gfSkpXG5cbnl0ZERvbWFpbiA9IHl0ZFNvcnRlZC5tYXAoZCA9PiBkLmJhckxhYmVsKVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC01IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGgsXG4gIGhlaWdodDogNjAgKyB5dGRTb3J0ZWQubGVuZ3RoICogMjIsXG4gIG1hcmdpbkxlZnQ6IDEwMCxcbiAgbWFyZ2luUmlnaHQ6IDgwLFxuICB4OiB7bGFiZWw6IFwiQ3VtdWxhdGl2ZSBuZXdseSBpZGVudGlmaWVkIChZVEQpXCIsIGdyaWQ6IHRydWUsIHRpY2tGb3JtYXQ6IGZtdE59LFxuICB5OiB7bGFiZWw6IG51bGwsIGRvbWFpbjogeXRkRG9tYWlufSxcbiAgY29sb3I6IHtcbiAgICBkb21haW46IFtTdHJpbmcocmVwb3J0aW5nWWVhciAtIDEpLCBTdHJpbmcocmVwb3J0aW5nWWVhcildLFxuICAgIHJhbmdlOiBbXCIjRkZCM0MxXCIsIFwiI0ZGMkQ1NVwiXSxcbiAgICBsZWdlbmQ6IHRydWVcbiAgfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LnJ1bGVYKFswXSksXG4gICAgUGxvdC5iYXJYKHl0ZFNvcnRlZCwge3g6IFwieXRkX25pXCIsIHk6IFwiYmFyTGFiZWxcIiwgZmlsbDogXCJ5ZWFyTGFiZWxcIiwgdGlwOiB0cnVlLFxuICAgICAgICAgICAgICAgICAgICAgICAgICBpbnNldFRvcDogMSwgaW5zZXRCb3R0b206IDF9KSxcbiAgICBQbG90LnRleHQoeXRkU29ydGVkLCB7XG4gICAgICB4OiBcInl0ZF9uaVwiLCB5OiBcImJhckxhYmVsXCIsXG4gICAgICB0ZXh0OiBkID0+IGQueXRkX25pLnRvTG9jYWxlU3RyaW5nKCksXG4gICAgICB0ZXh0QW5jaG9yOiBcInN0YXJ0XCIsIGR4OiA1LCBmb250U2l6ZTogMTFcbiAgICB9KVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGgsXG4gIGhlaWdodDogNjAgKyB5dGRTb3J0ZWQubGVuZ3RoICogMjIsXG4gIG1hcmdpbkxlZnQ6IDEwMCxcbiAgbWFyZ2luUmlnaHQ6IDgwLFxuICB4OiB7bGFiZWw6IFwiQ3VtdWxhdGl2ZSBtb3ZlZCB0byBwZXJtYW5lbnQgaG91c2luZyAoWVREKVwiLCBncmlkOiB0cnVlLCB0aWNrRm9ybWF0OiBmbXROfSxcbiAgeToge2xhYmVsOiBudWxsLCBkb21haW46IHl0ZERvbWFpbn0sXG4gIGNvbG9yOiB7XG4gICAgZG9tYWluOiBbU3RyaW5nKHJlcG9ydGluZ1llYXIgLSAxKSwgU3RyaW5nKHJlcG9ydGluZ1llYXIpXSxcbiAgICByYW5nZTogW1wiI0FFRDVBRVwiLCBcIiM1QkE3NUJcIl0sXG4gICAgbGVnZW5kOiB0cnVlXG4gIH0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5ydWxlWChbMF0pLFxuICAgIFBsb3QuYmFyWCh5dGRTb3J0ZWQsIHt4OiBcInl0ZF9taFwiLCB5OiBcImJhckxhYmVsXCIsIGZpbGw6IFwieWVhckxhYmVsXCIsIHRpcDogdHJ1ZSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgaW5zZXRUb3A6IDEsIGluc2V0Qm90dG9tOiAxfSksXG4gICAgUGxvdC50ZXh0KHl0ZFNvcnRlZCwge1xuICAgICAgeDogXCJ5dGRfbWhcIiwgeTogXCJiYXJMYWJlbFwiLFxuICAgICAgdGV4dDogZCA9PiBkLnl0ZF9taC50b0xvY2FsZVN0cmluZygpLFxuICAgICAgdGV4dEFuY2hvcjogXCJzdGFydFwiLCBkeDogNSwgZm9udFNpemU6IDExXG4gICAgfSlcbiAgXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoic2hpbnlJbnB1dCgncmVwb3J0aW5nRGF0ZScpIn1dfQ==
 </script>
@@ -463,6 +821,19 @@ window._ojs.runtime.interpretFromScriptTags();
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -865,14 +1236,14 @@ window._ojs.runtime.interpretFromScriptTags();
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>© 2026 Miriam Marling · BonQuery</p>
-</div>   
+      &nbsp;
+    </div>   
     <div class="nav-footer-center">
+<p>An independent data audit for Toronto residents. / Un audit de données indépendant pour les résidents de Toronto. <br> <span style="font-size: 0.85em; opacity: 0.7;">© 2026 Miriam Marling · BonQuery</span></p>
+</div>
+    <div class="nav-footer-right">
       &nbsp;
     </div>
-    <div class="nav-footer-right">
-<p>Built with <a href="https://quarto.org">Quarto</a></p>
-</div>
   </div>
 </footer>
 

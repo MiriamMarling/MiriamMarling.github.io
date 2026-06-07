@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-CA" xml:lang="en-CA"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -76,10 +76,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-94b323657c735dfe3b1bf6ebb2c33a55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-bf3f322ac8d240d639fe1d97eccc3f5a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-94b323657c735dfe3b1bf6ebb2c33a55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -136,7 +140,169 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="twitter:card" content="summary">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -157,39 +323,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../projects/cold-response.html"> 
+<span class="menu-text">Left in the Cold</span></a>
+  </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Projects</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-audits" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Audits</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-audits">    
+        <li class="dropdown-header">INDEPENDENT OVERSIGHT</li>
         <li>
-    <a class="dropdown-item" href="../projects/toronto-shelter.html">
- <span class="dropdown-text">Inside Toronto’s Shelter System</span></a>
+    <a class="dropdown-item" href="../projects/discrepancy-tracker.html">
+ <span class="dropdown-text">Discrepancy Tracker</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/data-validation.html">
+ <span class="dropdown-text">Emergency Occupancy Audit</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/data-validation-central-intake.html">
+ <span class="dropdown-text">Central Intake Audit</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/about-the-data.html">
  <span class="dropdown-text">About the Data</span></a>
   </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-shelter-dashboards" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Shelter Dashboards</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-shelter-dashboards">    
         <li>
-    <a class="dropdown-item" href="../projects/data-validation.html">
- <span class="dropdown-text">Data Validation</span></a>
-  </li>  
-        <li><hr class="dropdown-divider"></li>
-        <li>
-    <a class="dropdown-item" href="../projects/historical-trends.html">
- <span class="dropdown-text">Historical Trends</span></a>
+    <a class="dropdown-item" href="../projects/toronto-shelter.html">
+ <span class="dropdown-text">Inside Toronto’s Shelter System</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/monthly-snapshot.html">
- <span class="dropdown-text">Monthly Snapshot</span></a>
+ <span class="dropdown-text">Monthly System Flow Replication</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/ytd-comparison.html">
- <span class="dropdown-text">YTD Comparison</span></a>
+ <span class="dropdown-text">Year-to-Date Capacity Match</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/historical-trends.html">
+ <span class="dropdown-text">Historical Trend Lines</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/central-intake.html">
+ <span class="dropdown-text">Referral Requests Analysis</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../projects/spike-detection.html">
  <span class="dropdown-text">Occupancy Spike Detection</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/daily-occupancy.html">
+ <span class="dropdown-text">Daily Occupancy &amp; Capacity</span></a>
   </li>  
     </ul>
   </li>
@@ -198,8 +391,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../fr/"> 
+<span class="menu-text">FR</span></a>
+  </li>  
+</ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -211,6 +411,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     
 <!-- main -->
 <main class="content column-page" id="quarto-document-content">
+
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -459,24 +660,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>Toronto publishes monthly data on its taxed shelter system, and the City’s own dashboards do a good job presenting the headline numbers. This section goes a step further: interactive filters on every chart, a clear note on what the data captures and what it leaves out, and findings that usually stay buried in technical documentation.</p>
+<p>The data covers every month from January 2018 to the most recent published month, sourced directly from the <a href="https://open.toronto.ca/dataset/toronto-shelter-system-flow/" target="_blank">City of Toronto’s Shelter System Flow dataset</a>. New data loads automatically each month, usually around the 15th, after the City publishes the prior month’s figures.</p>
 <hr>
 <section id="people-actively-homeless-in-the-last-3-months" class="level3">
 <h3 class="anchored" data-anchor-id="people-actively-homeless-in-the-last-3-months">People actively homeless in the last 3 months</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb7" data-startfrom="151" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 150;"><span id="cb7-151"><a href="#cb7-151" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb7-152"><a href="#cb7-152" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">70</span><span class="op">,</span></span>
-<span id="cb7-153"><a href="#cb7-153" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
-<span id="cb7-154"><a href="#cb7-154" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"People actively homeless"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
-<span id="cb7-155"><a href="#cb7-155" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb7-156"><a href="#cb7-156" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
-<span id="cb7-157"><a href="#cb7-157" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">line</span>(filtered<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actively_homeless"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#FF2D55"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span>})<span class="op">,</span></span>
-<span id="cb7-158"><a href="#cb7-158" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(filtered<span class="op">,</span>  {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actively_homeless"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span>   <span class="st">"#FF2D55"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">2</span>})<span class="op">,</span></span>
-<span id="cb7-159"><a href="#cb7-159" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(filtered<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({</span>
-<span id="cb7-160"><a href="#cb7-160" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actively_homeless"</span><span class="op">,</span></span>
-<span id="cb7-161"><a href="#cb7-161" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="sc">}\n${</span>d<span class="op">.</span><span class="at">actively_homeless</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs"> people`</span></span>
-<span id="cb7-162"><a href="#cb7-162" aria-hidden="true" tabindex="-1"></a>    }))</span>
-<span id="cb7-163"><a href="#cb7-163" aria-hidden="true" tabindex="-1"></a>  ]</span>
-<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb7" data-startfrom="163" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 162;"><span id="cb7-163"><a href="#cb7-163" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">70</span><span class="op">,</span></span>
+<span id="cb7-165"><a href="#cb7-165" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
+<span id="cb7-166"><a href="#cb7-166" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"People actively homeless"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
+<span id="cb7-167"><a href="#cb7-167" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb7-168"><a href="#cb7-168" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb7-169"><a href="#cb7-169" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">line</span>(filtered<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actively_homeless"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#FF2D55"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span>})<span class="op">,</span></span>
+<span id="cb7-170"><a href="#cb7-170" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(filtered<span class="op">,</span>  {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actively_homeless"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span>   <span class="st">"#FF2D55"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">2</span>})<span class="op">,</span></span>
+<span id="cb7-171"><a href="#cb7-171" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(filtered<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({</span>
+<span id="cb7-172"><a href="#cb7-172" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actively_homeless"</span><span class="op">,</span></span>
+<span id="cb7-173"><a href="#cb7-173" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="sc">}\n${</span>d<span class="op">.</span><span class="at">actively_homeless</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs"> people`</span></span>
+<span id="cb7-174"><a href="#cb7-174" aria-hidden="true" tabindex="-1"></a>    }))</span>
+<span id="cb7-175"><a href="#cb7-175" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb7-176"><a href="#cb7-176" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-7" data-nodetype="expression">
 
@@ -488,29 +691,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="net-change-inflow-minus-outflow-each-month" class="level3">
 <h3 class="anchored" data-anchor-id="net-change-inflow-minus-outflow-each-month">Net Change (Inflow minus Outflow) each month</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb8" data-startfrom="174" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 173;"><span id="cb8-174"><a href="#cb8-174" aria-hidden="true" tabindex="-1"></a>netData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> ({</span>
-<span id="cb8-175"><a href="#cb8-175" aria-hidden="true" tabindex="-1"></a>  <span class="dt">date</span><span class="op">:</span> d<span class="op">.</span><span class="at">date</span><span class="op">,</span> <span class="dt">month</span><span class="op">:</span> d<span class="op">.</span><span class="at">month</span><span class="op">,</span></span>
-<span id="cb8-176"><a href="#cb8-176" aria-hidden="true" tabindex="-1"></a>  <span class="dt">net_change</span><span class="op">:</span> d<span class="op">.</span><span class="at">newly_identified</span> <span class="op">+</span> d<span class="op">.</span><span class="at">returned_from_housing</span> <span class="op">+</span> d<span class="op">.</span><span class="at">returned_to_shelter</span></span>
-<span id="cb8-177"><a href="#cb8-177" aria-hidden="true" tabindex="-1"></a>              <span class="op">-</span> d<span class="op">.</span><span class="at">moved_to_housing</span> <span class="op">-</span> d<span class="op">.</span><span class="at">became_inactive</span></span>
-<span id="cb8-178"><a href="#cb8-178" aria-hidden="true" tabindex="-1"></a>}))</span>
-<span id="cb8-179"><a href="#cb8-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-180"><a href="#cb8-180" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb8-181"><a href="#cb8-181" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">70</span><span class="op">,</span></span>
-<span id="cb8-182"><a href="#cb8-182" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
-<span id="cb8-183"><a href="#cb8-183" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Net change (people)"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
-<span id="cb8-184"><a href="#cb8-184" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb8-185"><a href="#cb8-185" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>]<span class="op">,</span> {<span class="dt">stroke</span><span class="op">:</span> <span class="st">"#555"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.5</span>})<span class="op">,</span></span>
-<span id="cb8-186"><a href="#cb8-186" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">line</span>(netData<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"net_change"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#5856D6"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span>})<span class="op">,</span></span>
-<span id="cb8-187"><a href="#cb8-187" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(netData<span class="op">,</span>  {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"net_change"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span>   <span class="st">"#5856D6"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">2</span>})<span class="op">,</span></span>
-<span id="cb8-188"><a href="#cb8-188" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(netData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({</span>
-<span id="cb8-189"><a href="#cb8-189" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"net_change"</span><span class="op">,</span></span>
-<span id="cb8-190"><a href="#cb8-190" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> {</span>
-<span id="cb8-191"><a href="#cb8-191" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> sign <span class="op">=</span> d<span class="op">.</span><span class="at">net_change</span> <span class="op">&gt;=</span> <span class="dv">0</span> <span class="op">?</span> <span class="st">"+"</span> <span class="op">:</span> <span class="st">""</span></span>
-<span id="cb8-192"><a href="#cb8-192" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="sc">}\n${</span>sign<span class="sc">}${</span>d<span class="op">.</span><span class="at">net_change</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs"> people`</span></span>
-<span id="cb8-193"><a href="#cb8-193" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb8-194"><a href="#cb8-194" aria-hidden="true" tabindex="-1"></a>    }))</span>
-<span id="cb8-195"><a href="#cb8-195" aria-hidden="true" tabindex="-1"></a>  ]</span>
-<span id="cb8-196"><a href="#cb8-196" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb8" data-startfrom="186" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 185;"><span id="cb8-186"><a href="#cb8-186" aria-hidden="true" tabindex="-1"></a>netData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> ({</span>
+<span id="cb8-187"><a href="#cb8-187" aria-hidden="true" tabindex="-1"></a>  <span class="dt">date</span><span class="op">:</span> d<span class="op">.</span><span class="at">date</span><span class="op">,</span> <span class="dt">month</span><span class="op">:</span> d<span class="op">.</span><span class="at">month</span><span class="op">,</span></span>
+<span id="cb8-188"><a href="#cb8-188" aria-hidden="true" tabindex="-1"></a>  <span class="dt">net_change</span><span class="op">:</span> d<span class="op">.</span><span class="at">newly_identified</span> <span class="op">+</span> d<span class="op">.</span><span class="at">returned_from_housing</span> <span class="op">+</span> d<span class="op">.</span><span class="at">returned_to_shelter</span></span>
+<span id="cb8-189"><a href="#cb8-189" aria-hidden="true" tabindex="-1"></a>              <span class="op">-</span> d<span class="op">.</span><span class="at">moved_to_housing</span> <span class="op">-</span> d<span class="op">.</span><span class="at">became_inactive</span></span>
+<span id="cb8-190"><a href="#cb8-190" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb8-191"><a href="#cb8-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-192"><a href="#cb8-192" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb8-193"><a href="#cb8-193" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">70</span><span class="op">,</span></span>
+<span id="cb8-194"><a href="#cb8-194" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
+<span id="cb8-195"><a href="#cb8-195" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Net change (people)"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
+<span id="cb8-196"><a href="#cb8-196" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb8-197"><a href="#cb8-197" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>]<span class="op">,</span> {<span class="dt">stroke</span><span class="op">:</span> <span class="fu">getComputedStyle</span>(<span class="bu">document</span><span class="op">.</span><span class="at">documentElement</span>)<span class="op">.</span><span class="fu">getPropertyValue</span>(<span class="st">"--bq-fg-secondary"</span>)<span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.5</span>})<span class="op">,</span></span>
+<span id="cb8-198"><a href="#cb8-198" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">line</span>(netData<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"net_change"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#5856D6"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span>})<span class="op">,</span></span>
+<span id="cb8-199"><a href="#cb8-199" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(netData<span class="op">,</span>  {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"net_change"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span>   <span class="st">"#5856D6"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">2</span>})<span class="op">,</span></span>
+<span id="cb8-200"><a href="#cb8-200" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(netData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({</span>
+<span id="cb8-201"><a href="#cb8-201" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"net_change"</span><span class="op">,</span></span>
+<span id="cb8-202"><a href="#cb8-202" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> {</span>
+<span id="cb8-203"><a href="#cb8-203" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> sign <span class="op">=</span> d<span class="op">.</span><span class="at">net_change</span> <span class="op">&gt;=</span> <span class="dv">0</span> <span class="op">?</span> <span class="st">"+"</span> <span class="op">:</span> <span class="st">""</span></span>
+<span id="cb8-204"><a href="#cb8-204" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="sc">}\n${</span>sign<span class="sc">}${</span>d<span class="op">.</span><span class="at">net_change</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs"> people`</span></span>
+<span id="cb8-205"><a href="#cb8-205" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb8-206"><a href="#cb8-206" aria-hidden="true" tabindex="-1"></a>    }))</span>
+<span id="cb8-207"><a href="#cb8-207" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb8-208"><a href="#cb8-208" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-8-1" data-nodetype="declaration">
@@ -531,29 +734,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="total-inflow-and-outflow-each-month" class="level3">
 <h3 class="anchored" data-anchor-id="total-inflow-and-outflow-each-month">Total Inflow and Outflow each month</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb9" data-startfrom="207" data-source-offset="-158"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 206;"><span id="cb9-207"><a href="#cb9-207" aria-hidden="true" tabindex="-1"></a>totalRectData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> {</span>
-<span id="cb9-208"><a href="#cb9-208" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> inflow  <span class="op">=</span> d<span class="op">.</span><span class="at">newly_identified</span> <span class="op">+</span> d<span class="op">.</span><span class="at">returned_from_housing</span> <span class="op">+</span> d<span class="op">.</span><span class="at">returned_to_shelter</span></span>
-<span id="cb9-209"><a href="#cb9-209" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> outflow <span class="op">=</span> d<span class="op">.</span><span class="at">moved_to_housing</span> <span class="op">+</span> d<span class="op">.</span><span class="at">became_inactive</span></span>
-<span id="cb9-210"><a href="#cb9-210" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> lbl     <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>MON[<span class="pp">parseInt</span>(d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span><span class="dv">7</span>))<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="vs">-</span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">4</span>)<span class="sc">}</span><span class="vs">`</span></span>
-<span id="cb9-211"><a href="#cb9-211" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> {</span>
-<span id="cb9-212"><a href="#cb9-212" aria-hidden="true" tabindex="-1"></a>    <span class="dt">x1</span><span class="op">:</span> <span class="fu">monthStart</span>(d)<span class="op">,</span> <span class="dt">x2</span><span class="op">:</span> <span class="fu">monthEnd</span>(d)<span class="op">,</span> <span class="dt">xMid</span><span class="op">:</span> <span class="fu">monthMid</span>(d)<span class="op">,</span></span>
-<span id="cb9-213"><a href="#cb9-213" aria-hidden="true" tabindex="-1"></a>    inflow<span class="op">,</span> outflow<span class="op">,</span></span>
-<span id="cb9-214"><a href="#cb9-214" aria-hidden="true" tabindex="-1"></a>    <span class="dt">tipTitle</span><span class="op">:</span> <span class="vs">`</span><span class="sc">${</span>lbl<span class="sc">}\n</span><span class="vs">Inflow:  +</span><span class="sc">${</span>inflow<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}\n</span><span class="vs">Outflow: −</span><span class="sc">${</span>outflow<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}\n</span><span class="vs">Net:      </span><span class="sc">${</span>(inflow<span class="op">-</span>outflow)<span class="op">&gt;=</span><span class="dv">0</span><span class="op">?</span><span class="st">"+"</span><span class="op">:</span><span class="st">""</span><span class="sc">}${</span>(inflow<span class="op">-</span>outflow)<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span></span>
-<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">70</span><span class="op">,</span></span>
-<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
-<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"People"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
-<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">domain</span><span class="op">:</span> [<span class="st">"Inflow"</span><span class="op">,</span><span class="st">"Outflow"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#E63946"</span><span class="op">,</span><span class="st">"#66CC66"</span>]<span class="op">,</span> <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
-<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
-<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">rectY</span>(totalRectData<span class="op">,</span> {<span class="dt">x1</span><span class="op">:</span> <span class="st">"x1"</span><span class="op">,</span> <span class="dt">x2</span><span class="op">:</span> <span class="st">"x2"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"inflow"</span><span class="op">,</span>          <span class="dt">fill</span><span class="op">:</span> <span class="st">"#E63946"</span><span class="op">,</span> <span class="dt">insetLeft</span><span class="op">:</span> <span class="fl">0.5</span><span class="op">,</span> <span class="dt">insetRight</span><span class="op">:</span> <span class="fl">0.5</span>})<span class="op">,</span></span>
-<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">rectY</span>(totalRectData<span class="op">,</span> {<span class="dt">x1</span><span class="op">:</span> <span class="st">"x1"</span><span class="op">,</span> <span class="dt">x2</span><span class="op">:</span> <span class="st">"x2"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="op">-</span>d<span class="op">.</span><span class="at">outflow</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span>  <span class="dt">fill</span><span class="op">:</span> <span class="st">"#66CC66"</span><span class="op">,</span> <span class="dt">insetLeft</span><span class="op">:</span> <span class="fl">0.5</span><span class="op">,</span> <span class="dt">insetRight</span><span class="op">:</span> <span class="fl">0.5</span>})<span class="op">,</span></span>
-<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(totalRectData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({<span class="dt">x</span><span class="op">:</span> <span class="st">"xMid"</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">tipTitle</span>}))</span>
-<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a>  ]</span>
-<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb9" data-startfrom="219" data-source-offset="-158"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 218;"><span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a>totalRectData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> {</span>
+<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> inflow  <span class="op">=</span> d<span class="op">.</span><span class="at">newly_identified</span> <span class="op">+</span> d<span class="op">.</span><span class="at">returned_from_housing</span> <span class="op">+</span> d<span class="op">.</span><span class="at">returned_to_shelter</span></span>
+<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> outflow <span class="op">=</span> d<span class="op">.</span><span class="at">moved_to_housing</span> <span class="op">+</span> d<span class="op">.</span><span class="at">became_inactive</span></span>
+<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> lbl     <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>MON[<span class="pp">parseInt</span>(d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span><span class="dv">7</span>))<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="vs">-</span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">4</span>)<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> {</span>
+<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>    <span class="dt">x1</span><span class="op">:</span> <span class="fu">monthStart</span>(d)<span class="op">,</span> <span class="dt">x2</span><span class="op">:</span> <span class="fu">monthEnd</span>(d)<span class="op">,</span> <span class="dt">xMid</span><span class="op">:</span> <span class="fu">monthMid</span>(d)<span class="op">,</span></span>
+<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a>    inflow<span class="op">,</span> outflow<span class="op">,</span></span>
+<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>    <span class="dt">tipTitle</span><span class="op">:</span> <span class="vs">`</span><span class="sc">${</span>lbl<span class="sc">}\n</span><span class="vs">Inflow:  +</span><span class="sc">${</span>inflow<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}\n</span><span class="vs">Outflow: −</span><span class="sc">${</span>outflow<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}\n</span><span class="vs">Net:      </span><span class="sc">${</span>(inflow<span class="op">-</span>outflow)<span class="op">&gt;=</span><span class="dv">0</span><span class="op">?</span><span class="st">"+"</span><span class="op">:</span><span class="st">""</span><span class="sc">}${</span>(inflow<span class="op">-</span>outflow)<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">70</span><span class="op">,</span></span>
+<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
+<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"People"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
+<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">domain</span><span class="op">:</span> [<span class="st">"Inflow"</span><span class="op">,</span><span class="st">"Outflow"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#E63946"</span><span class="op">,</span><span class="st">"#66CC66"</span>]<span class="op">,</span> <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb9-236"><a href="#cb9-236" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb9-237"><a href="#cb9-237" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">rectY</span>(totalRectData<span class="op">,</span> {<span class="dt">x1</span><span class="op">:</span> <span class="st">"x1"</span><span class="op">,</span> <span class="dt">x2</span><span class="op">:</span> <span class="st">"x2"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"inflow"</span><span class="op">,</span>          <span class="dt">fill</span><span class="op">:</span> <span class="st">"#E63946"</span><span class="op">,</span> <span class="dt">insetLeft</span><span class="op">:</span> <span class="fl">0.5</span><span class="op">,</span> <span class="dt">insetRight</span><span class="op">:</span> <span class="fl">0.5</span>})<span class="op">,</span></span>
+<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">rectY</span>(totalRectData<span class="op">,</span> {<span class="dt">x1</span><span class="op">:</span> <span class="st">"x1"</span><span class="op">,</span> <span class="dt">x2</span><span class="op">:</span> <span class="st">"x2"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="op">-</span>d<span class="op">.</span><span class="at">outflow</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span>  <span class="dt">fill</span><span class="op">:</span> <span class="st">"#66CC66"</span><span class="op">,</span> <span class="dt">insetLeft</span><span class="op">:</span> <span class="fl">0.5</span><span class="op">,</span> <span class="dt">insetRight</span><span class="op">:</span> <span class="fl">0.5</span>})<span class="op">,</span></span>
+<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(totalRectData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({<span class="dt">x</span><span class="op">:</span> <span class="st">"xMid"</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">tipTitle</span>}))</span>
+<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-9-1" data-nodetype="declaration">
@@ -574,57 +777,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="detailed-inflow-and-outflow-each-month" class="level3">
 <h3 class="anchored" data-anchor-id="detailed-inflow-and-outflow-each-month">Detailed Inflow and Outflow each month</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb10" data-startfrom="238" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 237;"><span id="cb10-238"><a href="#cb10-238" aria-hidden="true" tabindex="-1"></a>detailedFlowTypes <span class="op">=</span> [</span>
-<span id="cb10-239"><a href="#cb10-239" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Inflow - Newly Identified"</span><span class="op">,</span></span>
-<span id="cb10-240"><a href="#cb10-240" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Inflow - Returned from Permanent Housing"</span><span class="op">,</span></span>
-<span id="cb10-241"><a href="#cb10-241" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Inflow - Returned to Shelter"</span><span class="op">,</span></span>
-<span id="cb10-242"><a href="#cb10-242" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Outflow - Became Inactive"</span><span class="op">,</span></span>
-<span id="cb10-243"><a href="#cb10-243" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Outflow - Moved to Permanent Housing"</span></span>
-<span id="cb10-244"><a href="#cb10-244" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb10-245"><a href="#cb10-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-246"><a href="#cb10-246" aria-hidden="true" tabindex="-1"></a>detailedColors <span class="op">=</span> [<span class="st">"#E63946"</span><span class="op">,</span><span class="st">"#FFD600"</span><span class="op">,</span><span class="st">"#FB8C00"</span><span class="op">,</span><span class="st">"#512DA8"</span><span class="op">,</span><span class="st">"#66CC66"</span>]</span>
-<span id="cb10-247"><a href="#cb10-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-248"><a href="#cb10-248" aria-hidden="true" tabindex="-1"></a><span class="co">// Pre-compute stacked y1/y2 for each series manually — avoids stackY on rectY</span></span>
-<span id="cb10-249"><a href="#cb10-249" aria-hidden="true" tabindex="-1"></a><span class="co">// (which doesn't support x1/x2 channels) and eliminates the band-scale warning.</span></span>
-<span id="cb10-250"><a href="#cb10-250" aria-hidden="true" tabindex="-1"></a>detailRectData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">flatMap</span>(d <span class="kw">=&gt;</span> {</span>
-<span id="cb10-251"><a href="#cb10-251" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> x1 <span class="op">=</span> <span class="fu">monthStart</span>(d)<span class="op">,</span> x2 <span class="op">=</span> <span class="fu">monthEnd</span>(d)<span class="op">,</span> xMid <span class="op">=</span> <span class="fu">monthMid</span>(d)</span>
-<span id="cb10-252"><a href="#cb10-252" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> ni <span class="op">=</span> d<span class="op">.</span><span class="at">newly_identified</span><span class="op">,</span> rfh <span class="op">=</span> d<span class="op">.</span><span class="at">returned_from_housing</span><span class="op">,</span></span>
-<span id="cb10-253"><a href="#cb10-253" aria-hidden="true" tabindex="-1"></a>        rts <span class="op">=</span> d<span class="op">.</span><span class="at">returned_to_shelter</span><span class="op">,</span> bi <span class="op">=</span> d<span class="op">.</span><span class="at">became_inactive</span><span class="op">,</span> mh <span class="op">=</span> d<span class="op">.</span><span class="at">moved_to_housing</span></span>
-<span id="cb10-254"><a href="#cb10-254" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> [</span>
-<span id="cb10-255"><a href="#cb10-255" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Inflow - Newly Identified"</span><span class="op">,</span>                <span class="dt">y1</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span>       <span class="dt">y2</span><span class="op">:</span> ni}<span class="op">,</span></span>
-<span id="cb10-256"><a href="#cb10-256" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Inflow - Returned from Permanent Housing"</span><span class="op">,</span>  <span class="dt">y1</span><span class="op">:</span> ni<span class="op">,</span>      <span class="dt">y2</span><span class="op">:</span> ni<span class="op">+</span>rfh}<span class="op">,</span></span>
-<span id="cb10-257"><a href="#cb10-257" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Inflow - Returned to Shelter"</span><span class="op">,</span>              <span class="dt">y1</span><span class="op">:</span> ni<span class="op">+</span>rfh<span class="op">,</span>  <span class="dt">y2</span><span class="op">:</span> ni<span class="op">+</span>rfh<span class="op">+</span>rts}<span class="op">,</span></span>
-<span id="cb10-258"><a href="#cb10-258" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Outflow - Became Inactive"</span><span class="op">,</span>                 <span class="dt">y1</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span>       <span class="dt">y2</span><span class="op">:</span> <span class="op">-</span>bi}<span class="op">,</span></span>
-<span id="cb10-259"><a href="#cb10-259" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Outflow - Moved to Permanent Housing"</span><span class="op">,</span>      <span class="dt">y1</span><span class="op">:</span> <span class="op">-</span>bi<span class="op">,</span>     <span class="dt">y2</span><span class="op">:</span> <span class="op">-</span>(bi<span class="op">+</span>mh)}</span>
-<span id="cb10-260"><a href="#cb10-260" aria-hidden="true" tabindex="-1"></a>  ]</span>
-<span id="cb10-261"><a href="#cb10-261" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb10-262"><a href="#cb10-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-263"><a href="#cb10-263" aria-hidden="true" tabindex="-1"></a>detailTipData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> {</span>
-<span id="cb10-264"><a href="#cb10-264" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> lbl <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>MON[<span class="pp">parseInt</span>(d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span><span class="dv">7</span>))<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="vs">-</span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">4</span>)<span class="sc">}</span><span class="vs">`</span></span>
-<span id="cb10-265"><a href="#cb10-265" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> {</span>
-<span id="cb10-266"><a href="#cb10-266" aria-hidden="true" tabindex="-1"></a>    <span class="dt">xMid</span><span class="op">:</span> <span class="fu">monthMid</span>(d)<span class="op">,</span></span>
-<span id="cb10-267"><a href="#cb10-267" aria-hidden="true" tabindex="-1"></a>    <span class="dt">tipTitle</span><span class="op">:</span> [</span>
-<span id="cb10-268"><a href="#cb10-268" aria-hidden="true" tabindex="-1"></a>      lbl<span class="op">,</span></span>
-<span id="cb10-269"><a href="#cb10-269" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Newly Identified:       +</span><span class="sc">${</span>d<span class="op">.</span><span class="at">newly_identified</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
-<span id="cb10-270"><a href="#cb10-270" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Returned from Housing:  +</span><span class="sc">${</span>d<span class="op">.</span><span class="at">returned_from_housing</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
-<span id="cb10-271"><a href="#cb10-271" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Returned to Shelter:    +</span><span class="sc">${</span>d<span class="op">.</span><span class="at">returned_to_shelter</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
-<span id="cb10-272"><a href="#cb10-272" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Became Inactive:        −</span><span class="sc">${</span>d<span class="op">.</span><span class="at">became_inactive</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
-<span id="cb10-273"><a href="#cb10-273" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Moved to Housing:       −</span><span class="sc">${</span>d<span class="op">.</span><span class="at">moved_to_housing</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span></span>
-<span id="cb10-274"><a href="#cb10-274" aria-hidden="true" tabindex="-1"></a>    ]<span class="op">.</span><span class="fu">join</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb10-275"><a href="#cb10-275" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-276"><a href="#cb10-276" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb10-277"><a href="#cb10-277" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-278"><a href="#cb10-278" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb10-279"><a href="#cb10-279" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">420</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">70</span><span class="op">,</span></span>
-<span id="cb10-280"><a href="#cb10-280" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
-<span id="cb10-281"><a href="#cb10-281" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"People"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
-<span id="cb10-282"><a href="#cb10-282" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">domain</span><span class="op">:</span> detailedFlowTypes<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> detailedColors<span class="op">,</span> <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
-<span id="cb10-283"><a href="#cb10-283" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb10-284"><a href="#cb10-284" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
-<span id="cb10-285"><a href="#cb10-285" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">rectY</span>(detailRectData<span class="op">,</span> {<span class="dt">x1</span><span class="op">:</span> <span class="st">"x1"</span><span class="op">,</span> <span class="dt">x2</span><span class="op">:</span> <span class="st">"x2"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="st">"y1"</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"y2"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"type"</span><span class="op">,</span> <span class="dt">insetLeft</span><span class="op">:</span> <span class="fl">0.5</span><span class="op">,</span> <span class="dt">insetRight</span><span class="op">:</span> <span class="fl">0.5</span>})<span class="op">,</span></span>
-<span id="cb10-286"><a href="#cb10-286" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(detailTipData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({<span class="dt">x</span><span class="op">:</span> <span class="st">"xMid"</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">tipTitle</span>}))</span>
-<span id="cb10-287"><a href="#cb10-287" aria-hidden="true" tabindex="-1"></a>  ]</span>
-<span id="cb10-288"><a href="#cb10-288" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb10" data-startfrom="250" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 249;"><span id="cb10-250"><a href="#cb10-250" aria-hidden="true" tabindex="-1"></a>detailedFlowTypes <span class="op">=</span> [</span>
+<span id="cb10-251"><a href="#cb10-251" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Inflow - Newly Identified"</span><span class="op">,</span></span>
+<span id="cb10-252"><a href="#cb10-252" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Inflow - Returned from Permanent Housing"</span><span class="op">,</span></span>
+<span id="cb10-253"><a href="#cb10-253" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Inflow - Returned to Shelter"</span><span class="op">,</span></span>
+<span id="cb10-254"><a href="#cb10-254" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Outflow - Became Inactive"</span><span class="op">,</span></span>
+<span id="cb10-255"><a href="#cb10-255" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Outflow - Moved to Permanent Housing"</span></span>
+<span id="cb10-256"><a href="#cb10-256" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb10-257"><a href="#cb10-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-258"><a href="#cb10-258" aria-hidden="true" tabindex="-1"></a>detailedColors <span class="op">=</span> [<span class="st">"#E63946"</span><span class="op">,</span><span class="st">"#FFD600"</span><span class="op">,</span><span class="st">"#FB8C00"</span><span class="op">,</span><span class="st">"#512DA8"</span><span class="op">,</span><span class="st">"#66CC66"</span>]</span>
+<span id="cb10-259"><a href="#cb10-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-260"><a href="#cb10-260" aria-hidden="true" tabindex="-1"></a><span class="co">// Pre-compute stacked y1/y2 for each series manually — avoids stackY on rectY</span></span>
+<span id="cb10-261"><a href="#cb10-261" aria-hidden="true" tabindex="-1"></a><span class="co">// (which doesn't support x1/x2 channels) and eliminates the band-scale warning.</span></span>
+<span id="cb10-262"><a href="#cb10-262" aria-hidden="true" tabindex="-1"></a>detailRectData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">flatMap</span>(d <span class="kw">=&gt;</span> {</span>
+<span id="cb10-263"><a href="#cb10-263" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> x1 <span class="op">=</span> <span class="fu">monthStart</span>(d)<span class="op">,</span> x2 <span class="op">=</span> <span class="fu">monthEnd</span>(d)<span class="op">,</span> xMid <span class="op">=</span> <span class="fu">monthMid</span>(d)</span>
+<span id="cb10-264"><a href="#cb10-264" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> ni <span class="op">=</span> d<span class="op">.</span><span class="at">newly_identified</span><span class="op">,</span> rfh <span class="op">=</span> d<span class="op">.</span><span class="at">returned_from_housing</span><span class="op">,</span></span>
+<span id="cb10-265"><a href="#cb10-265" aria-hidden="true" tabindex="-1"></a>        rts <span class="op">=</span> d<span class="op">.</span><span class="at">returned_to_shelter</span><span class="op">,</span> bi <span class="op">=</span> d<span class="op">.</span><span class="at">became_inactive</span><span class="op">,</span> mh <span class="op">=</span> d<span class="op">.</span><span class="at">moved_to_housing</span></span>
+<span id="cb10-266"><a href="#cb10-266" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> [</span>
+<span id="cb10-267"><a href="#cb10-267" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Inflow - Newly Identified"</span><span class="op">,</span>                <span class="dt">y1</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span>       <span class="dt">y2</span><span class="op">:</span> ni}<span class="op">,</span></span>
+<span id="cb10-268"><a href="#cb10-268" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Inflow - Returned from Permanent Housing"</span><span class="op">,</span>  <span class="dt">y1</span><span class="op">:</span> ni<span class="op">,</span>      <span class="dt">y2</span><span class="op">:</span> ni<span class="op">+</span>rfh}<span class="op">,</span></span>
+<span id="cb10-269"><a href="#cb10-269" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Inflow - Returned to Shelter"</span><span class="op">,</span>              <span class="dt">y1</span><span class="op">:</span> ni<span class="op">+</span>rfh<span class="op">,</span>  <span class="dt">y2</span><span class="op">:</span> ni<span class="op">+</span>rfh<span class="op">+</span>rts}<span class="op">,</span></span>
+<span id="cb10-270"><a href="#cb10-270" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Outflow - Became Inactive"</span><span class="op">,</span>                 <span class="dt">y1</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span>       <span class="dt">y2</span><span class="op">:</span> <span class="op">-</span>bi}<span class="op">,</span></span>
+<span id="cb10-271"><a href="#cb10-271" aria-hidden="true" tabindex="-1"></a>    {x1<span class="op">,</span> x2<span class="op">,</span> xMid<span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"Outflow - Moved to Permanent Housing"</span><span class="op">,</span>      <span class="dt">y1</span><span class="op">:</span> <span class="op">-</span>bi<span class="op">,</span>     <span class="dt">y2</span><span class="op">:</span> <span class="op">-</span>(bi<span class="op">+</span>mh)}</span>
+<span id="cb10-272"><a href="#cb10-272" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb10-273"><a href="#cb10-273" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb10-274"><a href="#cb10-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-275"><a href="#cb10-275" aria-hidden="true" tabindex="-1"></a>detailTipData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> {</span>
+<span id="cb10-276"><a href="#cb10-276" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> lbl <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>MON[<span class="pp">parseInt</span>(d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span><span class="dv">7</span>))<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="vs">-</span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">4</span>)<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb10-277"><a href="#cb10-277" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> {</span>
+<span id="cb10-278"><a href="#cb10-278" aria-hidden="true" tabindex="-1"></a>    <span class="dt">xMid</span><span class="op">:</span> <span class="fu">monthMid</span>(d)<span class="op">,</span></span>
+<span id="cb10-279"><a href="#cb10-279" aria-hidden="true" tabindex="-1"></a>    <span class="dt">tipTitle</span><span class="op">:</span> [</span>
+<span id="cb10-280"><a href="#cb10-280" aria-hidden="true" tabindex="-1"></a>      lbl<span class="op">,</span></span>
+<span id="cb10-281"><a href="#cb10-281" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Newly Identified:       +</span><span class="sc">${</span>d<span class="op">.</span><span class="at">newly_identified</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
+<span id="cb10-282"><a href="#cb10-282" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Returned from Housing:  +</span><span class="sc">${</span>d<span class="op">.</span><span class="at">returned_from_housing</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
+<span id="cb10-283"><a href="#cb10-283" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Returned to Shelter:    +</span><span class="sc">${</span>d<span class="op">.</span><span class="at">returned_to_shelter</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
+<span id="cb10-284"><a href="#cb10-284" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Became Inactive:        −</span><span class="sc">${</span>d<span class="op">.</span><span class="at">became_inactive</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
+<span id="cb10-285"><a href="#cb10-285" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`Moved to Housing:       −</span><span class="sc">${</span>d<span class="op">.</span><span class="at">moved_to_housing</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb10-286"><a href="#cb10-286" aria-hidden="true" tabindex="-1"></a>    ]<span class="op">.</span><span class="fu">join</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb10-287"><a href="#cb10-287" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-288"><a href="#cb10-288" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb10-289"><a href="#cb10-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-290"><a href="#cb10-290" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb10-291"><a href="#cb10-291" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">420</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">70</span><span class="op">,</span></span>
+<span id="cb10-292"><a href="#cb10-292" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
+<span id="cb10-293"><a href="#cb10-293" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"People"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtN}<span class="op">,</span></span>
+<span id="cb10-294"><a href="#cb10-294" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">domain</span><span class="op">:</span> detailedFlowTypes<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> detailedColors<span class="op">,</span> <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb10-295"><a href="#cb10-295" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb10-296"><a href="#cb10-296" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb10-297"><a href="#cb10-297" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">rectY</span>(detailRectData<span class="op">,</span> {<span class="dt">x1</span><span class="op">:</span> <span class="st">"x1"</span><span class="op">,</span> <span class="dt">x2</span><span class="op">:</span> <span class="st">"x2"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="st">"y1"</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"y2"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"type"</span><span class="op">,</span> <span class="dt">insetLeft</span><span class="op">:</span> <span class="fl">0.5</span><span class="op">,</span> <span class="dt">insetRight</span><span class="op">:</span> <span class="fl">0.5</span>})<span class="op">,</span></span>
+<span id="cb10-298"><a href="#cb10-298" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(detailTipData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({<span class="dt">x</span><span class="op">:</span> <span class="st">"xMid"</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">tipTitle</span>}))</span>
+<span id="cb10-299"><a href="#cb10-299" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb10-300"><a href="#cb10-300" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-10-1" data-nodetype="declaration">
@@ -666,41 +869,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="age-of-people-actively-homeless-in-the-last-3-months" class="level3">
 <h3 class="anchored" data-anchor-id="age-of-people-actively-homeless-in-the-last-3-months">Age of people actively homeless in the last 3 months</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb11" data-startfrom="297" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 296;"><span id="cb11-297"><a href="#cb11-297" aria-hidden="true" tabindex="-1"></a>ageBandDefs <span class="op">=</span> [</span>
-<span id="cb11-298"><a href="#cb11-298" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_under_16"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Under 16"</span>}<span class="op">,</span></span>
-<span id="cb11-299"><a href="#cb11-299" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_16_24"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"16–24"</span>}<span class="op">,</span></span>
-<span id="cb11-300"><a href="#cb11-300" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_25_34"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"25–34"</span>}<span class="op">,</span></span>
-<span id="cb11-301"><a href="#cb11-301" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_35_44"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"35–44"</span>}<span class="op">,</span></span>
-<span id="cb11-302"><a href="#cb11-302" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_45_54"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"45–54"</span>}<span class="op">,</span></span>
-<span id="cb11-303"><a href="#cb11-303" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_55_64"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"55–64"</span>}<span class="op">,</span></span>
-<span id="cb11-304"><a href="#cb11-304" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_65_over"</span><span class="op">,</span>  <span class="dt">label</span><span class="op">:</span> <span class="st">"65+"</span>}</span>
-<span id="cb11-305"><a href="#cb11-305" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb11-306"><a href="#cb11-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-307"><a href="#cb11-307" aria-hidden="true" tabindex="-1"></a>ageData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">flatMap</span>(d <span class="kw">=&gt;</span> {</span>
-<span id="cb11-308"><a href="#cb11-308" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> total <span class="op">=</span> ageBandDefs<span class="op">.</span><span class="fu">reduce</span>((s<span class="op">,</span> b) <span class="kw">=&gt;</span> s <span class="op">+</span> (d[b<span class="op">.</span><span class="at">key</span>] <span class="op">||</span> <span class="dv">0</span>)<span class="op">,</span> <span class="dv">0</span>)</span>
-<span id="cb11-309"><a href="#cb11-309" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ageBandDefs<span class="op">.</span><span class="fu">map</span>(b <span class="kw">=&gt;</span> ({</span>
-<span id="cb11-310"><a href="#cb11-310" aria-hidden="true" tabindex="-1"></a>    <span class="dt">date</span><span class="op">:</span> d<span class="op">.</span><span class="at">date</span><span class="op">,</span> <span class="dt">month</span><span class="op">:</span> d<span class="op">.</span><span class="at">month</span><span class="op">,</span> <span class="dt">band</span><span class="op">:</span> b<span class="op">.</span><span class="at">label</span><span class="op">,</span></span>
-<span id="cb11-311"><a href="#cb11-311" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pct</span><span class="op">:</span> total <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> d[b<span class="op">.</span><span class="at">key</span>] <span class="op">/</span> total <span class="op">:</span> <span class="kw">null</span></span>
-<span id="cb11-312"><a href="#cb11-312" aria-hidden="true" tabindex="-1"></a>  }))</span>
-<span id="cb11-313"><a href="#cb11-313" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb11-314"><a href="#cb11-314" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-315"><a href="#cb11-315" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb11-316"><a href="#cb11-316" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
-<span id="cb11-317"><a href="#cb11-317" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
-<span id="cb11-318"><a href="#cb11-318" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Share of age-banded total"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtPct}<span class="op">,</span></span>
-<span id="cb11-319"><a href="#cb11-319" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
-<span id="cb11-320"><a href="#cb11-320" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb11-321"><a href="#cb11-321" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
-<span id="cb11-322"><a href="#cb11-322" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">line</span>(ageData<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"band"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.8</span>})<span class="op">,</span></span>
-<span id="cb11-323"><a href="#cb11-323" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(ageData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({</span>
-<span id="cb11-324"><a href="#cb11-324" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"band"</span><span class="op">,</span></span>
-<span id="cb11-325"><a href="#cb11-325" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> {</span>
-<span id="cb11-326"><a href="#cb11-326" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> lbl <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>MON[<span class="pp">parseInt</span>(d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span><span class="dv">7</span>))<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">4</span>)<span class="sc">}</span><span class="vs">`</span></span>
-<span id="cb11-327"><a href="#cb11-327" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">band</span><span class="sc">}</span><span class="vs"> — </span><span class="sc">${</span>lbl<span class="sc">}\n${</span>(d<span class="op">.</span><span class="at">pct</span> <span class="op">*</span> <span class="dv">100</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">%`</span></span>
-<span id="cb11-328"><a href="#cb11-328" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb11-329"><a href="#cb11-329" aria-hidden="true" tabindex="-1"></a>    }))</span>
-<span id="cb11-330"><a href="#cb11-330" aria-hidden="true" tabindex="-1"></a>  ]</span>
-<span id="cb11-331"><a href="#cb11-331" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb11" data-startfrom="309" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 308;"><span id="cb11-309"><a href="#cb11-309" aria-hidden="true" tabindex="-1"></a>ageBandDefs <span class="op">=</span> [</span>
+<span id="cb11-310"><a href="#cb11-310" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_under_16"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Under 16"</span>}<span class="op">,</span></span>
+<span id="cb11-311"><a href="#cb11-311" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_16_24"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"16–24"</span>}<span class="op">,</span></span>
+<span id="cb11-312"><a href="#cb11-312" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_25_34"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"25–34"</span>}<span class="op">,</span></span>
+<span id="cb11-313"><a href="#cb11-313" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_35_44"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"35–44"</span>}<span class="op">,</span></span>
+<span id="cb11-314"><a href="#cb11-314" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_45_54"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"45–54"</span>}<span class="op">,</span></span>
+<span id="cb11-315"><a href="#cb11-315" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_55_64"</span><span class="op">,</span>    <span class="dt">label</span><span class="op">:</span> <span class="st">"55–64"</span>}<span class="op">,</span></span>
+<span id="cb11-316"><a href="#cb11-316" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"age_65_over"</span><span class="op">,</span>  <span class="dt">label</span><span class="op">:</span> <span class="st">"65+"</span>}</span>
+<span id="cb11-317"><a href="#cb11-317" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb11-318"><a href="#cb11-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-319"><a href="#cb11-319" aria-hidden="true" tabindex="-1"></a>ageData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">flatMap</span>(d <span class="kw">=&gt;</span> {</span>
+<span id="cb11-320"><a href="#cb11-320" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> total <span class="op">=</span> ageBandDefs<span class="op">.</span><span class="fu">reduce</span>((s<span class="op">,</span> b) <span class="kw">=&gt;</span> s <span class="op">+</span> (d[b<span class="op">.</span><span class="at">key</span>] <span class="op">||</span> <span class="dv">0</span>)<span class="op">,</span> <span class="dv">0</span>)</span>
+<span id="cb11-321"><a href="#cb11-321" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ageBandDefs<span class="op">.</span><span class="fu">map</span>(b <span class="kw">=&gt;</span> ({</span>
+<span id="cb11-322"><a href="#cb11-322" aria-hidden="true" tabindex="-1"></a>    <span class="dt">date</span><span class="op">:</span> d<span class="op">.</span><span class="at">date</span><span class="op">,</span> <span class="dt">month</span><span class="op">:</span> d<span class="op">.</span><span class="at">month</span><span class="op">,</span> <span class="dt">band</span><span class="op">:</span> b<span class="op">.</span><span class="at">label</span><span class="op">,</span></span>
+<span id="cb11-323"><a href="#cb11-323" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pct</span><span class="op">:</span> total <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> d[b<span class="op">.</span><span class="at">key</span>] <span class="op">/</span> total <span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb11-324"><a href="#cb11-324" aria-hidden="true" tabindex="-1"></a>  }))</span>
+<span id="cb11-325"><a href="#cb11-325" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb11-326"><a href="#cb11-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-327"><a href="#cb11-327" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb11-328"><a href="#cb11-328" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb11-329"><a href="#cb11-329" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
+<span id="cb11-330"><a href="#cb11-330" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Share of age-banded total"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtPct}<span class="op">,</span></span>
+<span id="cb11-331"><a href="#cb11-331" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb11-332"><a href="#cb11-332" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb11-333"><a href="#cb11-333" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb11-334"><a href="#cb11-334" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">line</span>(ageData<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"band"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.8</span>})<span class="op">,</span></span>
+<span id="cb11-335"><a href="#cb11-335" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(ageData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({</span>
+<span id="cb11-336"><a href="#cb11-336" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"band"</span><span class="op">,</span></span>
+<span id="cb11-337"><a href="#cb11-337" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> {</span>
+<span id="cb11-338"><a href="#cb11-338" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> lbl <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>MON[<span class="pp">parseInt</span>(d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span><span class="dv">7</span>))<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">4</span>)<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb11-339"><a href="#cb11-339" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">band</span><span class="sc">}</span><span class="vs"> — </span><span class="sc">${</span>lbl<span class="sc">}\n${</span>(d<span class="op">.</span><span class="at">pct</span> <span class="op">*</span> <span class="dv">100</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">%`</span></span>
+<span id="cb11-340"><a href="#cb11-340" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb11-341"><a href="#cb11-341" aria-hidden="true" tabindex="-1"></a>    }))</span>
+<span id="cb11-342"><a href="#cb11-342" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb11-343"><a href="#cb11-343" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-11-1" data-nodetype="declaration">
@@ -728,37 +931,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="gender-of-people-actively-homeless-in-the-last-3-months" class="level3">
 <h3 class="anchored" data-anchor-id="gender-of-people-actively-homeless-in-the-last-3-months">Gender of people actively homeless in the last 3 months</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb12" data-startfrom="340" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 339;"><span id="cb12-340"><a href="#cb12-340" aria-hidden="true" tabindex="-1"></a>genderDefs <span class="op">=</span> [</span>
-<span id="cb12-341"><a href="#cb12-341" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"gender_male"</span><span class="op">,</span>                <span class="dt">label</span><span class="op">:</span> <span class="st">"Men"</span>}<span class="op">,</span></span>
-<span id="cb12-342"><a href="#cb12-342" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"gender_female"</span><span class="op">,</span>              <span class="dt">label</span><span class="op">:</span> <span class="st">"Women"</span>}<span class="op">,</span></span>
-<span id="cb12-343"><a href="#cb12-343" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"gender_trans_nb_two_spirit"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Transgender, Non-Binary, or Two-Spirit"</span>}</span>
-<span id="cb12-344"><a href="#cb12-344" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb12-345"><a href="#cb12-345" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-346"><a href="#cb12-346" aria-hidden="true" tabindex="-1"></a>genderData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">flatMap</span>(d <span class="kw">=&gt;</span> {</span>
-<span id="cb12-347"><a href="#cb12-347" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> total <span class="op">=</span> genderDefs<span class="op">.</span><span class="fu">reduce</span>((s<span class="op">,</span> g) <span class="kw">=&gt;</span> s <span class="op">+</span> (d[g<span class="op">.</span><span class="at">key</span>] <span class="op">||</span> <span class="dv">0</span>)<span class="op">,</span> <span class="dv">0</span>)</span>
-<span id="cb12-348"><a href="#cb12-348" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> genderDefs<span class="op">.</span><span class="fu">map</span>(g <span class="kw">=&gt;</span> ({</span>
-<span id="cb12-349"><a href="#cb12-349" aria-hidden="true" tabindex="-1"></a>    <span class="dt">date</span><span class="op">:</span> d<span class="op">.</span><span class="at">date</span><span class="op">,</span> <span class="dt">month</span><span class="op">:</span> d<span class="op">.</span><span class="at">month</span><span class="op">,</span> <span class="dt">gender</span><span class="op">:</span> g<span class="op">.</span><span class="at">label</span><span class="op">,</span></span>
-<span id="cb12-350"><a href="#cb12-350" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pct</span><span class="op">:</span> total <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> d[g<span class="op">.</span><span class="at">key</span>] <span class="op">/</span> total <span class="op">:</span> <span class="kw">null</span></span>
-<span id="cb12-351"><a href="#cb12-351" aria-hidden="true" tabindex="-1"></a>  }))</span>
-<span id="cb12-352"><a href="#cb12-352" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb12-353"><a href="#cb12-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-354"><a href="#cb12-354" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb12-355"><a href="#cb12-355" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
-<span id="cb12-356"><a href="#cb12-356" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
-<span id="cb12-357"><a href="#cb12-357" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Share of gender total"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtPct}<span class="op">,</span></span>
-<span id="cb12-358"><a href="#cb12-358" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
-<span id="cb12-359"><a href="#cb12-359" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb12-360"><a href="#cb12-360" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
-<span id="cb12-361"><a href="#cb12-361" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">line</span>(genderData<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"gender"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.8</span>})<span class="op">,</span></span>
-<span id="cb12-362"><a href="#cb12-362" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(genderData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({</span>
-<span id="cb12-363"><a href="#cb12-363" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"gender"</span><span class="op">,</span></span>
-<span id="cb12-364"><a href="#cb12-364" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> {</span>
-<span id="cb12-365"><a href="#cb12-365" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> lbl <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>MON[<span class="pp">parseInt</span>(d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span><span class="dv">7</span>))<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">4</span>)<span class="sc">}</span><span class="vs">`</span></span>
-<span id="cb12-366"><a href="#cb12-366" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">gender</span><span class="sc">}</span><span class="vs"> — </span><span class="sc">${</span>lbl<span class="sc">}\n${</span>(d<span class="op">.</span><span class="at">pct</span> <span class="op">*</span> <span class="dv">100</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">%`</span></span>
-<span id="cb12-367"><a href="#cb12-367" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb12-368"><a href="#cb12-368" aria-hidden="true" tabindex="-1"></a>    }))</span>
-<span id="cb12-369"><a href="#cb12-369" aria-hidden="true" tabindex="-1"></a>  ]</span>
-<span id="cb12-370"><a href="#cb12-370" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb12" data-startfrom="352" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 351;"><span id="cb12-352"><a href="#cb12-352" aria-hidden="true" tabindex="-1"></a>genderDefs <span class="op">=</span> [</span>
+<span id="cb12-353"><a href="#cb12-353" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"gender_male"</span><span class="op">,</span>                <span class="dt">label</span><span class="op">:</span> <span class="st">"Men"</span>}<span class="op">,</span></span>
+<span id="cb12-354"><a href="#cb12-354" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"gender_female"</span><span class="op">,</span>              <span class="dt">label</span><span class="op">:</span> <span class="st">"Women"</span>}<span class="op">,</span></span>
+<span id="cb12-355"><a href="#cb12-355" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">key</span><span class="op">:</span> <span class="st">"gender_trans_nb_two_spirit"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Transgender, Non-Binary, or Two-Spirit"</span>}</span>
+<span id="cb12-356"><a href="#cb12-356" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb12-357"><a href="#cb12-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-358"><a href="#cb12-358" aria-hidden="true" tabindex="-1"></a>genderData <span class="op">=</span> filtered<span class="op">.</span><span class="fu">flatMap</span>(d <span class="kw">=&gt;</span> {</span>
+<span id="cb12-359"><a href="#cb12-359" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> total <span class="op">=</span> genderDefs<span class="op">.</span><span class="fu">reduce</span>((s<span class="op">,</span> g) <span class="kw">=&gt;</span> s <span class="op">+</span> (d[g<span class="op">.</span><span class="at">key</span>] <span class="op">||</span> <span class="dv">0</span>)<span class="op">,</span> <span class="dv">0</span>)</span>
+<span id="cb12-360"><a href="#cb12-360" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> genderDefs<span class="op">.</span><span class="fu">map</span>(g <span class="kw">=&gt;</span> ({</span>
+<span id="cb12-361"><a href="#cb12-361" aria-hidden="true" tabindex="-1"></a>    <span class="dt">date</span><span class="op">:</span> d<span class="op">.</span><span class="at">date</span><span class="op">,</span> <span class="dt">month</span><span class="op">:</span> d<span class="op">.</span><span class="at">month</span><span class="op">,</span> <span class="dt">gender</span><span class="op">:</span> g<span class="op">.</span><span class="at">label</span><span class="op">,</span></span>
+<span id="cb12-362"><a href="#cb12-362" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pct</span><span class="op">:</span> total <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> d[g<span class="op">.</span><span class="at">key</span>] <span class="op">/</span> total <span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb12-363"><a href="#cb12-363" aria-hidden="true" tabindex="-1"></a>  }))</span>
+<span id="cb12-364"><a href="#cb12-364" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb12-365"><a href="#cb12-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-366"><a href="#cb12-366" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb12-367"><a href="#cb12-367" aria-hidden="true" tabindex="-1"></a>  width<span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb12-368"><a href="#cb12-368" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> xLine<span class="op">,</span></span>
+<span id="cb12-369"><a href="#cb12-369" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Share of gender total"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> fmtPct}<span class="op">,</span></span>
+<span id="cb12-370"><a href="#cb12-370" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb12-371"><a href="#cb12-371" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb12-372"><a href="#cb12-372" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb12-373"><a href="#cb12-373" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">line</span>(genderData<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"gender"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.8</span>})<span class="op">,</span></span>
+<span id="cb12-374"><a href="#cb12-374" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">tip</span>(genderData<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointerX</span>({</span>
+<span id="cb12-375"><a href="#cb12-375" aria-hidden="true" tabindex="-1"></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"gender"</span><span class="op">,</span></span>
+<span id="cb12-376"><a href="#cb12-376" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> {</span>
+<span id="cb12-377"><a href="#cb12-377" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> lbl <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>MON[<span class="pp">parseInt</span>(d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">5</span><span class="op">,</span><span class="dv">7</span>))<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="vs"> </span><span class="sc">${</span>d<span class="op">.</span><span class="at">month</span><span class="op">.</span><span class="fu">slice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">4</span>)<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb12-378"><a href="#cb12-378" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">gender</span><span class="sc">}</span><span class="vs"> — </span><span class="sc">${</span>lbl<span class="sc">}\n${</span>(d<span class="op">.</span><span class="at">pct</span> <span class="op">*</span> <span class="dv">100</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">%`</span></span>
+<span id="cb12-379"><a href="#cb12-379" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb12-380"><a href="#cb12-380" aria-hidden="true" tabindex="-1"></a>    }))</span>
+<span id="cb12-381"><a href="#cb12-381" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb12-382"><a href="#cb12-382" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-12-1" data-nodetype="declaration">
@@ -784,19 +987,186 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="mobile-page-nav">
 <p><strong>Explore other dashboards:</strong></p>
 <ul>
-<li><a href="monthly-snapshot.html">Monthly Snapshot</a></li>
-<li><a href="ytd-comparison.html">YTD Comparison</a></li>
+<li><a href="monthly-snapshot.html" target="_blank">Monthly Snapshot</a></li>
+<li><a href="ytd-comparison.html" target="_blank">YTD Comparison</a></li>
 </ul>
 </div>
 <hr>
 <p><em>This dashboard is also available as an <a href="https://g88e375ebfb8a61-bonquery.adb.ca-toronto-1.oraclecloudapps.com/ords/r/shelter/toronto-shelter-analytics/historical-trends" target="_blank">Oracle APEX dashboard</a> built on the same database — useful if you want to see how the same data renders in Oracle’s native low-code platform, or if you’re curious about the SQL and APEX configuration behind it.</em></p>
+</section>
+<section id="how-to-read-this-data" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-read-this-data">How to read this data</h3>
+<p>These numbers reflect the shelter <em>system</em>, not all homelessness. The data captures people who used a City-funded overnight service at least once in the past three months. It doesn’t include people sleeping outside, in shelters that aren’t City-funded, or staying temporarily with friends or family. The City <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/" target="_blank">estimates</a> that roughly 18% of people experiencing absolute homelessness in Toronto aren’t reflected in these numbers. Trends here reflect changes in the shelter system specifically — not in total homelessness in the city.</p>
+</section>
+<section id="key-terms" class="level3">
+<h3 class="anchored" data-anchor-id="key-terms">Key terms</h3>
+<p>The dashboards use a few terms that have specific meanings worth knowing before you read the charts.</p>
+<p><strong>Actively homeless.</strong> A person who has used City-funded shelter services at least once in the past three months and hasn’t been recorded as moving to permanent housing. This is the headline number on every dashboard. Because it looks back three months, the count includes people who may not be in shelter on any given night.</p>
+<p><strong>Chronic homelessness.</strong> The federal definition: someone who has spent at least 180 nights in shelter over the past year, or at least 546 nights over the past three years. A person can meet this definition while still actively in the shelter system — they don’t need to have left and returned.</p>
+<p><strong>Inflow categories</strong> (people entering the shelter system this month):</p>
+<ul>
+<li><strong>Newly Identified.</strong> People entering the shelter system for the first time. One exception for the “Chronic” group: in that row, this column counts people who became chronically homeless during the reporting month, regardless of how long they’d already been using the shelter system.</li>
+<li><strong>Returned from Permanent Housing.</strong> People who previously moved to permanent housing and have come back to the shelter system.</li>
+<li><strong>Returned to Shelter.</strong> People who were in the system, didn’t use it for at least three months, and have now returned.</li>
+</ul>
+<p><strong>Outflow categories</strong> (people leaving the shelter system this month):</p>
+<ul>
+<li><strong>Moved to Permanent Housing.</strong> People who left the shelter system for permanent housing.</li>
+<li><strong>Became Inactive.</strong> People who haven’t used shelter services in the past three months, including the reporting month.</li>
+</ul>
+<p>Definitions are based on the <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-flow-data/" target="_blank">City of Toronto’s Shelter System Flow Data page</a>.</p>
+<p><a href="about-the-data.html" target="_blank">Read all data findings →</a></p>
+</section>
+<section id="data-source" class="level3">
+<h3 class="anchored" data-anchor-id="data-source">Data source</h3>
+<p>All data comes from the City of Toronto’s <a href="https://open.toronto.ca/dataset/toronto-shelter-system-flow/" target="_blank">Shelter System Flow dataset</a>, published monthly on the City’s open data portal.</p>
+<p>Contains information licensed under the <a href="https://open.toronto.ca/open-data-licence/" target="_blank">Open Government Licence – Toronto</a>.</p>
 
 
 </section>
 
 </main> <!-- /main -->
+<script>
+// ── Mobile language toggle ────────────────────────────────────────────────
+// Uses location.pathname so the correct label appears regardless of whether
+// Quarto renders the navbar id attribute (it does not).
+(function () {
+  var darkTog = document.querySelector(".quarto-color-scheme-toggle");
+  if (!darkTog) return;
+  var isFR  = location.pathname.startsWith("/fr/") || location.pathname === "/fr";
+  var clone = document.createElement("a");
+  clone.className = "bq-lang-mobile";
+  clone.href      = isFR ? "/" : "/fr/";
+  clone.textContent = isFR ? "EN" : "FR";
+  darkTog.parentNode.insertBefore(clone, darkTog.nextSibling);
+})();
+
+// ── Nav cleanup ───────────────────────────────────────────────────────────
+// The Quarto FR profile render re-renders all pages with a merged navbar
+// (EN items + FR items concatenated). This script removes the wrong-language
+// items at runtime on every page load.
+(function () {
+  var isFR = location.pathname.startsWith("/fr/") || location.pathname === "/fr";
+
+  // Left nav: keep items whose links match the current language.
+  // Each top-level <li> contains only same-language hrefs, so checking for
+  // "fr/" is a reliable discriminator.
+  var leftNav = document.querySelector(".navbar-nav.me-auto");
+  if (leftNav) {
+    Array.from(leftNav.querySelectorAll(":scope > li")).forEach(function (li) {
+      var links = Array.from(li.querySelectorAll("a[href]"));
+      var hasFRLink = links.some(function (a) {
+        return (a.getAttribute("href") || "").indexOf("fr/") !== -1;
+      });
+      if (isFR ? !hasFRLink : hasFRLink) li.remove();
+    });
+  }
+
+  // Right nav: remove the self-referential language-toggle link that merges
+  // in from the other profile (the EN config's "FR" link rides along with
+  // the FR config's "EN" link, and vice versa).
+  var rightNav = document.querySelector(".navbar-nav.ms-auto");
+  if (rightNav) {
+    Array.from(rightNav.querySelectorAll("li")).forEach(function (li) {
+      var a = li.querySelector("a[href]");
+      var hasFRLink = a && (a.getAttribute("href") || "").indexOf("fr/") !== -1;
+      if (isFR) {
+        if (hasFRLink) li.remove();
+      } else {
+        if (!hasFRLink) li.remove();
+      }
+    });
+  }
+})();
+
+// ── Theme toggle label ("Light" / "Dark") ────────────────────────────────
+(function () {
+  var tog = document.querySelector(".quarto-color-scheme-toggle");
+  if (!tog) return;
+  var label = document.createElement("span");
+  label.className = "bq-theme-label";
+  var update = function () {
+    var isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+    label.textContent = isDark ? "Light" : "Dark";
+  };
+  tog.appendChild(label);
+  update();
+  new MutationObserver(update).observe(
+    document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] }
+  );
+})();
+
+// ── Bilingual alert toggle (EN | FR) ─────────────────────────────────────
+// Sets data-lang on each .bq-bilingual block; CSS controls visibility.
+var pageLang = (location.pathname.startsWith("/fr/") || location.pathname === "/fr")
+  ? "fr" : "en";
+document.querySelectorAll(".bq-bilingual").forEach(function (block) {
+  var btns = block.querySelectorAll(".bq-lang-btn");
+  function setLang(lang) {
+    block.setAttribute("data-lang", lang);
+    btns.forEach(function (b) {
+      b.classList.toggle("active", b.dataset.set === lang);
+    });
+  }
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () { setLang(b.dataset.set); });
+  });
+  setLang(block.getAttribute("data-lang") || pageLang);
+});
+
+// ── Language toggle link + hreflang injection ─────────────────────────────
+// Computes the exact mirror URL from the current pathname and updates the
+// navbar toggle link, then injects hreflang <link> tags for search engines.
+(function () {
+  var frPfx = "/fr/";
+  var path  = location.pathname;
+  var isFR  = path.startsWith(frPfx) || path === "/fr";
+
+  var enPath, frPath;
+  if (isFR) {
+    enPath = (path === "/fr" || path === "/fr/")
+      ? "/"
+      : path.replace(frPfx, "/");
+    frPath = path.endsWith("/") ? path : path + "/";
+  } else {
+    enPath = path;
+    frPath = frPfx + path.replace(/^\//, "");
+  }
+
+  function abs(p) { return location.origin + p; }
+
+  // Update the navbar toggle link. After nav cleanup the right nav has
+  // exactly one <a>: the link to the other language.
+  var rightNav = document.querySelector(".navbar-nav.ms-auto");
+  if (rightNav) {
+    var tog = rightNav.querySelector("a.nav-link");
+    if (tog) {
+      tog.href        = isFR ? abs(enPath) : abs(frPath);
+      tog.textContent = isFR ? "EN" : "FR";
+    }
+  }
+
+  // Also sync the mobile clone's href to the specific counterpart page.
+  var mobileClone = document.querySelector(".bq-lang-mobile");
+  if (mobileClone) {
+    mobileClone.href = isFR ? abs(enPath) : abs(frPath);
+  }
+
+  // Hreflang <link> tags for search engines.
+  function addLink(rel, hreflang, href) {
+    var el = document.createElement("link");
+    el.rel = rel;
+    if (hreflang) el.setAttribute("hreflang", hreflang);
+    el.href = href;
+    document.head.appendChild(el);
+  }
+  addLink("alternate", "en-CA",    abs(enPath));
+  addLink("alternate", "fr-CA",    abs(frPath));
+  addLink("alternate", "x-default", abs(enPath));
+})();
+</script>
 <script type="ojs-module-contents">
-eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImRhdGEgPSBGaWxlQXR0YWNobWVudChcIi4uL2RhdGEvc2hlbHRlcl9mbG93Lmpzb25cIikuanNvbigpXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJwb3B1bGF0aW9uR3JvdXBzID0gW1xuICBcIkFsbCBQb3B1bGF0aW9uXCIsXG4gIC4uLkFycmF5LmZyb20obmV3IFNldChkYXRhLm1hcChkID0+IGQucG9wdWxhdGlvbl9ncm91cCkpKVxuICAgIC5maWx0ZXIoZyA9PiBnICE9PSBcIkFsbCBQb3B1bGF0aW9uXCIpXG4gICAgLnNvcnQoKVxuXVxuXG5hdmFpbGFibGVZZWFycyA9IFtcbiAgXCJBbGxcIixcbiAgLi4uQXJyYXkuZnJvbShuZXcgU2V0KGRhdGEubWFwKGQgPT4gZC5mbG93X2RhdGUuc2xpY2UoMCwgNCkpKSkuc29ydCgpXG5dXG5cbm1vbnRoT3B0aW9ucyA9IFtcbiAge2xhYmVsOiBcIkFsbFwiLCB2YWx1ZTogXCJBbGxcIn0sXG4gIC4uLkFycmF5LmZyb20oe2xlbmd0aDogMTJ9LCAoXywgaSkgPT4gKHtcbiAgICBsYWJlbDogbmV3IERhdGUoMjAwMCwgaSkudG9Mb2NhbGVTdHJpbmcoXCJkZWZhdWx0XCIsIHttb250aDogXCJsb25nXCJ9KSxcbiAgICB2YWx1ZTogU3RyaW5nKGkgKyAxKVxuICB9KSlcbl1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InZpZXdvZiBzZWxlY3RlZEdyb3VwID0gSW5wdXRzLnNlbGVjdChwb3B1bGF0aW9uR3JvdXBzLCB7XG4gIGxhYmVsOiBcIlBvcHVsYXRpb24gZ3JvdXBcIiwgdmFsdWU6IFwiQWxsIFBvcHVsYXRpb25cIiwgd2lkdGg6IDIyMFxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InZpZXdvZiBzZWxlY3RlZFllYXIgPSBJbnB1dHMuc2VsZWN0KGF2YWlsYWJsZVllYXJzLCB7XG4gIGxhYmVsOiBcIlllYXJcIiwgdmFsdWU6IFwiQWxsXCIsIHdpZHRoOiAxMjBcbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTUiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2Ygc2VsZWN0ZWRNb250aCA9IElucHV0cy5zZWxlY3QobW9udGhPcHRpb25zLCB7XG4gIGxhYmVsOiBcIk1vbnRoXCIsIGZvcm1hdDogZCA9PiBkLmxhYmVsLCB2YWx1ZTogbW9udGhPcHRpb25zWzBdLCB3aWR0aDogMTYwXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiZmlsdGVyZWQgPSBkYXRhXG4gIC5maWx0ZXIoZCA9PiB7XG4gICAgY29uc3QgZ3JvdXBNYXRjaCA9IGQucG9wdWxhdGlvbl9ncm91cCA9PT0gc2VsZWN0ZWRHcm91cFxuICAgIGNvbnN0IHllYXJNYXRjaCAgPSBzZWxlY3RlZFllYXIgPT09IFwiQWxsXCIgfHwgZC5mbG93X2RhdGUuc2xpY2UoMCwgNCkgPT09IHNlbGVjdGVkWWVhclxuICAgIGNvbnN0IG1vbnRoTWF0Y2ggPSBzZWxlY3RlZE1vbnRoLnZhbHVlID09PSBcIkFsbFwiIHx8XG4gICAgICAgICAgICAgICAgICAgICAgIHBhcnNlSW50KGQuZmxvd19kYXRlLnNsaWNlKDUsIDcpKSA9PT0gcGFyc2VJbnQoc2VsZWN0ZWRNb250aC52YWx1ZSlcbiAgICByZXR1cm4gZ3JvdXBNYXRjaCAmJiB5ZWFyTWF0Y2ggJiYgbW9udGhNYXRjaFxuICB9KVxuICAubWFwKGQgPT4ge1xuICAgIGNvbnN0IFt5LCBtLCBkYXldID0gZC5mbG93X2RhdGUuc3BsaXQoXCItXCIpLm1hcChOdW1iZXIpXG4gICAgcmV0dXJuIHsuLi5kLCBkYXRlOiBuZXcgRGF0ZSh5LCBtIC0gMSwgZGF5KSwgbW9udGg6IGQuZmxvd19kYXRlLnNsaWNlKDAsIDcpfVxuICB9KVxuICAuc29ydCgoYSwgYikgPT4gYS5kYXRlIC0gYi5kYXRlKVxuXG4vLyBTaG9ydCBtb250aCBuYW1lcyB1c2VkIGluIHRpY2sgbGFiZWxzLlxuTU9OID0gW1wiSmFuXCIsXCJGZWJcIixcIk1hclwiLFwiQXByXCIsXCJNYXlcIixcIkp1blwiLFwiSnVsXCIsXCJBdWdcIixcIlNlcFwiLFwiT2N0XCIsXCJOb3ZcIixcIkRlY1wiXVxuXG4vLyBBY3R1YWwgdGltZSBzcGFuIGluIG1vbnRocyBiZXR3ZWVuIGZpcnN0IGFuZCBsYXN0IGZpbHRlcmVkIHJvdy5cbi8vIFRoaXMgZ292ZXJucyB0aWNrIGRlbnNpdHkg4oCUIE5PVCB0aGUgZGF0YSBwb2ludCBjb3VudCwgd2hpY2ggaXMgbWlzbGVhZGluZ1xuLy8gd2hlbiBvbmUgc3BlY2lmaWMgbW9udGggaXMgc2VsZWN0ZWQgYWNyb3NzIG1hbnkgeWVhcnMgKGZldyBwb2ludHMsIGh1Z2Ugc3BhbikuXG5zcGFuTW9udGhzID0gZmlsdGVyZWQubGVuZ3RoIDwgMiA/IDEgOlxuICBNYXRoLnJvdW5kKChmaWx0ZXJlZFtmaWx0ZXJlZC5sZW5ndGgtMV0uZGF0ZSAtIGZpbHRlcmVkWzBdLmRhdGUpXG4gICAgICAgICAgICAgLyAoMzAuNDQgKiAyNCAqIDM2MDAgKiAxMDAwKSlcblxuLy8gVGhyZWUgYXhpcyBkaXNwbGF5IG1vZGVzIGZvciBMSU5FIGNoYXJ0czpcbi8vICAgZGVuc2UgIOKAlCBtYW55IHllYXJzLCBhbGwgbW9udGhzIChmaWx0ZXJlZC5sZW5ndGggPiAyMCwgc3Bhbk1vbnRocyA+IDE4KVxuLy8gICAgICAgICAgICDihpIgeWVhcmx5IHRpY2tzLCB5ZWFyLW9ubHkgbGFiZWwgKFwiMjAxOVwiKVxuLy8gICBzcGFyc2Ug4oCUIHNwZWNpZmljIG1vbnRoIGFjcm9zcyBhbGwgeWVhcnMgKGZpbHRlcmVkLmxlbmd0aCDiiaQgMjAsIHNwYW5Nb250aHMgPiAxOClcbi8vICAgICAgICAgICAg4oaSIHllYXJseSB0aWNrcywgXCJNb24tWVlZWVwiIGxhYmVsIChcIkphbi0yMDE4XCIpXG4vLyAgIHNpbmdsZSDigJQgb25lIHllYXIgc2VsZWN0ZWQgKHNwYW5Nb250aHMg4omkIDE4KVxuLy8gICAgICAgICAgICDihpIgbW9udGhseSB0aWNrcywgXCJNb25cIiB3aXRoIHllYXIgb24gSmFudWFyeSAoXCJKYW4tMjAxOFwiLCBcIkZlYlwiLCDigKYpXG54TGluZURlbnNlICA9IHNwYW5Nb250aHMgPiAxOCAmJiBmaWx0ZXJlZC5sZW5ndGggPiAyMFxueExpbmVTaW5nbGUgPSBzcGFuTW9udGhzIDw9IDE4XG5cbnhMaW5lID0gKHtcbiAgdHlwZTogXCJ0aW1lXCIsXG4gIGxhYmVsOiBudWxsLFxuICB0aWNrczogeExpbmVTaW5nbGUgPyBkMy51dGNNb250aC5ldmVyeSgxKSA6IDgsXG4gIHRpY2tGb3JtYXQ6IGQgPT4ge1xuICAgIGNvbnN0IG0gPSBkLmdldE1vbnRoKCksIHkgPSBkLmdldEZ1bGxZZWFyKClcbiAgICBpZiAoeExpbmVTaW5nbGUpICByZXR1cm4gbSA9PT0gMCA/IGAke01PTlttXX0tJHt5fWAgOiBNT05bbV1cbiAgICBpZiAoeExpbmVEZW5zZSkgICByZXR1cm4gbSA9PT0gMCA/IFN0cmluZyh5KSA6IG0gPT09IDYgPyBgSnVsICR7eX1gIDogXCJcIlxuICAgIC8vIHNwYXJzZTogc3BlY2lmaWMgbW9udGggYWNyb3NzIGFsbCB5ZWFyc1xuICAgIHJldHVybiBtID09PSAwID8gYEphbi0ke3l9YCA6IG0gPT09IDYgPyBgSnVsLSR7eX1gIDogYCR7TU9OW21dfS0ke3l9YFxuICB9XG59KVxuXG4vLyBIZWxwZXI6IGZpcnN0IGFuZCBsYXN0IGRheSBvZiBhIG1vbnRoIGFzIERhdGUgb2JqZWN0cyAobG9jYWwgdGltZSkuXG4vLyBVc2VkIGJ5IHJlY3RZIGJhciBjaGFydHMgdG8gZHJhdyBiYXJzIHNwYW5uaW5nIGV4YWN0bHkgb25lIGNhbGVuZGFyIG1vbnRoLlxubW9udGhTdGFydCA9IGQgPT4gbmV3IERhdGUoZC5kYXRlLmdldEZ1bGxZZWFyKCksIGQuZGF0ZS5nZXRNb250aCgpLCAxKVxubW9udGhFbmQgICA9IGQgPT4gbmV3IERhdGUoZC5kYXRlLmdldEZ1bGxZZWFyKCksIGQuZGF0ZS5nZXRNb250aCgpICsgMSwgMSlcbi8vIE1pZC1tb250aCBkYXRlIHVzZWQgdG8gYW5jaG9yIHBvaW50ZXJYIHRvb2x0aXAgc25hcHBpbmcuXG5tb250aE1pZCAgID0gZCA9PiBuZXcgRGF0ZShkLmRhdGUuZ2V0RnVsbFllYXIoKSwgZC5kYXRlLmdldE1vbnRoKCksIDE1KVxuXG4vLyBTaGFyZWQgeSBmb3JtYXR0ZXIg4oCUIG5vIHNjaWVudGlmaWMgbm90YXRpb24uXG5mbXROID0gZCA9PiBkLnRvTG9jYWxlU3RyaW5nKClcbmZtdFBjdCA9IGQgPT4gKGQgKiAxMDApLnRvRml4ZWQoMCkgKyBcIiVcIlxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGgsIGhlaWdodDogMzgwLCBtYXJnaW5MZWZ0OiA3MCxcbiAgeDogeExpbmUsXG4gIHk6IHtsYWJlbDogXCJQZW9wbGUgYWN0aXZlbHkgaG9tZWxlc3NcIiwgZ3JpZDogdHJ1ZSwgdGlja0Zvcm1hdDogZm10Tn0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5ydWxlWShbMF0pLFxuICAgIFBsb3QubGluZShmaWx0ZXJlZCwge3g6IFwiZGF0ZVwiLCB5OiBcImFjdGl2ZWx5X2hvbWVsZXNzXCIsIHN0cm9rZTogXCIjRkYyRDU1XCIsIHN0cm9rZVdpZHRoOiAyfSksXG4gICAgUGxvdC5kb3QoZmlsdGVyZWQsICB7eDogXCJkYXRlXCIsIHk6IFwiYWN0aXZlbHlfaG9tZWxlc3NcIiwgZmlsbDogICBcIiNGRjJENTVcIiwgcjogMn0pLFxuICAgIFBsb3QudGlwKGZpbHRlcmVkLCBQbG90LnBvaW50ZXJYKHtcbiAgICAgIHg6IFwiZGF0ZVwiLCB5OiBcImFjdGl2ZWx5X2hvbWVsZXNzXCIsXG4gICAgICB0aXRsZTogZCA9PiBgJHtkLm1vbnRofVxcbiR7ZC5hY3RpdmVseV9ob21lbGVzcy50b0xvY2FsZVN0cmluZygpfSBwZW9wbGVgXG4gICAgfSkpXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTgiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJuZXREYXRhID0gZmlsdGVyZWQubWFwKGQgPT4gKHtcbiAgZGF0ZTogZC5kYXRlLCBtb250aDogZC5tb250aCxcbiAgbmV0X2NoYW5nZTogZC5uZXdseV9pZGVudGlmaWVkICsgZC5yZXR1cm5lZF9mcm9tX2hvdXNpbmcgKyBkLnJldHVybmVkX3RvX3NoZWx0ZXJcbiAgICAgICAgICAgICAgLSBkLm1vdmVkX3RvX2hvdXNpbmcgLSBkLmJlY2FtZV9pbmFjdGl2ZVxufSkpXG5cblBsb3QucGxvdCh7XG4gIHdpZHRoLCBoZWlnaHQ6IDM4MCwgbWFyZ2luTGVmdDogNzAsXG4gIHg6IHhMaW5lLFxuICB5OiB7bGFiZWw6IFwiTmV0IGNoYW5nZSAocGVvcGxlKVwiLCBncmlkOiB0cnVlLCB0aWNrRm9ybWF0OiBmbXROfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LnJ1bGVZKFswXSwge3N0cm9rZTogXCIjNTU1XCIsIHN0cm9rZVdpZHRoOiAxLjV9KSxcbiAgICBQbG90LmxpbmUobmV0RGF0YSwge3g6IFwiZGF0ZVwiLCB5OiBcIm5ldF9jaGFuZ2VcIiwgc3Ryb2tlOiBcIiM1ODU2RDZcIiwgc3Ryb2tlV2lkdGg6IDJ9KSxcbiAgICBQbG90LmRvdChuZXREYXRhLCAge3g6IFwiZGF0ZVwiLCB5OiBcIm5ldF9jaGFuZ2VcIiwgZmlsbDogICBcIiM1ODU2RDZcIiwgcjogMn0pLFxuICAgIFBsb3QudGlwKG5ldERhdGEsIFBsb3QucG9pbnRlclgoe1xuICAgICAgeDogXCJkYXRlXCIsIHk6IFwibmV0X2NoYW5nZVwiLFxuICAgICAgdGl0bGU6IGQgPT4ge1xuICAgICAgICBjb25zdCBzaWduID0gZC5uZXRfY2hhbmdlID49IDAgPyBcIitcIiA6IFwiXCJcbiAgICAgICAgcmV0dXJuIGAke2QubW9udGh9XFxuJHtzaWdufSR7ZC5uZXRfY2hhbmdlLnRvTG9jYWxlU3RyaW5nKCl9IHBlb3BsZWBcbiAgICAgIH1cbiAgICB9KSlcbiAgXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Ii8vIHJlY3RZIG9uIGEgdGVtcG9yYWwgeCBzY2FsZSDigJQgZWxpbWluYXRlcyB0aGUgYmFuZC1zY2FsZSBcInRvbyBtYW55IHZhbHVlc1wiXG4vLyB3YXJuaW5nIGFuZCBnaXZlcyBwaXhlbC1hY2N1cmF0ZSB0b29sdGlwIHNuYXBwaW5nIGF0IGFsbCBicm93c2VyIHpvb20gbGV2ZWxzLlxudG90YWxSZWN0RGF0YSA9IGZpbHRlcmVkLm1hcChkID0+IHtcbiAgY29uc3QgaW5mbG93ICA9IGQubmV3bHlfaWRlbnRpZmllZCArIGQucmV0dXJuZWRfZnJvbV9ob3VzaW5nICsgZC5yZXR1cm5lZF90b19zaGVsdGVyXG4gIGNvbnN0IG91dGZsb3cgPSBkLm1vdmVkX3RvX2hvdXNpbmcgKyBkLmJlY2FtZV9pbmFjdGl2ZVxuICBjb25zdCBsYmwgICAgID0gYCR7TU9OW3BhcnNlSW50KGQubW9udGguc2xpY2UoNSw3KSktMV19LSR7ZC5tb250aC5zbGljZSgwLDQpfWBcbiAgcmV0dXJuIHtcbiAgICB4MTogbW9udGhTdGFydChkKSwgeDI6IG1vbnRoRW5kKGQpLCB4TWlkOiBtb250aE1pZChkKSxcbiAgICBpbmZsb3csIG91dGZsb3csXG4gICAgdGlwVGl0bGU6IGAke2xibH1cXG5JbmZsb3c6ICArJHtpbmZsb3cudG9Mb2NhbGVTdHJpbmcoKX1cXG5PdXRmbG93OiDiiJIke291dGZsb3cudG9Mb2NhbGVTdHJpbmcoKX1cXG5OZXQ6ICAgICAgJHsoaW5mbG93LW91dGZsb3cpPj0wP1wiK1wiOlwiXCJ9JHsoaW5mbG93LW91dGZsb3cpLnRvTG9jYWxlU3RyaW5nKCl9YFxuICB9XG59KVxuXG5QbG90LnBsb3Qoe1xuICB3aWR0aCwgaGVpZ2h0OiAzODAsIG1hcmdpbkxlZnQ6IDcwLFxuICB4OiB4TGluZSxcbiAgeToge2xhYmVsOiBcIlBlb3BsZVwiLCBncmlkOiB0cnVlLCB0aWNrRm9ybWF0OiBmbXROfSxcbiAgY29sb3I6IHtkb21haW46IFtcIkluZmxvd1wiLFwiT3V0Zmxvd1wiXSwgcmFuZ2U6IFtcIiNFNjM5NDZcIixcIiM2NkNDNjZcIl0sIGxlZ2VuZDogdHJ1ZX0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5ydWxlWShbMF0pLFxuICAgIFBsb3QucmVjdFkodG90YWxSZWN0RGF0YSwge3gxOiBcIngxXCIsIHgyOiBcIngyXCIsIHkxOiAwLCB5MjogXCJpbmZsb3dcIiwgICAgICAgICAgZmlsbDogXCIjRTYzOTQ2XCIsIGluc2V0TGVmdDogMC41LCBpbnNldFJpZ2h0OiAwLjV9KSxcbiAgICBQbG90LnJlY3RZKHRvdGFsUmVjdERhdGEsIHt4MTogXCJ4MVwiLCB4MjogXCJ4MlwiLCB5MTogZCA9PiAtZC5vdXRmbG93LCB5MjogMCwgIGZpbGw6IFwiIzY2Q0M2NlwiLCBpbnNldExlZnQ6IDAuNSwgaW5zZXRSaWdodDogMC41fSksXG4gICAgUGxvdC50aXAodG90YWxSZWN0RGF0YSwgUGxvdC5wb2ludGVyWCh7eDogXCJ4TWlkXCIsIHRpdGxlOiBkID0+IGQudGlwVGl0bGV9KSlcbiAgXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTAiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJkZXRhaWxlZEZsb3dUeXBlcyA9IFtcbiAgXCJJbmZsb3cgLSBOZXdseSBJZGVudGlmaWVkXCIsXG4gIFwiSW5mbG93IC0gUmV0dXJuZWQgZnJvbSBQZXJtYW5lbnQgSG91c2luZ1wiLFxuICBcIkluZmxvdyAtIFJldHVybmVkIHRvIFNoZWx0ZXJcIixcbiAgXCJPdXRmbG93IC0gQmVjYW1lIEluYWN0aXZlXCIsXG4gIFwiT3V0ZmxvdyAtIE1vdmVkIHRvIFBlcm1hbmVudCBIb3VzaW5nXCJcbl1cblxuZGV0YWlsZWRDb2xvcnMgPSBbXCIjRTYzOTQ2XCIsXCIjRkZENjAwXCIsXCIjRkI4QzAwXCIsXCIjNTEyREE4XCIsXCIjNjZDQzY2XCJdXG5cbi8vIFByZS1jb21wdXRlIHN0YWNrZWQgeTEveTIgZm9yIGVhY2ggc2VyaWVzIG1hbnVhbGx5IOKAlCBhdm9pZHMgc3RhY2tZIG9uIHJlY3RZXG4vLyAod2hpY2ggZG9lc24ndCBzdXBwb3J0IHgxL3gyIGNoYW5uZWxzKSBhbmQgZWxpbWluYXRlcyB0aGUgYmFuZC1zY2FsZSB3YXJuaW5nLlxuZGV0YWlsUmVjdERhdGEgPSBmaWx0ZXJlZC5mbGF0TWFwKGQgPT4ge1xuICBjb25zdCB4MSA9IG1vbnRoU3RhcnQoZCksIHgyID0gbW9udGhFbmQoZCksIHhNaWQgPSBtb250aE1pZChkKVxuICBjb25zdCBuaSA9IGQubmV3bHlfaWRlbnRpZmllZCwgcmZoID0gZC5yZXR1cm5lZF9mcm9tX2hvdXNpbmcsXG4gICAgICAgIHJ0cyA9IGQucmV0dXJuZWRfdG9fc2hlbHRlciwgYmkgPSBkLmJlY2FtZV9pbmFjdGl2ZSwgbWggPSBkLm1vdmVkX3RvX2hvdXNpbmdcbiAgcmV0dXJuIFtcbiAgICB7eDEsIHgyLCB4TWlkLCB0eXBlOiBcIkluZmxvdyAtIE5ld2x5IElkZW50aWZpZWRcIiwgICAgICAgICAgICAgICAgeTE6IDAsICAgICAgIHkyOiBuaX0sXG4gICAge3gxLCB4MiwgeE1pZCwgdHlwZTogXCJJbmZsb3cgLSBSZXR1cm5lZCBmcm9tIFBlcm1hbmVudCBIb3VzaW5nXCIsICB5MTogbmksICAgICAgeTI6IG5pK3JmaH0sXG4gICAge3gxLCB4MiwgeE1pZCwgdHlwZTogXCJJbmZsb3cgLSBSZXR1cm5lZCB0byBTaGVsdGVyXCIsICAgICAgICAgICAgICB5MTogbmkrcmZoLCAgeTI6IG5pK3JmaCtydHN9LFxuICAgIHt4MSwgeDIsIHhNaWQsIHR5cGU6IFwiT3V0ZmxvdyAtIEJlY2FtZSBJbmFjdGl2ZVwiLCAgICAgICAgICAgICAgICAgeTE6IDAsICAgICAgIHkyOiAtYml9LFxuICAgIHt4MSwgeDIsIHhNaWQsIHR5cGU6IFwiT3V0ZmxvdyAtIE1vdmVkIHRvIFBlcm1hbmVudCBIb3VzaW5nXCIsICAgICAgeTE6IC1iaSwgICAgIHkyOiAtKGJpK21oKX1cbiAgXVxufSlcblxuZGV0YWlsVGlwRGF0YSA9IGZpbHRlcmVkLm1hcChkID0+IHtcbiAgY29uc3QgbGJsID0gYCR7TU9OW3BhcnNlSW50KGQubW9udGguc2xpY2UoNSw3KSktMV19LSR7ZC5tb250aC5zbGljZSgwLDQpfWBcbiAgcmV0dXJuIHtcbiAgICB4TWlkOiBtb250aE1pZChkKSxcbiAgICB0aXBUaXRsZTogW1xuICAgICAgbGJsLFxuICAgICAgYE5ld2x5IElkZW50aWZpZWQ6ICAgICAgICske2QubmV3bHlfaWRlbnRpZmllZC50b0xvY2FsZVN0cmluZygpfWAsXG4gICAgICBgUmV0dXJuZWQgZnJvbSBIb3VzaW5nOiAgKyR7ZC5yZXR1cm5lZF9mcm9tX2hvdXNpbmcudG9Mb2NhbGVTdHJpbmcoKX1gLFxuICAgICAgYFJldHVybmVkIHRvIFNoZWx0ZXI6ICAgICske2QucmV0dXJuZWRfdG9fc2hlbHRlci50b0xvY2FsZVN0cmluZygpfWAsXG4gICAgICBgQmVjYW1lIEluYWN0aXZlOiAgICAgICAg4oiSJHtkLmJlY2FtZV9pbmFjdGl2ZS50b0xvY2FsZVN0cmluZygpfWAsXG4gICAgICBgTW92ZWQgdG8gSG91c2luZzogICAgICAg4oiSJHtkLm1vdmVkX3RvX2hvdXNpbmcudG9Mb2NhbGVTdHJpbmcoKX1gXG4gICAgXS5qb2luKFwiXFxuXCIpXG4gIH1cbn0pXG5cblBsb3QucGxvdCh7XG4gIHdpZHRoLCBoZWlnaHQ6IDQyMCwgbWFyZ2luTGVmdDogNzAsXG4gIHg6IHhMaW5lLFxuICB5OiB7bGFiZWw6IFwiUGVvcGxlXCIsIGdyaWQ6IHRydWUsIHRpY2tGb3JtYXQ6IGZtdE59LFxuICBjb2xvcjoge2RvbWFpbjogZGV0YWlsZWRGbG93VHlwZXMsIHJhbmdlOiBkZXRhaWxlZENvbG9ycywgbGVnZW5kOiB0cnVlfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LnJ1bGVZKFswXSksXG4gICAgUGxvdC5yZWN0WShkZXRhaWxSZWN0RGF0YSwge3gxOiBcIngxXCIsIHgyOiBcIngyXCIsIHkxOiBcInkxXCIsIHkyOiBcInkyXCIsIGZpbGw6IFwidHlwZVwiLCBpbnNldExlZnQ6IDAuNSwgaW5zZXRSaWdodDogMC41fSksXG4gICAgUGxvdC50aXAoZGV0YWlsVGlwRGF0YSwgUGxvdC5wb2ludGVyWCh7eDogXCJ4TWlkXCIsIHRpdGxlOiBkID0+IGQudGlwVGl0bGV9KSlcbiAgXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTEiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJhZ2VCYW5kRGVmcyA9IFtcbiAge2tleTogXCJhZ2VfdW5kZXJfMTZcIiwgbGFiZWw6IFwiVW5kZXIgMTZcIn0sXG4gIHtrZXk6IFwiYWdlXzE2XzI0XCIsICAgIGxhYmVsOiBcIjE24oCTMjRcIn0sXG4gIHtrZXk6IFwiYWdlXzI1XzM0XCIsICAgIGxhYmVsOiBcIjI14oCTMzRcIn0sXG4gIHtrZXk6IFwiYWdlXzM1XzQ0XCIsICAgIGxhYmVsOiBcIjM14oCTNDRcIn0sXG4gIHtrZXk6IFwiYWdlXzQ1XzU0XCIsICAgIGxhYmVsOiBcIjQ14oCTNTRcIn0sXG4gIHtrZXk6IFwiYWdlXzU1XzY0XCIsICAgIGxhYmVsOiBcIjU14oCTNjRcIn0sXG4gIHtrZXk6IFwiYWdlXzY1X292ZXJcIiwgIGxhYmVsOiBcIjY1K1wifVxuXVxuXG5hZ2VEYXRhID0gZmlsdGVyZWQuZmxhdE1hcChkID0+IHtcbiAgY29uc3QgdG90YWwgPSBhZ2VCYW5kRGVmcy5yZWR1Y2UoKHMsIGIpID0+IHMgKyAoZFtiLmtleV0gfHwgMCksIDApXG4gIHJldHVybiBhZ2VCYW5kRGVmcy5tYXAoYiA9PiAoe1xuICAgIGRhdGU6IGQuZGF0ZSwgbW9udGg6IGQubW9udGgsIGJhbmQ6IGIubGFiZWwsXG4gICAgcGN0OiB0b3RhbCA+IDAgPyBkW2Iua2V5XSAvIHRvdGFsIDogbnVsbFxuICB9KSlcbn0pXG5cblBsb3QucGxvdCh7XG4gIHdpZHRoLCBoZWlnaHQ6IDQwMCwgbWFyZ2luTGVmdDogNjAsXG4gIHg6IHhMaW5lLFxuICB5OiB7bGFiZWw6IFwiU2hhcmUgb2YgYWdlLWJhbmRlZCB0b3RhbFwiLCBncmlkOiB0cnVlLCB0aWNrRm9ybWF0OiBmbXRQY3R9LFxuICBjb2xvcjoge2xlZ2VuZDogdHJ1ZX0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5ydWxlWShbMF0pLFxuICAgIFBsb3QubGluZShhZ2VEYXRhLCB7eDogXCJkYXRlXCIsIHk6IFwicGN0XCIsIHN0cm9rZTogXCJiYW5kXCIsIHN0cm9rZVdpZHRoOiAxLjh9KSxcbiAgICBQbG90LnRpcChhZ2VEYXRhLCBQbG90LnBvaW50ZXJYKHtcbiAgICAgIHg6IFwiZGF0ZVwiLCB5OiBcInBjdFwiLCBzdHJva2U6IFwiYmFuZFwiLFxuICAgICAgdGl0bGU6IGQgPT4ge1xuICAgICAgICBjb25zdCBsYmwgPSBgJHtNT05bcGFyc2VJbnQoZC5tb250aC5zbGljZSg1LDcpKS0xXX0gJHtkLm1vbnRoLnNsaWNlKDAsNCl9YFxuICAgICAgICByZXR1cm4gYCR7ZC5iYW5kfSDigJQgJHtsYmx9XFxuJHsoZC5wY3QgKiAxMDApLnRvRml4ZWQoMSl9JWBcbiAgICAgIH1cbiAgICB9KSlcbiAgXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJnZW5kZXJEZWZzID0gW1xuICB7a2V5OiBcImdlbmRlcl9tYWxlXCIsICAgICAgICAgICAgICAgIGxhYmVsOiBcIk1lblwifSxcbiAge2tleTogXCJnZW5kZXJfZmVtYWxlXCIsICAgICAgICAgICAgICBsYWJlbDogXCJXb21lblwifSxcbiAge2tleTogXCJnZW5kZXJfdHJhbnNfbmJfdHdvX3NwaXJpdFwiLCBsYWJlbDogXCJUcmFuc2dlbmRlciwgTm9uLUJpbmFyeSwgb3IgVHdvLVNwaXJpdFwifVxuXVxuXG5nZW5kZXJEYXRhID0gZmlsdGVyZWQuZmxhdE1hcChkID0+IHtcbiAgY29uc3QgdG90YWwgPSBnZW5kZXJEZWZzLnJlZHVjZSgocywgZykgPT4gcyArIChkW2cua2V5XSB8fCAwKSwgMClcbiAgcmV0dXJuIGdlbmRlckRlZnMubWFwKGcgPT4gKHtcbiAgICBkYXRlOiBkLmRhdGUsIG1vbnRoOiBkLm1vbnRoLCBnZW5kZXI6IGcubGFiZWwsXG4gICAgcGN0OiB0b3RhbCA+IDAgPyBkW2cua2V5XSAvIHRvdGFsIDogbnVsbFxuICB9KSlcbn0pXG5cblBsb3QucGxvdCh7XG4gIHdpZHRoLCBoZWlnaHQ6IDQwMCwgbWFyZ2luTGVmdDogNjAsXG4gIHg6IHhMaW5lLFxuICB5OiB7bGFiZWw6IFwiU2hhcmUgb2YgZ2VuZGVyIHRvdGFsXCIsIGdyaWQ6IHRydWUsIHRpY2tGb3JtYXQ6IGZtdFBjdH0sXG4gIGNvbG9yOiB7bGVnZW5kOiB0cnVlfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LnJ1bGVZKFswXSksXG4gICAgUGxvdC5saW5lKGdlbmRlckRhdGEsIHt4OiBcImRhdGVcIiwgeTogXCJwY3RcIiwgc3Ryb2tlOiBcImdlbmRlclwiLCBzdHJva2VXaWR0aDogMS44fSksXG4gICAgUGxvdC50aXAoZ2VuZGVyRGF0YSwgUGxvdC5wb2ludGVyWCh7XG4gICAgICB4OiBcImRhdGVcIiwgeTogXCJwY3RcIiwgc3Ryb2tlOiBcImdlbmRlclwiLFxuICAgICAgdGl0bGU6IGQgPT4ge1xuICAgICAgICBjb25zdCBsYmwgPSBgJHtNT05bcGFyc2VJbnQoZC5tb250aC5zbGljZSg1LDcpKS0xXX0gJHtkLm1vbnRoLnNsaWNlKDAsNCl9YFxuICAgICAgICByZXR1cm4gYCR7ZC5nZW5kZXJ9IOKAlCAke2xibH1cXG4keyhkLnBjdCAqIDEwMCkudG9GaXhlZCgxKX0lYFxuICAgICAgfVxuICAgIH0pKVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdzZWxlY3RlZEdyb3VwJykifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ3NlbGVjdGVkWWVhcicpIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdzZWxlY3RlZE1vbnRoJykifV19
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImRhdGEgPSBGaWxlQXR0YWNobWVudChcIi4uL2RhdGEvc2hlbHRlcl9mbG93Lmpzb25cIikuanNvbigpXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJwb3B1bGF0aW9uR3JvdXBzID0gW1xuICBcIkFsbCBQb3B1bGF0aW9uXCIsXG4gIC4uLkFycmF5LmZyb20obmV3IFNldChkYXRhLm1hcChkID0+IGQucG9wdWxhdGlvbl9ncm91cCkpKVxuICAgIC5maWx0ZXIoZyA9PiBnICE9PSBcIkFsbCBQb3B1bGF0aW9uXCIpXG4gICAgLnNvcnQoKVxuXVxuXG5hdmFpbGFibGVZZWFycyA9IFtcbiAgXCJBbGxcIixcbiAgLi4uQXJyYXkuZnJvbShuZXcgU2V0KGRhdGEubWFwKGQgPT4gZC5mbG93X2RhdGUuc2xpY2UoMCwgNCkpKSkuc29ydCgpXG5dXG5cbm1vbnRoT3B0aW9ucyA9IFtcbiAge2xhYmVsOiBcIkFsbFwiLCB2YWx1ZTogXCJBbGxcIn0sXG4gIC4uLkFycmF5LmZyb20oe2xlbmd0aDogMTJ9LCAoXywgaSkgPT4gKHtcbiAgICBsYWJlbDogbmV3IERhdGUoMjAwMCwgaSkudG9Mb2NhbGVTdHJpbmcoXCJkZWZhdWx0XCIsIHttb250aDogXCJsb25nXCJ9KSxcbiAgICB2YWx1ZTogU3RyaW5nKGkgKyAxKVxuICB9KSlcbl1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InZpZXdvZiBzZWxlY3RlZEdyb3VwID0gSW5wdXRzLnNlbGVjdChwb3B1bGF0aW9uR3JvdXBzLCB7XG4gIGxhYmVsOiBcIlBvcHVsYXRpb24gZ3JvdXBcIiwgdmFsdWU6IFwiQWxsIFBvcHVsYXRpb25cIiwgd2lkdGg6IDIyMFxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InZpZXdvZiBzZWxlY3RlZFllYXIgPSBJbnB1dHMuc2VsZWN0KGF2YWlsYWJsZVllYXJzLCB7XG4gIGxhYmVsOiBcIlllYXJcIiwgdmFsdWU6IFwiQWxsXCIsIHdpZHRoOiAxMjBcbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTUiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2Ygc2VsZWN0ZWRNb250aCA9IElucHV0cy5zZWxlY3QobW9udGhPcHRpb25zLCB7XG4gIGxhYmVsOiBcIk1vbnRoXCIsIGZvcm1hdDogZCA9PiBkLmxhYmVsLCB2YWx1ZTogbW9udGhPcHRpb25zWzBdLCB3aWR0aDogMTYwXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiZmlsdGVyZWQgPSBkYXRhXG4gIC5maWx0ZXIoZCA9PiB7XG4gICAgY29uc3QgZ3JvdXBNYXRjaCA9IGQucG9wdWxhdGlvbl9ncm91cCA9PT0gc2VsZWN0ZWRHcm91cFxuICAgIGNvbnN0IHllYXJNYXRjaCAgPSBzZWxlY3RlZFllYXIgPT09IFwiQWxsXCIgfHwgZC5mbG93X2RhdGUuc2xpY2UoMCwgNCkgPT09IHNlbGVjdGVkWWVhclxuICAgIGNvbnN0IG1vbnRoTWF0Y2ggPSBzZWxlY3RlZE1vbnRoLnZhbHVlID09PSBcIkFsbFwiIHx8XG4gICAgICAgICAgICAgICAgICAgICAgIHBhcnNlSW50KGQuZmxvd19kYXRlLnNsaWNlKDUsIDcpKSA9PT0gcGFyc2VJbnQoc2VsZWN0ZWRNb250aC52YWx1ZSlcbiAgICByZXR1cm4gZ3JvdXBNYXRjaCAmJiB5ZWFyTWF0Y2ggJiYgbW9udGhNYXRjaFxuICB9KVxuICAubWFwKGQgPT4ge1xuICAgIGNvbnN0IFt5LCBtLCBkYXldID0gZC5mbG93X2RhdGUuc3BsaXQoXCItXCIpLm1hcChOdW1iZXIpXG4gICAgcmV0dXJuIHsuLi5kLCBkYXRlOiBuZXcgRGF0ZSh5LCBtIC0gMSwgZGF5KSwgbW9udGg6IGQuZmxvd19kYXRlLnNsaWNlKDAsIDcpfVxuICB9KVxuICAuc29ydCgoYSwgYikgPT4gYS5kYXRlIC0gYi5kYXRlKVxuXG4vLyBTaG9ydCBtb250aCBuYW1lcyB1c2VkIGluIHRpY2sgbGFiZWxzLlxuTU9OID0gW1wiSmFuXCIsXCJGZWJcIixcIk1hclwiLFwiQXByXCIsXCJNYXlcIixcIkp1blwiLFwiSnVsXCIsXCJBdWdcIixcIlNlcFwiLFwiT2N0XCIsXCJOb3ZcIixcIkRlY1wiXVxuXG4vLyBBY3R1YWwgdGltZSBzcGFuIGluIG1vbnRocyBiZXR3ZWVuIGZpcnN0IGFuZCBsYXN0IGZpbHRlcmVkIHJvdy5cbi8vIFRoaXMgZ292ZXJucyB0aWNrIGRlbnNpdHkg4oCUIE5PVCB0aGUgZGF0YSBwb2ludCBjb3VudCwgd2hpY2ggaXMgbWlzbGVhZGluZ1xuLy8gd2hlbiBvbmUgc3BlY2lmaWMgbW9udGggaXMgc2VsZWN0ZWQgYWNyb3NzIG1hbnkgeWVhcnMgKGZldyBwb2ludHMsIGh1Z2Ugc3BhbikuXG5zcGFuTW9udGhzID0gZmlsdGVyZWQubGVuZ3RoIDwgMiA/IDEgOlxuICBNYXRoLnJvdW5kKChmaWx0ZXJlZFtmaWx0ZXJlZC5sZW5ndGgtMV0uZGF0ZSAtIGZpbHRlcmVkWzBdLmRhdGUpXG4gICAgICAgICAgICAgLyAoMzAuNDQgKiAyNCAqIDM2MDAgKiAxMDAwKSlcblxuLy8gVGhyZWUgYXhpcyBkaXNwbGF5IG1vZGVzIGZvciBMSU5FIGNoYXJ0czpcbi8vICAgZGVuc2UgIOKAlCBtYW55IHllYXJzLCBhbGwgbW9udGhzIChmaWx0ZXJlZC5sZW5ndGggPiAyMCwgc3Bhbk1vbnRocyA+IDE4KVxuLy8gICAgICAgICAgICDihpIgeWVhcmx5IHRpY2tzLCB5ZWFyLW9ubHkgbGFiZWwgKFwiMjAxOVwiKVxuLy8gICBzcGFyc2Ug4oCUIHNwZWNpZmljIG1vbnRoIGFjcm9zcyBhbGwgeWVhcnMgKGZpbHRlcmVkLmxlbmd0aCDiiaQgMjAsIHNwYW5Nb250aHMgPiAxOClcbi8vICAgICAgICAgICAg4oaSIHllYXJseSB0aWNrcywgXCJNb24tWVlZWVwiIGxhYmVsIChcIkphbi0yMDE4XCIpXG4vLyAgIHNpbmdsZSDigJQgb25lIHllYXIgc2VsZWN0ZWQgKHNwYW5Nb250aHMg4omkIDE4KVxuLy8gICAgICAgICAgICDihpIgbW9udGhseSB0aWNrcywgXCJNb25cIiB3aXRoIHllYXIgb24gSmFudWFyeSAoXCJKYW4tMjAxOFwiLCBcIkZlYlwiLCDigKYpXG54TGluZURlbnNlICA9IHNwYW5Nb250aHMgPiAxOCAmJiBmaWx0ZXJlZC5sZW5ndGggPiAyMFxueExpbmVTaW5nbGUgPSBzcGFuTW9udGhzIDw9IDE4XG5cbnhMaW5lID0gKHtcbiAgdHlwZTogXCJ0aW1lXCIsXG4gIGxhYmVsOiBudWxsLFxuICB0aWNrczogeExpbmVTaW5nbGUgPyBkMy51dGNNb250aC5ldmVyeSgxKSA6IDgsXG4gIHRpY2tGb3JtYXQ6IGQgPT4ge1xuICAgIGNvbnN0IG0gPSBkLmdldE1vbnRoKCksIHkgPSBkLmdldEZ1bGxZZWFyKClcbiAgICBpZiAoeExpbmVTaW5nbGUpICByZXR1cm4gbSA9PT0gMCA/IGAke01PTlttXX0tJHt5fWAgOiBNT05bbV1cbiAgICBpZiAoeExpbmVEZW5zZSkgICByZXR1cm4gbSA9PT0gMCA/IFN0cmluZyh5KSA6IG0gPT09IDYgPyBgSnVsICR7eX1gIDogXCJcIlxuICAgIC8vIHNwYXJzZTogc3BlY2lmaWMgbW9udGggYWNyb3NzIGFsbCB5ZWFyc1xuICAgIHJldHVybiBtID09PSAwID8gYEphbi0ke3l9YCA6IG0gPT09IDYgPyBgSnVsLSR7eX1gIDogYCR7TU9OW21dfS0ke3l9YFxuICB9XG59KVxuXG4vLyBIZWxwZXI6IGZpcnN0IGFuZCBsYXN0IGRheSBvZiBhIG1vbnRoIGFzIERhdGUgb2JqZWN0cyAobG9jYWwgdGltZSkuXG4vLyBVc2VkIGJ5IHJlY3RZIGJhciBjaGFydHMgdG8gZHJhdyBiYXJzIHNwYW5uaW5nIGV4YWN0bHkgb25lIGNhbGVuZGFyIG1vbnRoLlxubW9udGhTdGFydCA9IGQgPT4gbmV3IERhdGUoZC5kYXRlLmdldEZ1bGxZZWFyKCksIGQuZGF0ZS5nZXRNb250aCgpLCAxKVxubW9udGhFbmQgICA9IGQgPT4gbmV3IERhdGUoZC5kYXRlLmdldEZ1bGxZZWFyKCksIGQuZGF0ZS5nZXRNb250aCgpICsgMSwgMSlcbi8vIE1pZC1tb250aCBkYXRlIHVzZWQgdG8gYW5jaG9yIHBvaW50ZXJYIHRvb2x0aXAgc25hcHBpbmcuXG5tb250aE1pZCAgID0gZCA9PiBuZXcgRGF0ZShkLmRhdGUuZ2V0RnVsbFllYXIoKSwgZC5kYXRlLmdldE1vbnRoKCksIDE1KVxuXG4vLyBTaGFyZWQgeSBmb3JtYXR0ZXIg4oCUIG5vIHNjaWVudGlmaWMgbm90YXRpb24uXG5mbXROID0gZCA9PiBkLnRvTG9jYWxlU3RyaW5nKClcbmZtdFBjdCA9IGQgPT4gKGQgKiAxMDApLnRvRml4ZWQoMCkgKyBcIiVcIlxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGgsIGhlaWdodDogMzgwLCBtYXJnaW5MZWZ0OiA3MCxcbiAgeDogeExpbmUsXG4gIHk6IHtsYWJlbDogXCJQZW9wbGUgYWN0aXZlbHkgaG9tZWxlc3NcIiwgZ3JpZDogdHJ1ZSwgdGlja0Zvcm1hdDogZm10Tn0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5ydWxlWShbMF0pLFxuICAgIFBsb3QubGluZShmaWx0ZXJlZCwge3g6IFwiZGF0ZVwiLCB5OiBcImFjdGl2ZWx5X2hvbWVsZXNzXCIsIHN0cm9rZTogXCIjRkYyRDU1XCIsIHN0cm9rZVdpZHRoOiAyfSksXG4gICAgUGxvdC5kb3QoZmlsdGVyZWQsICB7eDogXCJkYXRlXCIsIHk6IFwiYWN0aXZlbHlfaG9tZWxlc3NcIiwgZmlsbDogICBcIiNGRjJENTVcIiwgcjogMn0pLFxuICAgIFBsb3QudGlwKGZpbHRlcmVkLCBQbG90LnBvaW50ZXJYKHtcbiAgICAgIHg6IFwiZGF0ZVwiLCB5OiBcImFjdGl2ZWx5X2hvbWVsZXNzXCIsXG4gICAgICB0aXRsZTogZCA9PiBgJHtkLm1vbnRofVxcbiR7ZC5hY3RpdmVseV9ob21lbGVzcy50b0xvY2FsZVN0cmluZygpfSBwZW9wbGVgXG4gICAgfSkpXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTgiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJuZXREYXRhID0gZmlsdGVyZWQubWFwKGQgPT4gKHtcbiAgZGF0ZTogZC5kYXRlLCBtb250aDogZC5tb250aCxcbiAgbmV0X2NoYW5nZTogZC5uZXdseV9pZGVudGlmaWVkICsgZC5yZXR1cm5lZF9mcm9tX2hvdXNpbmcgKyBkLnJldHVybmVkX3RvX3NoZWx0ZXJcbiAgICAgICAgICAgICAgLSBkLm1vdmVkX3RvX2hvdXNpbmcgLSBkLmJlY2FtZV9pbmFjdGl2ZVxufSkpXG5cblBsb3QucGxvdCh7XG4gIHdpZHRoLCBoZWlnaHQ6IDM4MCwgbWFyZ2luTGVmdDogNzAsXG4gIHg6IHhMaW5lLFxuICB5OiB7bGFiZWw6IFwiTmV0IGNoYW5nZSAocGVvcGxlKVwiLCBncmlkOiB0cnVlLCB0aWNrRm9ybWF0OiBmbXROfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LnJ1bGVZKFswXSwge3N0cm9rZTogZ2V0Q29tcHV0ZWRTdHlsZShkb2N1bWVudC5kb2N1bWVudEVsZW1lbnQpLmdldFByb3BlcnR5VmFsdWUoXCItLWJxLWZnLXNlY29uZGFyeVwiKSwgc3Ryb2tlV2lkdGg6IDEuNX0pLFxuICAgIFBsb3QubGluZShuZXREYXRhLCB7eDogXCJkYXRlXCIsIHk6IFwibmV0X2NoYW5nZVwiLCBzdHJva2U6IFwiIzU4NTZENlwiLCBzdHJva2VXaWR0aDogMn0pLFxuICAgIFBsb3QuZG90KG5ldERhdGEsICB7eDogXCJkYXRlXCIsIHk6IFwibmV0X2NoYW5nZVwiLCBmaWxsOiAgIFwiIzU4NTZENlwiLCByOiAyfSksXG4gICAgUGxvdC50aXAobmV0RGF0YSwgUGxvdC5wb2ludGVyWCh7XG4gICAgICB4OiBcImRhdGVcIiwgeTogXCJuZXRfY2hhbmdlXCIsXG4gICAgICB0aXRsZTogZCA9PiB7XG4gICAgICAgIGNvbnN0IHNpZ24gPSBkLm5ldF9jaGFuZ2UgPj0gMCA/IFwiK1wiIDogXCJcIlxuICAgICAgICByZXR1cm4gYCR7ZC5tb250aH1cXG4ke3NpZ259JHtkLm5ldF9jaGFuZ2UudG9Mb2NhbGVTdHJpbmcoKX0gcGVvcGxlYFxuICAgICAgfVxuICAgIH0pKVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC05IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiLy8gcmVjdFkgb24gYSB0ZW1wb3JhbCB4IHNjYWxlIOKAlCBlbGltaW5hdGVzIHRoZSBiYW5kLXNjYWxlIFwidG9vIG1hbnkgdmFsdWVzXCJcbi8vIHdhcm5pbmcgYW5kIGdpdmVzIHBpeGVsLWFjY3VyYXRlIHRvb2x0aXAgc25hcHBpbmcgYXQgYWxsIGJyb3dzZXIgem9vbSBsZXZlbHMuXG50b3RhbFJlY3REYXRhID0gZmlsdGVyZWQubWFwKGQgPT4ge1xuICBjb25zdCBpbmZsb3cgID0gZC5uZXdseV9pZGVudGlmaWVkICsgZC5yZXR1cm5lZF9mcm9tX2hvdXNpbmcgKyBkLnJldHVybmVkX3RvX3NoZWx0ZXJcbiAgY29uc3Qgb3V0ZmxvdyA9IGQubW92ZWRfdG9faG91c2luZyArIGQuYmVjYW1lX2luYWN0aXZlXG4gIGNvbnN0IGxibCAgICAgPSBgJHtNT05bcGFyc2VJbnQoZC5tb250aC5zbGljZSg1LDcpKS0xXX0tJHtkLm1vbnRoLnNsaWNlKDAsNCl9YFxuICByZXR1cm4ge1xuICAgIHgxOiBtb250aFN0YXJ0KGQpLCB4MjogbW9udGhFbmQoZCksIHhNaWQ6IG1vbnRoTWlkKGQpLFxuICAgIGluZmxvdywgb3V0ZmxvdyxcbiAgICB0aXBUaXRsZTogYCR7bGJsfVxcbkluZmxvdzogICske2luZmxvdy50b0xvY2FsZVN0cmluZygpfVxcbk91dGZsb3c6IOKIkiR7b3V0Zmxvdy50b0xvY2FsZVN0cmluZygpfVxcbk5ldDogICAgICAkeyhpbmZsb3ctb3V0Zmxvdyk+PTA/XCIrXCI6XCJcIn0keyhpbmZsb3ctb3V0ZmxvdykudG9Mb2NhbGVTdHJpbmcoKX1gXG4gIH1cbn0pXG5cblBsb3QucGxvdCh7XG4gIHdpZHRoLCBoZWlnaHQ6IDM4MCwgbWFyZ2luTGVmdDogNzAsXG4gIHg6IHhMaW5lLFxuICB5OiB7bGFiZWw6IFwiUGVvcGxlXCIsIGdyaWQ6IHRydWUsIHRpY2tGb3JtYXQ6IGZtdE59LFxuICBjb2xvcjoge2RvbWFpbjogW1wiSW5mbG93XCIsXCJPdXRmbG93XCJdLCByYW5nZTogW1wiI0U2Mzk0NlwiLFwiIzY2Q0M2NlwiXSwgbGVnZW5kOiB0cnVlfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LnJ1bGVZKFswXSksXG4gICAgUGxvdC5yZWN0WSh0b3RhbFJlY3REYXRhLCB7eDE6IFwieDFcIiwgeDI6IFwieDJcIiwgeTE6IDAsIHkyOiBcImluZmxvd1wiLCAgICAgICAgICBmaWxsOiBcIiNFNjM5NDZcIiwgaW5zZXRMZWZ0OiAwLjUsIGluc2V0UmlnaHQ6IDAuNX0pLFxuICAgIFBsb3QucmVjdFkodG90YWxSZWN0RGF0YSwge3gxOiBcIngxXCIsIHgyOiBcIngyXCIsIHkxOiBkID0+IC1kLm91dGZsb3csIHkyOiAwLCAgZmlsbDogXCIjNjZDQzY2XCIsIGluc2V0TGVmdDogMC41LCBpbnNldFJpZ2h0OiAwLjV9KSxcbiAgICBQbG90LnRpcCh0b3RhbFJlY3REYXRhLCBQbG90LnBvaW50ZXJYKHt4OiBcInhNaWRcIiwgdGl0bGU6IGQgPT4gZC50aXBUaXRsZX0pKVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xMCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImRldGFpbGVkRmxvd1R5cGVzID0gW1xuICBcIkluZmxvdyAtIE5ld2x5IElkZW50aWZpZWRcIixcbiAgXCJJbmZsb3cgLSBSZXR1cm5lZCBmcm9tIFBlcm1hbmVudCBIb3VzaW5nXCIsXG4gIFwiSW5mbG93IC0gUmV0dXJuZWQgdG8gU2hlbHRlclwiLFxuICBcIk91dGZsb3cgLSBCZWNhbWUgSW5hY3RpdmVcIixcbiAgXCJPdXRmbG93IC0gTW92ZWQgdG8gUGVybWFuZW50IEhvdXNpbmdcIlxuXVxuXG5kZXRhaWxlZENvbG9ycyA9IFtcIiNFNjM5NDZcIixcIiNGRkQ2MDBcIixcIiNGQjhDMDBcIixcIiM1MTJEQThcIixcIiM2NkNDNjZcIl1cblxuLy8gUHJlLWNvbXB1dGUgc3RhY2tlZCB5MS95MiBmb3IgZWFjaCBzZXJpZXMgbWFudWFsbHkg4oCUIGF2b2lkcyBzdGFja1kgb24gcmVjdFlcbi8vICh3aGljaCBkb2Vzbid0IHN1cHBvcnQgeDEveDIgY2hhbm5lbHMpIGFuZCBlbGltaW5hdGVzIHRoZSBiYW5kLXNjYWxlIHdhcm5pbmcuXG5kZXRhaWxSZWN0RGF0YSA9IGZpbHRlcmVkLmZsYXRNYXAoZCA9PiB7XG4gIGNvbnN0IHgxID0gbW9udGhTdGFydChkKSwgeDIgPSBtb250aEVuZChkKSwgeE1pZCA9IG1vbnRoTWlkKGQpXG4gIGNvbnN0IG5pID0gZC5uZXdseV9pZGVudGlmaWVkLCByZmggPSBkLnJldHVybmVkX2Zyb21faG91c2luZyxcbiAgICAgICAgcnRzID0gZC5yZXR1cm5lZF90b19zaGVsdGVyLCBiaSA9IGQuYmVjYW1lX2luYWN0aXZlLCBtaCA9IGQubW92ZWRfdG9faG91c2luZ1xuICByZXR1cm4gW1xuICAgIHt4MSwgeDIsIHhNaWQsIHR5cGU6IFwiSW5mbG93IC0gTmV3bHkgSWRlbnRpZmllZFwiLCAgICAgICAgICAgICAgICB5MTogMCwgICAgICAgeTI6IG5pfSxcbiAgICB7eDEsIHgyLCB4TWlkLCB0eXBlOiBcIkluZmxvdyAtIFJldHVybmVkIGZyb20gUGVybWFuZW50IEhvdXNpbmdcIiwgIHkxOiBuaSwgICAgICB5MjogbmkrcmZofSxcbiAgICB7eDEsIHgyLCB4TWlkLCB0eXBlOiBcIkluZmxvdyAtIFJldHVybmVkIHRvIFNoZWx0ZXJcIiwgICAgICAgICAgICAgIHkxOiBuaStyZmgsICB5MjogbmkrcmZoK3J0c30sXG4gICAge3gxLCB4MiwgeE1pZCwgdHlwZTogXCJPdXRmbG93IC0gQmVjYW1lIEluYWN0aXZlXCIsICAgICAgICAgICAgICAgICB5MTogMCwgICAgICAgeTI6IC1iaX0sXG4gICAge3gxLCB4MiwgeE1pZCwgdHlwZTogXCJPdXRmbG93IC0gTW92ZWQgdG8gUGVybWFuZW50IEhvdXNpbmdcIiwgICAgICB5MTogLWJpLCAgICAgeTI6IC0oYmkrbWgpfVxuICBdXG59KVxuXG5kZXRhaWxUaXBEYXRhID0gZmlsdGVyZWQubWFwKGQgPT4ge1xuICBjb25zdCBsYmwgPSBgJHtNT05bcGFyc2VJbnQoZC5tb250aC5zbGljZSg1LDcpKS0xXX0tJHtkLm1vbnRoLnNsaWNlKDAsNCl9YFxuICByZXR1cm4ge1xuICAgIHhNaWQ6IG1vbnRoTWlkKGQpLFxuICAgIHRpcFRpdGxlOiBbXG4gICAgICBsYmwsXG4gICAgICBgTmV3bHkgSWRlbnRpZmllZDogICAgICAgKyR7ZC5uZXdseV9pZGVudGlmaWVkLnRvTG9jYWxlU3RyaW5nKCl9YCxcbiAgICAgIGBSZXR1cm5lZCBmcm9tIEhvdXNpbmc6ICArJHtkLnJldHVybmVkX2Zyb21faG91c2luZy50b0xvY2FsZVN0cmluZygpfWAsXG4gICAgICBgUmV0dXJuZWQgdG8gU2hlbHRlcjogICAgKyR7ZC5yZXR1cm5lZF90b19zaGVsdGVyLnRvTG9jYWxlU3RyaW5nKCl9YCxcbiAgICAgIGBCZWNhbWUgSW5hY3RpdmU6ICAgICAgICDiiJIke2QuYmVjYW1lX2luYWN0aXZlLnRvTG9jYWxlU3RyaW5nKCl9YCxcbiAgICAgIGBNb3ZlZCB0byBIb3VzaW5nOiAgICAgICDiiJIke2QubW92ZWRfdG9faG91c2luZy50b0xvY2FsZVN0cmluZygpfWBcbiAgICBdLmpvaW4oXCJcXG5cIilcbiAgfVxufSlcblxuUGxvdC5wbG90KHtcbiAgd2lkdGgsIGhlaWdodDogNDIwLCBtYXJnaW5MZWZ0OiA3MCxcbiAgeDogeExpbmUsXG4gIHk6IHtsYWJlbDogXCJQZW9wbGVcIiwgZ3JpZDogdHJ1ZSwgdGlja0Zvcm1hdDogZm10Tn0sXG4gIGNvbG9yOiB7ZG9tYWluOiBkZXRhaWxlZEZsb3dUeXBlcywgcmFuZ2U6IGRldGFpbGVkQ29sb3JzLCBsZWdlbmQ6IHRydWV9LFxuICBtYXJrczogW1xuICAgIFBsb3QucnVsZVkoWzBdKSxcbiAgICBQbG90LnJlY3RZKGRldGFpbFJlY3REYXRhLCB7eDE6IFwieDFcIiwgeDI6IFwieDJcIiwgeTE6IFwieTFcIiwgeTI6IFwieTJcIiwgZmlsbDogXCJ0eXBlXCIsIGluc2V0TGVmdDogMC41LCBpbnNldFJpZ2h0OiAwLjV9KSxcbiAgICBQbG90LnRpcChkZXRhaWxUaXBEYXRhLCBQbG90LnBvaW50ZXJYKHt4OiBcInhNaWRcIiwgdGl0bGU6IGQgPT4gZC50aXBUaXRsZX0pKVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImFnZUJhbmREZWZzID0gW1xuICB7a2V5OiBcImFnZV91bmRlcl8xNlwiLCBsYWJlbDogXCJVbmRlciAxNlwifSxcbiAge2tleTogXCJhZ2VfMTZfMjRcIiwgICAgbGFiZWw6IFwiMTbigJMyNFwifSxcbiAge2tleTogXCJhZ2VfMjVfMzRcIiwgICAgbGFiZWw6IFwiMjXigJMzNFwifSxcbiAge2tleTogXCJhZ2VfMzVfNDRcIiwgICAgbGFiZWw6IFwiMzXigJM0NFwifSxcbiAge2tleTogXCJhZ2VfNDVfNTRcIiwgICAgbGFiZWw6IFwiNDXigJM1NFwifSxcbiAge2tleTogXCJhZ2VfNTVfNjRcIiwgICAgbGFiZWw6IFwiNTXigJM2NFwifSxcbiAge2tleTogXCJhZ2VfNjVfb3ZlclwiLCAgbGFiZWw6IFwiNjUrXCJ9XG5dXG5cbmFnZURhdGEgPSBmaWx0ZXJlZC5mbGF0TWFwKGQgPT4ge1xuICBjb25zdCB0b3RhbCA9IGFnZUJhbmREZWZzLnJlZHVjZSgocywgYikgPT4gcyArIChkW2Iua2V5XSB8fCAwKSwgMClcbiAgcmV0dXJuIGFnZUJhbmREZWZzLm1hcChiID0+ICh7XG4gICAgZGF0ZTogZC5kYXRlLCBtb250aDogZC5tb250aCwgYmFuZDogYi5sYWJlbCxcbiAgICBwY3Q6IHRvdGFsID4gMCA/IGRbYi5rZXldIC8gdG90YWwgOiBudWxsXG4gIH0pKVxufSlcblxuUGxvdC5wbG90KHtcbiAgd2lkdGgsIGhlaWdodDogNDAwLCBtYXJnaW5MZWZ0OiA2MCxcbiAgeDogeExpbmUsXG4gIHk6IHtsYWJlbDogXCJTaGFyZSBvZiBhZ2UtYmFuZGVkIHRvdGFsXCIsIGdyaWQ6IHRydWUsIHRpY2tGb3JtYXQ6IGZtdFBjdH0sXG4gIGNvbG9yOiB7bGVnZW5kOiB0cnVlfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LnJ1bGVZKFswXSksXG4gICAgUGxvdC5saW5lKGFnZURhdGEsIHt4OiBcImRhdGVcIiwgeTogXCJwY3RcIiwgc3Ryb2tlOiBcImJhbmRcIiwgc3Ryb2tlV2lkdGg6IDEuOH0pLFxuICAgIFBsb3QudGlwKGFnZURhdGEsIFBsb3QucG9pbnRlclgoe1xuICAgICAgeDogXCJkYXRlXCIsIHk6IFwicGN0XCIsIHN0cm9rZTogXCJiYW5kXCIsXG4gICAgICB0aXRsZTogZCA9PiB7XG4gICAgICAgIGNvbnN0IGxibCA9IGAke01PTltwYXJzZUludChkLm1vbnRoLnNsaWNlKDUsNykpLTFdfSAke2QubW9udGguc2xpY2UoMCw0KX1gXG4gICAgICAgIHJldHVybiBgJHtkLmJhbmR9IOKAlCAke2xibH1cXG4keyhkLnBjdCAqIDEwMCkudG9GaXhlZCgxKX0lYFxuICAgICAgfVxuICAgIH0pKVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImdlbmRlckRlZnMgPSBbXG4gIHtrZXk6IFwiZ2VuZGVyX21hbGVcIiwgICAgICAgICAgICAgICAgbGFiZWw6IFwiTWVuXCJ9LFxuICB7a2V5OiBcImdlbmRlcl9mZW1hbGVcIiwgICAgICAgICAgICAgIGxhYmVsOiBcIldvbWVuXCJ9LFxuICB7a2V5OiBcImdlbmRlcl90cmFuc19uYl90d29fc3Bpcml0XCIsIGxhYmVsOiBcIlRyYW5zZ2VuZGVyLCBOb24tQmluYXJ5LCBvciBUd28tU3Bpcml0XCJ9XG5dXG5cbmdlbmRlckRhdGEgPSBmaWx0ZXJlZC5mbGF0TWFwKGQgPT4ge1xuICBjb25zdCB0b3RhbCA9IGdlbmRlckRlZnMucmVkdWNlKChzLCBnKSA9PiBzICsgKGRbZy5rZXldIHx8IDApLCAwKVxuICByZXR1cm4gZ2VuZGVyRGVmcy5tYXAoZyA9PiAoe1xuICAgIGRhdGU6IGQuZGF0ZSwgbW9udGg6IGQubW9udGgsIGdlbmRlcjogZy5sYWJlbCxcbiAgICBwY3Q6IHRvdGFsID4gMCA/IGRbZy5rZXldIC8gdG90YWwgOiBudWxsXG4gIH0pKVxufSlcblxuUGxvdC5wbG90KHtcbiAgd2lkdGgsIGhlaWdodDogNDAwLCBtYXJnaW5MZWZ0OiA2MCxcbiAgeDogeExpbmUsXG4gIHk6IHtsYWJlbDogXCJTaGFyZSBvZiBnZW5kZXIgdG90YWxcIiwgZ3JpZDogdHJ1ZSwgdGlja0Zvcm1hdDogZm10UGN0fSxcbiAgY29sb3I6IHtsZWdlbmQ6IHRydWV9LFxuICBtYXJrczogW1xuICAgIFBsb3QucnVsZVkoWzBdKSxcbiAgICBQbG90LmxpbmUoZ2VuZGVyRGF0YSwge3g6IFwiZGF0ZVwiLCB5OiBcInBjdFwiLCBzdHJva2U6IFwiZ2VuZGVyXCIsIHN0cm9rZVdpZHRoOiAxLjh9KSxcbiAgICBQbG90LnRpcChnZW5kZXJEYXRhLCBQbG90LnBvaW50ZXJYKHtcbiAgICAgIHg6IFwiZGF0ZVwiLCB5OiBcInBjdFwiLCBzdHJva2U6IFwiZ2VuZGVyXCIsXG4gICAgICB0aXRsZTogZCA9PiB7XG4gICAgICAgIGNvbnN0IGxibCA9IGAke01PTltwYXJzZUludChkLm1vbnRoLnNsaWNlKDUsNykpLTFdfSAke2QubW9udGguc2xpY2UoMCw0KX1gXG4gICAgICAgIHJldHVybiBgJHtkLmdlbmRlcn0g4oCUICR7bGJsfVxcbiR7KGQucGN0ICogMTAwKS50b0ZpeGVkKDEpfSVgXG4gICAgICB9XG4gICAgfSkpXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ3NlbGVjdGVkR3JvdXAnKSJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoic2hpbnlJbnB1dCgnc2VsZWN0ZWRZZWFyJykifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ3NlbGVjdGVkTW9udGgnKSJ9XX0=
 </script>
 <script type="module">
 if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
@@ -808,6 +1178,19 @@ window._ojs.runtime.interpretFromScriptTags();
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -1210,14 +1593,14 @@ window._ojs.runtime.interpretFromScriptTags();
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>© 2026 Miriam Marling · BonQuery</p>
-</div>   
+      &nbsp;
+    </div>   
     <div class="nav-footer-center">
+<p>An independent data audit for Toronto residents. / Un audit de données indépendant pour les résidents de Toronto. <br> <span style="font-size: 0.85em; opacity: 0.7;">© 2026 Miriam Marling · BonQuery</span></p>
+</div>
+    <div class="nav-footer-right">
       &nbsp;
     </div>
-    <div class="nav-footer-right">
-<p>Built with <a href="https://quarto.org">Quarto</a></p>
-</div>
   </div>
 </footer>
 
