@@ -28,6 +28,7 @@ CLAUDE.md
 
 # Internal dev notes — must not appear in public repo
 DailyOccupancy_gh_sync.md
+/handoffs/
 
 # Local-only Bayesian R analysis — writes data/bayesian_gender.json (which is committed).
 # The R script itself runs locally; no CI invokes it.
