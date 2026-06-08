@@ -15,25 +15,10 @@ Website built with the help of [Claude Code](https://claude.com/product/claude-c
 
 BonQuery donne vie aux données humanitaires en transformant les chiffres qui dorment sur les portails gouvernementaux de données ouvertes en analyses claires et utiles pour les personnes qui peuvent agir sur les enjeux qu'elles révèlent.
 
-À partir de données accessibles au public, BonQuery examine des enjeux humanitaires urgents, en commençant par le réseau de refuges de Toronto. Le travail est ouvert, reproductible et conçu pour les journalistes, les chercheurs, les défenseurs, les décideurs politiques et toute personne qui suit la situation de près.
+Nous utilisons des données accessibles au public pour analyser des enjeux humanitaires urgents, en commençant par le réseau de refuges de Toronto. Le travail est ouvert, reproductible et conçu pour les journalistes, les chercheurs, les défenseurs, les décideurs politiques et toute personne qui suit la situation de près.
 
 🌐 **Site web :** https://bonquery.ca
 
-## À propos de ce dépôt
+**Note :** Ce dépôt contient uniquement les fichiers du site front-end, les données agrégées utilisées pour les graphiques et les configurations de rendu de BonQuery.ca. Les pipelines de données brutes, le traitement backend et les scripts d'analyse principaux sont actuellement conservés dans un dépôt privé distinct.
 
-Ce dépôt contient uniquement :
-
-- les fichiers du site web ;
-- les données agrégées utilisées pour les graphiques ;
-- les configurations de rendu et de visualisation.
-
-Les pipelines de traitement des données brutes, les scripts d'analyse principaux et les autres composantes de l'infrastructure sont actuellement conservés dans un dépôt privé distinct.
-
-## Transparence
-
-- Toutes les analyses publiées reposent sur des données accessibles au public.
-- Les résultats présentés sur le site sont reproductibles à partir des données sources.
-- L'objectif est de rendre les données publiques plus accessibles, compréhensibles et utiles.
-
-  *Site web développé avec l'aide de Claude Code.*
-  📬 Vous pouvez me contacter à miriam@bonquery.ca pour toute question ou pour demander l’accès au dépôt privé (analyses plus approfondies).
+Site web développé avec l’aide de [Claude Code](https://claude.com/product/claude-code).
