@@ -13,7 +13,6 @@ project:
     - projects/discrepancy-tracker.qmd
     - projects/historical-trends.qmd
     - projects/monthly-snapshot.qmd
-    - projects/spike-detection.qmd
     - projects/toronto-shelter.qmd
     - projects/ytd-comparison.qmd
   resources:
@@ -54,8 +53,6 @@ website:
             text: "Historical Trend Lines"
           - href: projects/central-intake.qmd
             text: "Referral Requests Analysis"
-          - href: projects/spike-detection.qmd
-            text: "Occupancy Spike Detection"
           - href: projects/daily-occupancy.qmd
             text: "Daily Occupancy & Capacity"
       - href: about.qmd

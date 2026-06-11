@@ -692,36 +692,6 @@ BonQuery's aggregated data is available for download from 2021 to present: [JSON
 
 ---
 
-::: {.callout-note .bq-orange collapse="true"}
-## Historical Occupancy Spike Detection
-
-These spike-detection charts flag days when Toronto's shelter system accommodated a lot more people than its seasonal pattern and long-run trend would've predicted, not merely days that happened to be busy. Spikes are identified by removing two predictable forces (seasonality and long-run trend) with Seasonal-Trend decomposition using LOESS (STL) and measuring what is left over.
-
-The amber band marks moderate anomalies (2 MAD-SD above the expected value), the red band marks pronounced ones (3 MAD-SD). The analysis counts individuals accommodated rather than the occupancy rate, and both thresholds are calibrated against the system's own behaviour over the preceding two years. It is retrospective and descriptive, not predictive. Full methodology and caveats are on the linked page.
-
-::: {.mobile-dashboard-links}
-- [Historical Occupancy Spike Detection →](projects/spike-detection.html)
-:::
-
-::: {.desktop-dashboard-tabs}
-
-[Open in a new tab →](projects/spike-detection.html){target="_blank"}
-
-<iframe
-  src="projects/spike-detection.html"
-  width="100%"
-  height="2800"
-  class="bq-embed"
-  loading="lazy">
-</iframe>
-
-:::
-
-Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/). Source: City of Toronto Open Data — [Daily Shelter & Overnight Service Occupancy & Capacity](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Analysis and charts by BonQuery.
-:::
-
----
-
 ::: {.callout-note .bq-purple collapse="true"}
 ## Shelter System Requests for Referrals
 

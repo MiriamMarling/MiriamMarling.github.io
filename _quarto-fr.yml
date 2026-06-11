@@ -11,7 +11,6 @@ project:
     - fr/projects/discrepancy-tracker.qmd
     - fr/projects/historical-trends.qmd
     - fr/projects/monthly-snapshot.qmd
-    - fr/projects/spike-detection.qmd
     - fr/projects/toronto-shelter.qmd
     - fr/projects/ytd-comparison.qmd
 
@@ -56,8 +55,6 @@ website:
             text: "Tendances historiques"
           - href: fr/projects/central-intake.qmd
             text: "Analyse des demandes d'orientation"
-          - href: fr/projects/spike-detection.qmd
-            text: "Détection de pics d'occupation"
           - href: fr/projects/daily-occupancy.qmd
             text: "Occupation et capacité quotidiennes"
       - href: fr/about.qmd

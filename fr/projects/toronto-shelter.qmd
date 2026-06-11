@@ -395,48 +395,6 @@ Les données agrégées de BonQuery sont disponibles en téléchargement de 2021
 
 ---
 
-::: {.callout-note .bq-orange collapse="true"}
-## Détection historique de pics d'occupation
-
-Ces graphiques de détection de pics signalent les jours où le réseau de
-refuges de Toronto a hébergé beaucoup plus de personnes que ne l'auraient
-prédit son pattern saisonnier et sa tendance à long terme — et pas seulement
-des journées simplement achalandées. Les pics sont identifiés en supprimant
-deux forces prévisibles (saisonnalité et tendance à long terme) par une
-décomposition saisonnelle-tendance par LOESS (STL) et en mesurant ce qui
-reste.
-
-La bande ambre signale les anomalies modérées (2 MAD-ÉT au-dessus de la
-valeur attendue), la bande rouge les anomalies prononcées (3 MAD-ÉT).
-L'analyse compte les personnes hébergées plutôt que le taux d'occupation, et
-les deux seuils sont calibrés sur le comportement propre du système au cours
-des deux années précédentes. Elle est rétrospective et descriptive, non
-prédictive. La méthodologie complète et les mises en garde figurent sur la
-page liée.
-
-::: {.mobile-dashboard-links}
-- [Détection historique de pics d'occupation →](spike-detection.html)
-:::
-
-::: {.desktop-dashboard-tabs}
-
-[Ouvrir dans un nouvel onglet →](spike-detection.html){target="_blank"}
-
-<iframe
-  src="spike-detection.html"
-  width="100%"
-  height="2800"
-  class="bq-embed"
-  loading="lazy">
-</iframe>
-
-:::
-
-Contient des informations sous licence [Licence du gouvernement ouvert – Toronto](https://open.toronto.ca/open-data-licence/). Source : Données ouvertes de la Ville de Toronto — [Utilisation quotidienne des refuges et services d'hébergement de nuit, occupation et capacité](https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/). Analyse et graphiques par BonQuery.
-:::
-
----
-
 ::: {.callout-note .bq-purple collapse="true"}
 ## Demandes d'orientation en refuge
 
