@@ -556,7 +556,6 @@ Toronto](https://open.toronto.ca/open-data-licence/){target="_blank"}.
 ```{ojs}
 //| echo: false
 bayesian_gender = FileAttachment("../data/bayesian_gender.json").json()
-spike_detection = FileAttachment("../data/spike_detection.json").json()
 shelter_flow    = data
 ```
 
@@ -778,23 +777,6 @@ Plot.plot({
 ```{ojs}
 //| echo: false
 md`Les hommes ont représenté au moins **${_menShareMinPct} %** de la population en itinérance active de Toronto chaque mois depuis le début de l'enregistrement des données (${_recordStartYear} à ${_recordEndYear}). Ce chiffre correspond à la **part mensuelle la plus faible jamais observée pour les hommes sur l'ensemble de la période** ; dans la plupart des mois, cette part est plus élevée. L'écart mensuel moyen entre les hommes et tous les autres (femmes, personnes trans, non binaires et bispirituelles confondues) est d'environ **${_gapAvgStr} personnes**, et il a à peine bougé à mesure que le total augmentait et diminuait. Ce schéma n'est ni nouveau, ni subtil, ni caché dans les données. Pourtant, il fait rarement la une des journaux, et peu de conversations publiques sur l'itinérance dans la ville s'ouvrent sur ce constat.`
-```
-
-```{ojs}
-//| echo: false
-_spikeTopSector = (() => {
-  const sectors = ["men","women","mixed_adult","youth","families"]
-  const counts = sectors.map(s => ({
-    key: s,
-    n: spike_detection.filter(d => d.series === s && d.spike_flag !== "none").length
-  }))
-  counts.sort((a, b) => b.n - a.n)
-  return counts[0].key
-})()
-
-_spikeTopSector === "men"
-  ? md`[Ce constat est également mis en évidence ici : Détection de pics d'occupation →](spike-detection.html)`
-  : html``
 ```
 
 :::

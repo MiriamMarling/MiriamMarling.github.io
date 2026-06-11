@@ -544,7 +544,6 @@ Contains information licensed under the [Open Government Licence – Toronto](ht
 ```{ojs}
 //| echo: false
 bayesian_gender = FileAttachment("../data/bayesian_gender.json").json()
-spike_detection = FileAttachment("../data/spike_detection.json").json()
 shelter_flow    = data
 ```
 
@@ -764,23 +763,6 @@ Plot.plot({
 ```{ojs}
 //| echo: false
 md`Men have accounted for at least **${_menShareMinPct}%** of Toronto's actively homeless population every single month on record (${_recordStartYear} to ${_recordEndYear}). That figure is the **lowest single-month share of men observed across the entire data record**; in most months the share is higher. The average monthly gap between men and everyone else (women plus transgender, non-binary, and two-spirit individuals combined) is roughly **${_gapAvgStr} people**, and it has barely moved as the total has risen and fallen. The pattern is not new, not subtle, and not hidden in the data. Yet it rarely makes headlines, and few of the city's public conversations about homelessness lead with it.`
-```
-
-```{ojs}
-//| echo: false
-_spikeTopSector = (() => {
-  const sectors = ["men","women","mixed_adult","youth","families"]
-  const counts = sectors.map(s => ({
-    key: s,
-    n: spike_detection.filter(d => d.series === s && d.spike_flag !== "none").length
-  }))
-  counts.sort((a, b) => b.n - a.n)
-  return counts[0].key
-})()
-
-_spikeTopSector === "men"
-  ? md`[The impact on men is also highlighted here: Occupancy Spike Detection →](spike-detection.html)`
-  : html``
 ```
 
 :::

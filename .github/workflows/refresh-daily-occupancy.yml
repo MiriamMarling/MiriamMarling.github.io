@@ -368,21 +368,6 @@ jobs:
           git pull --rebase origin main
           git push origin main
 
-      # Notify the sibling repo to regenerate spike_detection.json immediately.
-      # The refresh-spike-detection.yml workflow in toronto-shelter-analytics
-      # listens for this event and runs generate_spike_json.R only when needed.
-      # Its built-in staleness check exits fast if the JSON is already current.
-      - name: Notify spike-detection workflow (sibling repo)
-        if: env.NEW_DATA == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.SPIKE_DISPATCH_PAT }}
-        run: |
-          gh api -X POST \
-            repos/MiriamMarling/toronto-shelter-analytics/dispatches \
-            -f event_type=daily-occupancy-updated \
-            -f "client_payload[latest_date]=${{ env.LATEST_DATE }}" \
-            -f "client_payload[reason]=${{ env.REBUILD_REASON }}"
-
       - name: Set up Quarto
         if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/setup@v2
