@@ -214,8 +214,8 @@ validationBanner = {
   if (!allPass) {
     const failedChecks = validationChecks.filter(c => !c.pass)
     return html`<div style="
-      background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
-      padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px">
+      background:var(--bq-warn-bg);border:1px solid var(--bq-warn-border);border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:var(--bq-warn-fg);margin-bottom:12px">
       <strong>⚠ Validation issue detected for ${fmtDate(latestDate)}</strong>
       <details style="margin-top:6px">
         <summary style="cursor:pointer">Show details</summary>

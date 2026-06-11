@@ -1,7 +1,7 @@
 /* css styles */
 
 /* ── Theme colour tokens ─────────────────────────────────────────────────
-   Light-mode defaults; dark-mode overrides in [data-bs-theme="dark"]. */
+   Light-mode defaults; dark-mode overrides in body.quarto-dark. */
 :root {
   /* Structure */
   --bq-bg:              #ffffff;
@@ -43,7 +43,7 @@
   --bq-hero-bg:         #1a1a2e;
   --bq-hero-fg:         #fff;
   --bq-hero-accent:     #ff3b30;
-  --bq-hero-sub:        #aab;
+  --bq-hero-sub:        #ccd;
 
   /* KPI cards */
   --bq-kpi-bg:          #E8E8E8;
@@ -60,9 +60,14 @@
   --bq-kpi-net-pos:     #C62828;
   --bq-kpi-net-zero-bg: #E8E8E8;
   --bq-kpi-net-zero:    #333333;
+
+  /* Warn / caution banners */
+  --bq-warn-bg:         #fff3cd;
+  --bq-warn-border:     #e0a800;
+  --bq-warn-fg:         #533f03;
 }
 
-[data-bs-theme="dark"] {
+body.quarto-dark {
   /* Structure */
   --bq-bg:              #212529;
   --bq-bg-alt:          #2b3035;
@@ -119,6 +124,11 @@
   --bq-kpi-net-pos:     #ef9a9a;
   --bq-kpi-net-zero-bg: #343a40;
   --bq-kpi-net-zero:    #dee2e6;
+
+  /* Warn / caution banners */
+  --bq-warn-bg:         #3a3020;
+  --bq-warn-border:     #a07800;
+  --bq-warn-fg:         #ffd97a;
 }
 
 
@@ -226,8 +236,18 @@ div.callout-note.bq-purple > .callout-header { background-color: rgba(124, 63, 1
   font-weight: 500;
 }
 .bq-alert p:last-child { margin-bottom: 0; }
-[data-bs-theme="dark"] .bq-alert {
+body.quarto-dark .bq-alert {
   background-color: rgba(255, 107, 107, 0.10);
+}
+
+/* Caution / warning banner utility — for validation notices and similar
+   callouts that need a yellow accent in both themes. */
+.bq-warn {
+  background: var(--bq-warn-bg);
+  border: 1px solid var(--bq-warn-border);
+  color: var(--bq-warn-fg);
+  border-radius: 4px;
+  padding: 0.6rem 1rem;
 }
 
 /* Bilingual alert toggle (EN | FR) — both language strings render into the page;
@@ -310,16 +330,25 @@ div.callout-note.bq-purple > .callout-header { background-color: rgba(124, 63, 1
 
 /* Observable Plot — transparent SVG bg + dark-mode text + tooltip */
 .cell-output-display svg { background: transparent !important; }
-[data-bs-theme="dark"] .cell-output-display figure,
-[data-bs-theme="dark"] .cell-output-display svg { color: var(--bq-fg); }
-[data-bs-theme="dark"] .cell-output-display text { fill: var(--bq-fg); }
-[data-bs-theme="dark"] [class*="plot-"] [aria-label="tip"],
-[data-bs-theme="dark"] .plot-tip,
-[data-bs-theme="dark"] figure [role="tooltip"],
-[data-bs-theme="dark"] .cell-output-display foreignObject > div {
-  background: #2b3035 !important;
-  color: #dee2e6 !important;
-  border-color: #495057 !important;
+body.quarto-dark .cell-output-display figure,
+body.quarto-dark .cell-output-display svg { color: var(--bq-fg); }
+body.quarto-dark .cell-output-display text { fill: var(--bq-fg); }
+body.quarto-dark [class*="plot-"] [aria-label="tip"],
+body.quarto-dark .plot-tip,
+body.quarto-dark figure [role="tooltip"],
+body.quarto-dark .cell-output-display foreignObject > div {
+  background: var(--bq-bg-alt) !important;
+  color: var(--bq-fg) !important;
+  border-color: var(--bq-border) !important;
+}
+
+/* Plot tip:true / Plot.tip() render <g aria-label="tip"> with an SVG <path
+   fill="white"> bubble — CSS `background` doesn't apply to SVG shapes, so
+   the bubble needs its own fill/stroke rule. Tip text is covered by the
+   .cell-output-display text rule above. */
+body.quarto-dark .cell-output-display svg [aria-label="tip"] path {
+  fill: var(--bq-bg-alt);
+  stroke: var(--bq-border);
 }
 
 /* ── Theme toggle styling ────────────────────────────────────────────── */
@@ -336,7 +365,7 @@ div.callout-note.bq-purple > .callout-header { background-color: rgba(124, 63, 1
 .quarto-color-scheme-toggle .bi:hover {
   background: rgba(255,255,255,0.12);
 }
-[data-bs-theme="dark"] .quarto-color-scheme-toggle .bi:hover {
+body.quarto-dark .quarto-color-scheme-toggle .bi:hover {
   background: rgba(255,255,255,0.15);
 }
 .bq-theme-label {
@@ -446,21 +475,21 @@ div.callout-note.bq-purple > .callout-header { background-color: rgba(124, 63, 1
 /* ── Crisis hero — gender/cold-response finding block ────────────────── */
 
 .crisis-hero {
-  background: #1a1a2e; color: #fff;
+  background: var(--bq-hero-bg); color: var(--bq-hero-fg);
   border-radius: 0.75rem; padding: 2rem 2.5rem;
   margin: 1.5rem 0 1rem;
   display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
 }
 .crisis-hero .hero-number {
-  font-size: 5rem; font-weight: 800; color: #ff3b30;
+  font-size: 5rem; font-weight: 800; color: var(--bq-hero-accent);
   line-height: 1; white-space: nowrap; flex-shrink: 0;
 }
 .crisis-hero .hero-text { max-width: 520px; }
-.crisis-hero .hero-text strong { color: #ff3b30; }
+.crisis-hero .hero-text strong { color: var(--bq-hero-accent); }
 .crisis-hero .hero-label {
   font-size: 1.8rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.65rem;
 }
-.crisis-hero .hero-sub { font-size: 1.2rem; color: #ccd; line-height: 1.5; }
+.crisis-hero .hero-sub { font-size: 1.2rem; color: var(--bq-hero-sub); line-height: 1.5; }
 
 /* Plain-English callout — appears after technical prose blocks */
 .plain-eng {
@@ -471,7 +500,7 @@ div.callout-note.bq-purple > .callout-header { background-color: rgba(124, 63, 1
   margin: 0.5rem 0 0.75rem;
   font-size: 0.82rem;
   line-height: 1.55;
-  color: #333;
+  color: var(--bq-fg);
 }
 .plain-eng .pe-label {
   display: inline-block;

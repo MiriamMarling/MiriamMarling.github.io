@@ -149,9 +149,10 @@ sous forme de barre de pourcentage avec les mêmes données et couleurs.*
 ```{ojs}
 //| echo: false
 chronicPct    = chronicRow ? chronicRow.population_group_pct / 100 : 0
-_cs = getComputedStyle(document.documentElement)
+_cs = getComputedStyle(document.body)
 _nonChronicFill = _cs.getPropertyValue("--bq-bg-alt").trim() || "#CCCCCC"
 _chartFg = _cs.getPropertyValue("--bq-fg").trim() || "#333"
+_chartStroke = _cs.getPropertyValue("--bq-chart-stroke").trim() || "#333"
 
 chronicData   = [
   {label: "Chronique",     pct: chronicPct,       fill: "#5856D6"},
@@ -676,23 +677,23 @@ Plot.plot({
     }),
     Plot.ruleY(_genderStats, {
       x: "label", y1: "ci_lo", y2: "ci_hi",
-      stroke: "#222", strokeWidth: 1.8
+      stroke: _chartStroke, strokeWidth: 1.8
     }),
     Plot.tickY(_genderStats, {
       x: "label", y: "ci_hi",
-      stroke: "#222", strokeWidth: 1.8,
+      stroke: _chartStroke, strokeWidth: 1.8,
       insetLeft: 18, insetRight: 18
     }),
     Plot.tickY(_genderStats, {
       x: "label", y: "ci_lo",
-      stroke: "#222", strokeWidth: 1.8,
+      stroke: _chartStroke, strokeWidth: 1.8,
       insetLeft: 18, insetRight: 18
     }),
     Plot.text(_genderStats, {
       x: "label", y: "ci_hi",
       text: d => Math.round(d.mean).toLocaleString("fr-CA"),
       dy: -10, textAnchor: "middle", fontSize: 13,
-      fill: d => d.isFocus ? "#cc1f15" : "#333",
+      fill: d => d.isFocus ? "#cc1f15" : _chartFg,
       fontWeight: "600"
     }),
     Plot.ruleY([0])

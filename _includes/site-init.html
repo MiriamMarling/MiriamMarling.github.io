@@ -58,13 +58,13 @@
   var label = document.createElement("span");
   label.className = "bq-theme-label";
   var update = function () {
-    var isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+    var isDark = document.body.classList.contains("quarto-dark");
     label.textContent = isDark ? "Light" : "Dark";
   };
   tog.appendChild(label);
   update();
   new MutationObserver(update).observe(
-    document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] }
+    document.body, { attributes: true, attributeFilter: ["class"] }
   );
 })();
 

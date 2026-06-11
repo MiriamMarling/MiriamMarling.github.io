@@ -251,7 +251,7 @@ valeur moyenne.
                        ? d.referred_mean - 2 * d.referred_se : null,
         y2:          d => d.referred_se != null
                        ? d.referred_mean + 2 * d.referred_se : null,
-        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
+        stroke:      getComputedStyle(document.body).getPropertyValue("--bq-chart-stroke"),
         strokeWidth: 1.5
       })] : [])
     ]
@@ -287,7 +287,7 @@ valeur moyenne.
                        ? d.unmatched_mean - 2 * d.unmatched_se : null,
         y2:          d => d.unmatched_se != null
                        ? d.unmatched_mean + 2 * d.unmatched_se : null,
-        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
+        stroke:      getComputedStyle(document.body).getPropertyValue("--bq-chart-stroke"),
         strokeWidth: 1.5
       })] : [])
     ]
@@ -323,7 +323,7 @@ valeur moyenne.
                        ? d.handled_mean - 2 * d.handled_se : null,
         y2:          d => d.handled_se != null
                        ? d.handled_mean + 2 * d.handled_se : null,
-        stroke:      getComputedStyle(document.documentElement).getPropertyValue("--bq-chart-stroke"),
+        stroke:      getComputedStyle(document.body).getPropertyValue("--bq-chart-stroke"),
         strokeWidth: 1.5
       })] : [])
     ]

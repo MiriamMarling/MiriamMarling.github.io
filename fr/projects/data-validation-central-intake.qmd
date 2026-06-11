@@ -261,7 +261,7 @@ une différence structurelle attendue entre les deux sources de données.
       const bg = i % 2 === 0 ? "var(--bq-bg)" : "var(--bq-bg-alt)"
       const td = `padding:5px 9px;text-align:center;border-bottom:1px solid var(--bq-border)`
 
-      const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark"
+      const isDark = document.body.classList.contains("quarto-dark")
       const gapStyle = gap == null ? td
         : gap > 200 ? td + `;background:${isDark ? "rgba(217,119,6,0.25)" : "#ffe4cc"};font-weight:700`
         : gap > 80  ? td + `;background:${isDark ? "rgba(217,119,6,0.12)" : "#fff3e6"}`
