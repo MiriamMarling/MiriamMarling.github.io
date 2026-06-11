@@ -194,7 +194,7 @@ Plot.plot({
   x: xLine,
   y: {label: "Net change (people)", grid: true, tickFormat: fmtN},
   marks: [
-    Plot.ruleY([0], {stroke: getComputedStyle(document.documentElement).getPropertyValue("--bq-fg-secondary"), strokeWidth: 1.5}),
+    Plot.ruleY([0], {stroke: getComputedStyle(document.body).getPropertyValue("--bq-fg-secondary"), strokeWidth: 1.5}),
     Plot.line(netData, {x: "date", y: "net_change", stroke: "#5856D6", strokeWidth: 2}),
     Plot.dot(netData,  {x: "date", y: "net_change", fill:   "#5856D6", r: 2}),
     Plot.tip(netData, Plot.pointerX({

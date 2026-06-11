@@ -78,7 +78,7 @@ role="button"}
 ```{ojs}
 //| echo: false
 //| output: false
-cs      = getComputedStyle(document.documentElement)
+cs      = getComputedStyle(document.body)
 refLine = cs.getPropertyValue("--bq-chart-stroke").trim()
 
 seasonColorMap = new Map([
@@ -154,7 +154,7 @@ viewof selectedWinters = {
   const hint = document.createElement("div");
   hint.textContent = "Cliquez sur une saison pour l'afficher ou la masquer";
   hint.style.cssText =
-    "font-size:11.5px;font-weight:400;color:#888;margin-bottom:6px;";
+    "font-size:11.5px;font-weight:400;color:var(--bq-fg-faint);margin-bottom:6px;";
 
   const row = document.createElement("div");
   row.style.cssText =
@@ -473,8 +473,8 @@ validationBanner = {
   if (!allPass) {
     const failedChecks = validationChecks.filter(c => !c.pass)
     return html`<div style="
-      background:#fff3cd;border:1px solid #e0a800;border-radius:4px;
-      padding:8px 14px;font-size:0.88em;color:#533f03;margin-bottom:12px">
+      background:var(--bq-warn-bg);border:1px solid var(--bq-warn-border);border-radius:4px;
+      padding:8px 14px;font-size:0.88em;color:var(--bq-warn-fg);margin-bottom:12px">
       <strong>⚠ Problème de validation détecté pour ${fmtDate(latestDate)}</strong>
       <details style="margin-top:6px">
         <summary style="cursor:pointer">Afficher les détails</summary>

@@ -92,7 +92,7 @@ binnedSC = FileAttachment("../data/cold_response_binned_by_winter_sc.csv").csv()
   })))
 
 // ── Theme-aware palette ──────────────────────────────────────────────────────
-cs      = getComputedStyle(document.documentElement)
+cs      = getComputedStyle(document.body)
 refLine = cs.getPropertyValue("--bq-chart-stroke").trim()
 
 // ── Season color map ─────────────────────────────────────────────────────────
@@ -169,7 +169,7 @@ viewof selectedWinters = {
   const hint = document.createElement("div");
   hint.textContent = "Cliquez sur une saison pour l'afficher ou la masquer";
   hint.style.cssText =
-    "font-size:11.5px;font-weight:400;color:#888;margin-bottom:6px;";
+    "font-size:11.5px;font-weight:400;color:var(--bq-fg-faint);margin-bottom:6px;";
 
   const row = document.createElement("div");
   row.style.cssText =
