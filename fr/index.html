@@ -81,9 +81,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-ef329cdfec84d61f1b09d4029da25417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-94b323657c735dfe3b1bf6ebb2c33a55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-bf3f322ac8d240d639fe1d97eccc3f5a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-94b323657c735dfe3b1bf6ebb2c33a55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -361,10 +361,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Referral Requests Analysis</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../projects/spike-detection.html">
- <span class="dropdown-text">Occupancy Spike Detection</span></a>
-  </li>  
-        <li>
     <a class="dropdown-item" href="../projects/daily-occupancy.html">
  <span class="dropdown-text">Daily Occupancy &amp; Capacity</span></a>
   </li>  
@@ -430,10 +426,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="../fr/projects/central-intake.html">
  <span class="dropdown-text">Analyse des demandes d’orientation</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../fr/projects/spike-detection.html">
- <span class="dropdown-text">Détection de pics d’occupation</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../fr/projects/daily-occupancy.html">
@@ -1265,37 +1257,8 @@ Note
 </div>
 </div>
 <hr>
-<div class="bq-orange callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Détection historique de pics d’occupation
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Ces graphiques de détection de pics signalent les jours où le réseau de refuges de Toronto a hébergé beaucoup plus de personnes que ne l’auraient prédit son pattern saisonnier et sa tendance à long terme — et pas seulement des journées simplement achalandées. Les pics sont identifiés en supprimant deux forces prévisibles (saisonnalité et tendance à long terme) par une décomposition saisonnelle-tendance par LOESS (STL) et en mesurant ce qui reste.</p>
-<p>La bande ambre signale les anomalies modérées (2 MAD-ÉT au-dessus de la valeur attendue), la bande rouge les anomalies prononcées (3 MAD-ÉT). L’analyse compte les personnes hébergées plutôt que le taux d’occupation, et les deux seuils sont calibrés sur le comportement propre du système au cours des deux années précédentes. Elle est rétrospective et descriptive, non prédictive. La méthodologie complète et les mises en garde figurent sur la page liée.</p>
-<div class="mobile-dashboard-links">
-<ul>
-<li><a href="projects/spike-detection.html">Détection historique de pics d’occupation →</a></li>
-</ul>
-</div>
-<div class="desktop-dashboard-tabs">
-<p><a href="projects/spike-detection.html" target="_blank">Ouvrir dans un nouvel onglet →</a></p>
-<iframe src="projects/spike-detection.html" width="100%" height="2800" class="bq-embed" loading="lazy">
-</iframe>
-</div>
-<p>Contient des informations sous licence <a href="https://open.toronto.ca/open-data-licence/">Licence du gouvernement ouvert – Toronto</a>. Source : Données ouvertes de la Ville de Toronto — <a href="https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/">Utilisation quotidienne des refuges et services d’hébergement de nuit, occupation et capacité</a>. Analyse et graphiques par BonQuery.</p>
-</div>
-</div>
-</div>
-<hr>
 <div class="bq-purple callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1304,7 +1267,7 @@ Note
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Moyenne quotidienne mensuelle des appels à la ligne d’orientation des refuges de Toronto (24 h/7 j) — appels orientés vers une place en refuge, appelants individuels sans jumelage et total des appels traités — avec contrôles de date interactifs. Reproduit et étend la page <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-system-requests-for-referrals/">Demandes d’orientation dans les refuges</a> de la Ville. Données provenant de deux ressources CKAN distinctes (codes de clôture des appels et file d’attente des services) ; voir la page pour des mises en garde importantes sur la combinaison des deux séries.</p>
 <div class="mobile-dashboard-links">
