@@ -4,7 +4,8 @@
 # and data/last_intake_month.txt) + repeated checks — NOT from out-pacing the frozen
 # OCI refresh, which GitHub delays by hours and cannot be out-paced by cron timing.
 # Emails miriam@bonquery.ca once when a new SSF or Central Intake month first lands,
-# and on failure. Can also be triggered manually via the Actions tab.
+# once on the first daily check if data is still stale (City running late), and on
+# failure. Can also be triggered manually via the Actions tab.
 #
 # Author: Miriam Marling <miriam@BonQuery.ca>
 # Date: 2026
@@ -17,7 +18,11 @@ on:
     # GitHub delays schedule triggers by hours, so these are coverage checks, not
     # precisely-timed ones. The fire-once sentinel means an early check that reads
     # stale OCI is a harmless no-op; a later check catches it once data lands.
-    - cron: '0 13,16,19,22 15-18 * *'
+    # Split into two cron entries so github.event.schedule can identify the first
+    # daily check — which fires the "no new data yet" stale heads-up — without
+    # relying on wall-clock hour (unreliable given GitHub's scheduling delays).
+    - cron: '11 13 15-18 * *'        # first daily check (sends stale heads-up if needed)
+    - cron: '41 16,19,22 15-18 * *'  # later coverage checks (silent if still stale)
   workflow_dispatch:                              # Allow manual triggering
 
 permissions:
@@ -207,3 +212,38 @@ jobs:
 
             Site:    https://bonquery.ca
             Run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      # Fires only on the first daily check (13:11 UTC cron) or a manual run,
+      # so stale-data heads-ups arrive at most once per day rather than 4× per day.
+      # Mutually exclusive with the success email above (which requires at least one
+      # of NEW_SSF / NEW_INTAKE to be true).
+      - name: Email notification — no new monthly data yet
+        if: >-
+          success() &&
+          env.NEW_SSF == 'false' && env.NEW_INTAKE == 'false' &&
+          (github.event.schedule == '11 13 15-18 * *' || github.event_name == 'workflow_dispatch')
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.mail.me.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[bonquery] No new monthly data yet — City may be running late"
+          to: miriam@bonquery.ca
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            The refresh-site-data (monthly) workflow ran cleanly, but no new
+            Shelter System Flow or Central Intake data has been published yet.
+
+            This is the first check of the day (13:11 UTC). The City usually
+            publishes around the 15th but is occasionally 1–2 days late. Three
+            more checks run today at 16:41, 19:41, and 22:41 UTC, and the window
+            continues through the 18th.
+
+            Latest data seen:
+            Shelter System Flow — latest month: ${{ env.LATEST_SSF_MONTH }}
+            Central Intake      — latest month: ${{ env.LATEST_INTAKE_MONTH }}
+
+            Triggered by: ${{ github.event_name }}
+            Run log:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

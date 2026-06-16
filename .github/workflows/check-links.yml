@@ -14,7 +14,7 @@ on:
       - "**/*.qmd"
       - "**/*.md"
   schedule:
-    - cron: '0 9 * * 1'     # Every Monday at 09:00 UTC
+    - cron: '19 9 * * 1'    # Every Monday at 09:19 UTC
   workflow_dispatch:
 
 jobs:
