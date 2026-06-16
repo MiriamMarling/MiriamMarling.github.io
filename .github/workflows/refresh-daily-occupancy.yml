@@ -285,13 +285,14 @@ jobs:
         id: audit_check
         run: |
           python3 -c "
-          import json, os, sys
+          import hashlib, json, os, sys
           from pathlib import Path
 
           report_path = Path('data/city_audit_report.json')
           if not report_path.exists():
               with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
                   f.write('has_mismatches=false\nmismatch_count=0\ndate_range=\nany_pending=false\n')
+                  f.write('audit_changed=false\naudit_signature=\n')
               print('No audit report found; skipping mismatch check.')
               sys.exit(0)
 
@@ -309,18 +310,39 @@ jobs:
           else:
               date_range = f'{dates_list[0]}–{dates_list[-1]}'
 
+          # Compute a content signature over the audit table that will be emailed.
+          # Use the markdown summary file when available (mirrors what the email
+          # body receives); fall back to a hash of the structured fields so the
+          # sentinel always advances when the mismatch set changes.
+          summary_path = Path('data/city_audit_summary.md')
+          if n > 0 and summary_path.exists():
+              sig_src = summary_path.read_bytes()
+          else:
+              sig_src = f'{date_range}|{n}'.encode()
+          current_sig = hashlib.sha256(sig_src).hexdigest()
+
+          # Compare against the committed sentinel to decide whether to email.
+          sig_path = Path('data/last_audit_signature.txt')
+          old_sig  = sig_path.read_text().strip() if sig_path.exists() else ''
+          audit_changed = n > 0 and current_sig != old_sig
+
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write(f'has_mismatches={\"true\" if n > 0 else \"false\"}\n')
               f.write(f'mismatch_count={n}\n')
               f.write(f'date_range={date_range}\n')
               f.write(f'any_pending={\"true\" if any_pending else \"false\"}\n')
+              f.write(f'audit_changed={\"true\" if audit_changed else \"false\"}\n')
+              f.write(f'audit_signature={current_sig}\n')
 
           print(f'Audit: {n} mismatch(es) for {date_range} (passed={passed}, pending={any_pending})')
+          print(f'  current_sig : {current_sig[:16]}…')
+          print(f'  old_sig     : {old_sig[:16] + \"…\" if old_sig else \"(none)\"}')
+          print(f'  audit_changed: {audit_changed}')
           "
         continue-on-error: true
 
       - name: Email notification — City audit mismatches found
-        if: steps.audit_check.outputs.has_mismatches == 'true'
+        if: steps.audit_check.outputs.has_mismatches == 'true' && steps.audit_check.outputs.audit_changed == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.mail.me.com
@@ -413,6 +435,16 @@ jobs:
             fi
           fi
 
+      # Write the audit signature sentinel to disk. Committed in all three commit
+      # steps below so the audit email only fires when the mismatch table changes.
+      # Written unconditionally so the sentinel advances even when the audit is
+      # clean (mismatch → no-mismatch transition is also tracked).
+      - name: Write audit signature sentinel
+        if: steps.audit_check.outputs.audit_signature != ''
+        run: |
+          printf '%s\n' "${{ steps.audit_check.outputs.audit_signature }}" \
+            > data/last_audit_signature.txt
+
       # Write the CKAN metadata_modified sentinel to disk. This is committed below
       # (in all three commit steps) so the guard job can skip the heavy job on the
       # next scheduled fire when the dataset hasn't advanced.
@@ -427,6 +459,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/last_pull_date.txt data/last_pull_hash.txt data/last_ckan_modified.txt
+          git add data/last_audit_signature.txt 2>/dev/null || true
           git add data/city_bridging_triage.json 2>/dev/null || true
           git add data/city_daily_table.json data/city_audit_report.json 2>/dev/null || true
           if [ "${{ env.REBUILD_REASON }}" = "new-day" ]; then
@@ -443,6 +476,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/city_bridging_triage.json data/last_ckan_modified.txt
+          git add data/last_audit_signature.txt 2>/dev/null || true
           git commit -m "data: bridging & triage entries updated [skip ci]"
           git pull --rebase origin main
           git push origin main
@@ -459,6 +493,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/last_ckan_modified.txt
+          git add data/last_audit_signature.txt 2>/dev/null || true
           git diff --staged --quiet || (
             git commit -m "data: CKAN freshness sentinel updated [skip ci]" &&
             git pull --rebase origin main &&
@@ -531,6 +566,3 @@ jobs:
 
             Site:    https://bonquery.ca
             Run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            ---
-            ${{ env.CITY_AUDIT_SUMMARY }}
