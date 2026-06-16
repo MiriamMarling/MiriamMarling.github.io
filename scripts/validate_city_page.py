@@ -401,6 +401,7 @@ def update_city_table_file(new_entries):
             "posts catch-up tables on a subsequent day."
         ),
         "first_captured": first,
+        "last_scraped": sorted(new_entries),
         "entries": dict(sorted(entries.items())),
     }
     CITY_TABLE_FILE.write_text(json.dumps(payload, indent=2))

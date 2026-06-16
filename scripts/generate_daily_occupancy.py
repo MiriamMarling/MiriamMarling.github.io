@@ -17,6 +17,7 @@ import io
 import json
 import re
 import ssl
+import urllib.parse
 import urllib.request
 from collections import defaultdict
 from datetime import date, datetime, timezone
@@ -79,15 +80,73 @@ def to_float(s):
 # Pull raw data
 # ---------------------------------------------------------------------------
 
+_DATASTORE_PAGE = 32_000   # rows per datastore_search request
+
+
+def pull_current_resource(resource_id):
+    """Fetch one resource via live datastore_search (avoids dump-file lag).
+
+    CKAN's datastore/dump CSV is regenerated on a delay and can trail the live
+    datastore by many hours, making the occupancy table appear stuck on an
+    older date.  datastore_search reads the live store directly, so today's
+    rows appear as soon as the City uploads them.
+
+    Records are returned as dicts with the same raw column names as the CSV
+    path (OCCUPANCY_DATE, SERVICE_USER_COUNT, etc.) so downstream aggregation
+    code is unchanged.
+    """
+    all_rows = []
+    offset   = 0
+    print(f"  Fetching via datastore_search (resource={resource_id}) ...",
+          flush=True)
+    while True:
+        params = urllib.parse.urlencode({
+            "resource_id": resource_id,
+            "limit":       _DATASTORE_PAGE,
+            "offset":      offset,
+            "sort":        "_id asc",
+        })
+        url = f"{CKAN_BASE}/api/3/action/datastore_search?{params}"
+        with urllib.request.urlopen(url, context=_SSL_CTX, timeout=120) as r:
+            result = json.loads(r.read().decode())["result"]
+        records = result.get("records", [])
+        if not records:
+            break
+        for rec in records:
+            rec["OCCUPANCY_DATE"] = fix_date(rec.get("OCCUPANCY_DATE", ""))
+        all_rows.extend(records)
+        offset += len(records)
+        print(f"    ... {len(all_rows):,} rows", flush=True)
+    print(f"  datastore_search: {len(all_rows):,} rows total", flush=True)
+    return all_rows
+
+
 def pull_all():
     print("Querying CKAN package_show ...", flush=True)
     resources = ckan_get("package_show", id=PKG_ID)["resources"]
-    dump_urls = [r["url"] for r in resources if "datastore/dump" in r.get("url", "")]
-    print(f"Found {len(dump_urls)} datastore dump resources.", flush=True)
+
+    # Split resources: the current year has no year suffix in its name;
+    # frozen historical resources are named "...-20YY" (e.g. "-2025").
+    # Derived by name pattern rather than hardcoded ID so a year rollover
+    # is handled automatically.
+    year_pat   = re.compile(r"-20\d\d$")
+    dump_res   = [r for r in resources if "datastore/dump" in r.get("url", "")]
+    current    = [r for r in dump_res if not year_pat.search(r.get("name", ""))]
+    historical = [r for r in dump_res if year_pat.search(r.get("name", ""))]
+    print(
+        f"Found {len(current)} current resource(s), "
+        f"{len(historical)} historical.", flush=True
+    )
 
     all_rows = []
-    for url in dump_urls:
-        text = download_csv(url)
+
+    # Current resource: pull via live datastore_search to avoid dump-file lag.
+    for res in current:
+        all_rows.extend(pull_current_resource(res["id"]))
+
+    # Historical resources: frozen data — cached dump is fast and correct.
+    for res in historical:
+        text   = download_csv(res["url"])
         reader = csv.DictReader(io.StringIO(text))
         for row in reader:
             row["OCCUPANCY_DATE"] = fix_date(row.get("OCCUPANCY_DATE", ""))

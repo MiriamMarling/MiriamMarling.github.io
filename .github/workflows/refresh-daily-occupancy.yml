@@ -1,7 +1,7 @@
 # Refresh daily occupancy data from the City of Toronto's CKAN open data
 # portal and republish the Quarto site.
 #
-# Runs at 10:00, 12:00, 14:00, and 16:00 UTC every day. The City typically
+# Runs at 10:07, 12:23, 14:37, and 16:43 UTC every day. The City typically
 # publishes the previous day's shelter occupancy figures overnight. The first
 # trigger gives a buffer; subsequent triggers are fallbacks for late CKAN
 # publishes. Fire-once detection (sentinel files in data/) means multiple runs
@@ -19,10 +19,10 @@ name: Refresh daily occupancy and publish
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # 10:00 UTC (6:00 AM EDT / 5:00 AM EST) — primary, ~2 hrs after CKAN data drop
-    - cron: '0 12 * * *'  # 12:00 UTC (8:00 AM EDT / 7:00 AM EST) — fallback if first run misses
-    - cron: '0 14 * * *'  # 14:00 UTC (10:00 AM EDT / 9:00 AM EST) — late-publish fallback
-    - cron: '0 16 * * *'  # 16:00 UTC (12:00 PM EDT / 11:00 AM EST) — very-late-publish fallback
+    - cron: '7 10 * * *'   # 10:07 UTC (6:07 AM EDT / 5:07 AM EST) — primary, ~2 hrs after CKAN data drop
+    - cron: '23 12 * * *'  # 12:23 UTC (8:23 AM EDT / 7:23 AM EST) — fallback if first run misses
+    - cron: '37 14 * * *'  # 14:37 UTC (10:37 AM EDT / 9:37 AM EST) — late-publish fallback
+    - cron: '43 16 * * *'  # 16:43 UTC (12:43 PM EDT / 11:43 AM EST) — very-late-publish fallback
   workflow_dispatch:       # Allow manual triggering from the Actions tab
   push:
     branches: [main]       # Every push to main rebuilds and republishes
@@ -244,21 +244,31 @@ jobs:
           report_path = Path('data/city_audit_report.json')
           if not report_path.exists():
               with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-                  f.write('has_mismatches=false\nmismatch_count=0\ncity_date=\n')
+                  f.write('has_mismatches=false\nmismatch_count=0\ndate_range=\nany_pending=false\n')
               print('No audit report found; skipping mismatch check.')
               sys.exit(0)
 
           r = json.loads(report_path.read_text())
-          n         = r.get('mismatch_count', 0)
-          city_date = r.get('city_date') or '(unknown)'
-          passed    = r.get('passed')
+          n           = r.get('total_mismatches', r.get('mismatch_count', 0))
+          any_pending = r.get('any_pending', False)
+          passed      = r.get('passed')
+
+          # Build a human-readable date range from the per-date list
+          dates_list = [d['date'] for d in r.get('dates', [])]
+          if not dates_list:
+              dates_list = [r.get('city_date') or '(unknown)']
+          if len(dates_list) == 1:
+              date_range = dates_list[0]
+          else:
+              date_range = f'{dates_list[0]}–{dates_list[-1]}'
 
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write(f'has_mismatches={\"true\" if n > 0 else \"false\"}\n')
               f.write(f'mismatch_count={n}\n')
-              f.write(f'city_date={city_date}\n')
+              f.write(f'date_range={date_range}\n')
+              f.write(f'any_pending={\"true\" if any_pending else \"false\"}\n')
 
-          print(f'Audit: {n} mismatch(es) for {city_date} (passed={passed})')
+          print(f'Audit: {n} mismatch(es) for {date_range} (passed={passed}, pending={any_pending})')
           "
         continue-on-error: true
 
@@ -271,15 +281,16 @@ jobs:
           secure: false
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "[bonquery] City audit: ${{ steps.audit_check.outputs.mismatch_count }} mismatch(es) for ${{ steps.audit_check.outputs.city_date }}"
+          subject: "[bonquery] City audit: ${{ steps.audit_check.outputs.mismatch_count }} mismatch(es) — ${{ steps.audit_check.outputs.date_range }}"
           to: miriam@bonquery.ca
           from: ${{ secrets.MAIL_USERNAME }}
           body: |
             The City of Toronto shelter census page reports figures that differ
             from our published daily_occupancy.json.
 
-            Date compared:    ${{ steps.audit_check.outputs.city_date }}
+            Dates audited:    ${{ steps.audit_check.outputs.date_range }}
             Mismatches found: ${{ steps.audit_check.outputs.mismatch_count }}
+            Pending dates:    ${{ steps.audit_check.outputs.any_pending }}
 
             ${{ env.CITY_AUDIT_SUMMARY }}
 
