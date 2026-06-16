@@ -15,6 +15,9 @@
 !/data/season_curves_sc.csv
 !/data/last_pull_date.txt
 !/data/last_pull_hash.txt
+# CKAN metadata_modified sentinel — committed so the guard job can detect a
+# no-change run and skip the expensive CKAN pull + Quarto rebuild.
+!/data/last_ckan_modified.txt
 # Monthly SSF / Central Intake month markers — committed so refresh-site-data.yml
 # can tell when a new month has landed and notify exactly once.
 !/data/last_ssf_month.txt

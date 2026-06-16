@@ -133,11 +133,15 @@ jobs:
           git pull --rebase origin main   # sync if a concurrent run already pushed
           git push origin main
 
-      # Install Quarto so we can build and publish the site
+      # Install Quarto so we can build and publish the site.
+      # Skipped when neither SSF nor Central Intake has a new month — mirrors
+      # the daily workflow's existing pattern for render/publish gating.
       - name: Set up Quarto
+        if: env.NEW_SSF == 'true' || env.NEW_INTAKE == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Render EN site
+        if: env.NEW_SSF == 'true' || env.NEW_INTAKE == 'true' || github.event_name != 'schedule'
         run: quarto render
 
       # Scoped to fr/ so this profile pass only touches FR-pathed output —
@@ -145,10 +149,12 @@ jobs:
       # lists and re-renders every EN page too, overwriting it with the FR
       # profile's lang and navbar.
       - name: Render FR site
+        if: env.NEW_SSF == 'true' || env.NEW_INTAKE == 'true' || github.event_name != 'schedule'
         run: quarto render fr --profile fr
 
       # Publish to gh-pages branch. GITHUB_TOKEN auth is automatic.
       - name: Publish to GitHub Pages
+        if: env.NEW_SSF == 'true' || env.NEW_INTAKE == 'true' || github.event_name != 'schedule'
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages

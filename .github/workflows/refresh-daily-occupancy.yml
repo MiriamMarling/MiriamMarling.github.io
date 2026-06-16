@@ -31,8 +31,68 @@ permissions:
   contents: write          # Needed to push to gh-pages
 
 jobs:
+  # Lightweight guard job — runs on every trigger, including scheduled fallbacks
+  # that fire after the day's data has already been pulled and published.
+  #
+  # Responsibilities:
+  #   1. OCI keepalive ping (load-bearing — must run on every fire even when the
+  #      heavy job is skipped; see comment below).
+  #   2. CKAN freshness check — reads CKAN metadata_modified and compares it to
+  #      the committed sentinel (data/last_ckan_modified.txt). If the dataset has
+  #      not advanced since the last successful run, outputs should_run=false and
+  #      the refresh-occupancy job is skipped, saving the full pip install + three
+  #      data pulls + Quarto render + publish on redundant fallback fires.
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.freshness.outputs.should_run }}
+      metadata_modified: ${{ steps.freshness.outputs.metadata_modified }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install OCI driver (keepalive dependency)
+        run: python -m pip install --upgrade pip && pip install oracledb
+
+      # OCI Always Free keepalive — see scripts/keepalive_oci.py. The Autonomous
+      # DB that backs the APEX dashboard is auto-stopped after 7 days idle, so a
+      # daily connection is load-bearing. This step lives in the guard so it fires
+      # on all four daily triggers, even when the heavy refresh job is skipped
+      # because no new CKAN data has landed. Do not move or remove.
+      - name: Keepalive ping — OCI Always Free (idle-reclamation guard)
+        continue-on-error: true
+        env:
+          OCI_DSN: ${{ secrets.OCI_DSN }}
+          OCI_DB_USER: ${{ secrets.OCI_DB_USER }}
+          OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
+        run: python scripts/keepalive_oci.py
+
+      # Compare the current CKAN metadata_modified timestamp to the committed
+      # sentinel (data/last_ckan_modified.txt). If the dataset hasn't advanced,
+      # should_run=false and the refresh-occupancy job will be skipped.
+      # Fail-open: any exception (network error, parse failure, missing sentinel)
+      # produces should_run=true so the heavy job always runs when uncertain.
+      - name: Check CKAN freshness
+        id: freshness
+        run: |
+          stored="$(cat data/last_ckan_modified.txt 2>/dev/null || true)"
+          python scripts/check_ckan_freshness.py \
+            daily-shelter-overnight-service-occupancy-capacity \
+            "$stored"
+
   refresh-occupancy:
     runs-on: ubuntu-latest
+    needs: guard
+    # Skip on scheduled triggers when the CKAN dataset hasn't advanced since the
+    # last successful run. Always run on push (site rebuild) and workflow_dispatch
+    # (manual override) regardless of what the freshness check found.
+    if: needs.guard.outputs.should_run == 'true' || github.event_name != 'schedule'
 
     steps:
       - name: Checkout repository
@@ -47,19 +107,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install oracledb requests beautifulsoup4
-
-      # OCI Always Free keepalive — see scripts/keepalive_oci.py. The Autonomous
-      # DB that backs the APEX dashboard is auto-stopped after 7 days idle, so a
-      # daily connection is load-bearing. This dedicated heartbeat runs first and
-      # with continue-on-error, so the database stays alive even if the
-      # generate_data.py pull below fails for an extended stretch. Do not remove.
-      - name: Keepalive ping — OCI Always Free (idle-reclamation guard)
-        continue-on-error: true
-        env:
-          OCI_DSN: ${{ secrets.OCI_DSN }}
-          OCI_DB_USER: ${{ secrets.OCI_DB_USER }}
-          OCI_DB_PASS: ${{ secrets.OCI_DB_PASS }}
-        run: python scripts/keepalive_oci.py
 
       # shelter_flow.json — monthly shelter flow data from OCI.
       # Required by monthly-snapshot.qmd, ytd-comparison.qmd, historical-trends.qmd.
@@ -366,12 +413,20 @@ jobs:
             fi
           fi
 
+      # Write the CKAN metadata_modified sentinel to disk. This is committed below
+      # (in all three commit steps) so the guard job can skip the heavy job on the
+      # next scheduled fire when the dataset hasn't advanced.
+      - name: Write CKAN freshness sentinel
+        run: |
+          printf '%s\n' "${{ needs.guard.outputs.metadata_modified }}" \
+            > data/last_ckan_modified.txt
+
       - name: Commit sentinels if new data or revision detected
         if: env.NEW_DATA == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/last_pull_date.txt data/last_pull_hash.txt
+          git add data/last_pull_date.txt data/last_pull_hash.txt data/last_ckan_modified.txt
           git add data/city_bridging_triage.json 2>/dev/null || true
           git add data/city_daily_table.json data/city_audit_report.json 2>/dev/null || true
           if [ "${{ env.REBUILD_REASON }}" = "new-day" ]; then
@@ -387,10 +442,28 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/city_bridging_triage.json
+          git add data/city_bridging_triage.json data/last_ckan_modified.txt
           git commit -m "data: bridging & triage entries updated [skip ci]"
           git pull --rebase origin main
           git push origin main
+
+      # Fallback: commit the CKAN freshness sentinel when the heavy job ran but
+      # found no data change and no BT update. Without this, the guard would
+      # re-trigger the heavy job on the next fallback fire of the same day (the
+      # CKAN metadata_modified advanced at the day's data drop, but nothing in
+      # our dataset changed). git diff --staged --quiet prevents an empty commit
+      # when last_ckan_modified.txt was already at this value.
+      - name: Commit CKAN freshness sentinel (no data change this run)
+        if: success() && env.NEW_DATA != 'true' && env.BT_CHANGED != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/last_ckan_modified.txt
+          git diff --staged --quiet || (
+            git commit -m "data: CKAN freshness sentinel updated [skip ci]" &&
+            git pull --rebase origin main &&
+            git push origin main
+          )
 
       - name: Set up Quarto
         if: env.NEW_DATA == 'true' || env.BT_CHANGED == 'true' || github.event_name != 'schedule'
