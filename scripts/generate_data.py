@@ -28,9 +28,22 @@ except ModuleNotFoundError:
     print("  ../toronto-shelter-db/venv/bin/python3 scripts/generate_data.py")
     sys.exit(1)
 
+def _toronto_shelter_db_root() -> Path:
+    """Root of the sibling toronto-shelter-db repo.
+
+    Prefer the TORONTO_SHELTER_DB environment variable; otherwise fall back to
+    the conventional sibling checkout (../toronto-shelter-db). The fallback
+    reproduces the historical relative path, so unconfigured setups keep working.
+    """
+    env = os.environ.get("TORONTO_SHELTER_DB")
+    if env:
+        return Path(env).expanduser().resolve()
+    return Path(__file__).resolve().parents[2] / "toronto-shelter-db"
+
+
 # Optional: load .env from the shelter-db sibling repo if OCI_DSN is not set.
 if not os.environ.get("OCI_DSN"):
-    env_file = Path(__file__).parent.parent.parent / "toronto-shelter-db" / ".env"
+    env_file = _toronto_shelter_db_root() / ".env"
     if env_file.exists():
         for line in env_file.read_text().splitlines():
             line = line.strip()

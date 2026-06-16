@@ -17,13 +17,29 @@ Author: Miriam Marling <miriam@BonQuery.ca>
 import csv
 import gzip
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-SOURCE_CSV = Path(
-    "/Users/Atom/projects/toronto-shelter-db/analysis/data/"
-    "daily_occupancy/daily_occupancy_raw_2026-05-17.csv"
+
+def _toronto_shelter_db_root() -> Path:
+    """Root of the sibling toronto-shelter-db repo.
+
+    Prefer the TORONTO_SHELTER_DB environment variable; otherwise fall back to
+    the conventional sibling checkout (../toronto-shelter-db). The fallback
+    reproduces the historical absolute path, so unconfigured setups keep working.
+    """
+    env = os.environ.get("TORONTO_SHELTER_DB")
+    if env:
+        return Path(env).expanduser().resolve()
+    return Path(__file__).resolve().parents[2] / "toronto-shelter-db"
+
+
+SOURCE_CSV = (
+    _toronto_shelter_db_root()
+    / "analysis" / "data" / "daily_occupancy"
+    / "daily_occupancy_raw_2026-05-17.csv"
 )
 OUT_DIR    = Path(__file__).parent.parent / "data" / "snapshots"
 # Timestamp the snapshot at the start of 2026-05-17 UTC. The exact wall-clock
