@@ -1,7 +1,10 @@
-# Refresh shelter_flow.json from OCI and republish the Quarto site.
-# Runs on the 15th of every month at 16:00 UTC (noon EDT / 11am EST)
-# — two hours after toronto-shelter-db refreshes OCI from CKAN.
-# Can also be triggered manually via the Actions tab.
+# Refresh monthly data (shelter flow from OCI + Central Intake from CKAN) and
+# republish the Quarto site. Runs 4× daily across the 15th–18th of every month.
+# Correctness comes from fire-once detection (sentinel files data/last_ssf_month.txt
+# and data/last_intake_month.txt) + repeated checks — NOT from out-pacing the frozen
+# OCI refresh, which GitHub delays by hours and cannot be out-paced by cron timing.
+# Emails miriam@bonquery.ca once when a new SSF or Central Intake month first lands,
+# and on failure. Can also be triggered manually via the Actions tab.
 #
 # Author: Miriam Marling <miriam@BonQuery.ca>
 # Date: 2026
@@ -10,12 +13,11 @@ name: Refresh site data and publish
 
 on:
   schedule:
-    # 16:00 UTC on the 15th, 16th, and 17th of every month.
-    # Mirrors the shelter-db refresh schedule — two hours after each
-    # CKAN pull so fresh OCI data is ready before the site rebuilds.
-    - cron: '0 16 15 * *'
-    - cron: '0 16 16 * *'
-    - cron: '0 16 17 * *'
+    # 4× daily across the 15th–18th (widened one day for City publish-delay margin).
+    # GitHub delays schedule triggers by hours, so these are coverage checks, not
+    # precisely-timed ones. The fire-once sentinel means an early check that reads
+    # stale OCI is a harmless no-op; a later check catches it once data lands.
+    - cron: '0 13,16,19,22 15-18 * *'
   workflow_dispatch:                              # Allow manual triggering
 
 permissions:
@@ -63,9 +65,73 @@ jobs:
       - name: Generate daily occupancy data (CKAN)
         run: python scripts/generate_daily_occupancy.py
 
+      # Pull fresh Central Intake data from CKAN. Must run AFTER daily occupancy
+      # (generate_central_intake.py reads daily_occupancy.json for its monthly
+      # occupancy buckets). data/ is gitignored, so this regenerates the
+      # central_intake.json that the monthly central-intake page renders from.
+      - name: Generate Central Intake data (CKAN)
+        run: python scripts/generate_central_intake.py
+
       # Validate BonQuery's daily occupancy totals against the City's live page.
       - name: Validate against City of Toronto shelter census page
         run: python scripts/validate_city_page.py
+
+      # Detect whether a new monthly SSF or Central Intake release has appeared,
+      # using committed month markers (data/last_ssf_month.txt /
+      # data/last_intake_month.txt). The JSON data files are gitignored, so we
+      # compare a tiny committed marker instead — the same sentinel approach the
+      # daily occupancy workflow uses. This dedupes the 15th/16th/17th reruns:
+      # the email fires once, when a month actually advances.
+      - name: Detect new monthly data
+        run: |
+          python3 -c "
+          import json, os
+          from pathlib import Path
+
+          flow = json.loads(Path('data/shelter_flow.json').read_text())
+          ssf_month = max(r['flow_date'] for r in flow)[:7]
+
+          ci = json.loads(Path('data/central_intake.json').read_text())
+          months = ci.get('monthly', [])
+          if months:
+              latest = max(months, key=lambda m: (m['year'], m['month']))
+              intake_month = '%04d-%02d' % (latest['year'], latest['month'])
+              intake_label = latest.get('month_label', intake_month)
+          else:
+              intake_month, intake_label = '', '(none)'
+
+          ssf_sentinel    = Path('data/last_ssf_month.txt')
+          intake_sentinel = Path('data/last_intake_month.txt')
+          old_ssf    = ssf_sentinel.read_text().strip()    if ssf_sentinel.exists()    else ''
+          old_intake = intake_sentinel.read_text().strip() if intake_sentinel.exists() else ''
+
+          new_ssf    = ssf_month > old_ssf
+          new_intake = bool(intake_month) and intake_month > old_intake
+
+          print('SSF   :', old_ssf or '(none)', '->', ssf_month, 'new=', new_ssf)
+          print('Intake:', old_intake or '(none)', '->', intake_month or '(none)', 'new=', new_intake)
+
+          if new_ssf:    ssf_sentinel.write_text(ssf_month + '\n')
+          if new_intake: intake_sentinel.write_text(intake_month + '\n')
+
+          with open(os.environ['GITHUB_ENV'], 'a') as f:
+              f.write('NEW_SSF=%s\n'             % ('true' if new_ssf    else 'false'))
+              f.write('NEW_INTAKE=%s\n'          % ('true' if new_intake else 'false'))
+              f.write('LATEST_SSF_MONTH=%s\n'    % ssf_month)
+              f.write('LATEST_INTAKE_MONTH=%s\n' % intake_label)
+          "
+
+      - name: Commit monthly data markers if advanced
+        if: env.NEW_SSF == 'true' || env.NEW_INTAKE == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in data/last_ssf_month.txt data/last_intake_month.txt; do
+            [ -f "$f" ] && git add "$f"
+          done
+          git diff --staged --quiet || git commit -m "data: monthly markers — SSF ${{ env.LATEST_SSF_MONTH }} / Intake ${{ env.LATEST_INTAKE_MONTH }} [skip ci]"
+          git pull --rebase origin main   # sync if a concurrent run already pushed
+          git push origin main
 
       # Install Quarto so we can build and publish the site
       - name: Set up Quarto
@@ -89,3 +155,49 @@ jobs:
           render: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Mirrors the daily occupancy workflow's notifications: same action, SMTP
+      # server, and MAIL_* secrets. Failure fires on any failed step; the
+      # success email only fires when a new SSF or Central Intake month landed.
+      - name: Email notification — monthly refresh failed
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.mail.me.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[bonquery] Monthly site refresh FAILED"
+          to: miriam@bonquery.ca
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            The refresh-site-data (monthly) workflow failed.
+
+            Triggered by: ${{ github.event_name }}
+            Run log:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Open the run log to see which step failed.
+
+      - name: Email notification — new monthly data published
+        if: success() && (env.NEW_SSF == 'true' || env.NEW_INTAKE == 'true')
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.mail.me.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[bonquery] New monthly data — SSF ${{ env.LATEST_SSF_MONTH }} / Intake ${{ env.LATEST_INTAKE_MONTH }}"
+          to: miriam@bonquery.ca
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            New monthly data was pulled and published to bonquery.ca.
+
+            Shelter System Flow — latest month: ${{ env.LATEST_SSF_MONTH }}  (new: ${{ env.NEW_SSF }})  [source: OCI]
+            Central Intake      — latest month: ${{ env.LATEST_INTAKE_MONTH }}  (new: ${{ env.NEW_INTAKE }})  [source: CKAN]
+
+            Triggered by: ${{ github.event_name }}
+
+            Site:    https://bonquery.ca
+            Run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

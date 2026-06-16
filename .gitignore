@@ -15,6 +15,10 @@
 !/data/season_curves_sc.csv
 !/data/last_pull_date.txt
 !/data/last_pull_hash.txt
+# Monthly SSF / Central Intake month markers — committed so refresh-site-data.yml
+# can tell when a new month has landed and notify exactly once.
+!/data/last_ssf_month.txt
+!/data/last_intake_month.txt
 # Bridging & Triage scraped daily from City census page — committed to main
 # so each CI run can accumulate entries from previous runs.
 !/data/city_bridging_triage.json
