@@ -351,6 +351,13 @@ body.quarto-dark .cell-output-display svg [aria-label="tip"] path {
   stroke: var(--bq-border);
 }
 
+/* Bootstrap's compiled `code{...}` rule hardcodes background-color:#f8f9fa
+   at build time, identical in the cosmo and darkly bundles — only
+   --bs-code-color (text) is dark-mode aware, not the background. Any inline
+   <code> (e.g. filenames in figure captions, "Source: `x.csv`") stays
+   light-on-light in dark mode without this override. */
+body.quarto-dark code { background-color: var(--bq-bg-alt); }
+
 /* ── Theme toggle styling ────────────────────────────────────────────── */
 .quarto-color-scheme-toggle {
   order: 99;
