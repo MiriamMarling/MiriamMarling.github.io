@@ -57,9 +57,9 @@ données agrégées des graphiques. Les scripts R, les pipelines de données et 
 complet de reproduction se trouvent dans un dépôt privé distinct et ne sont pas
 visés ici.
 
-- **Code** (interface, styles, configuration, workflows) : [licence MIT](LICENSE).
-  Utilisation, modification et redistribution libres, en conservant l'avis de droit
-  d'auteur.
+- **Code** (interface, styles, configuration, workflows) : [licence MIT](LICENSE)
+  ([traduction française](LICENSE-FR.fr)). Utilisation, modification et redistribution
+  libres, en conservant l'avis de droit d'auteur.
 - **Données agrégées et contenu rédactionnel** : [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
   Réutilisation et adaptation libres, à condition de créditer la source.
 
