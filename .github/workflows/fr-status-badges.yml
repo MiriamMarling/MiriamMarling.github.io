@@ -1,0 +1,90 @@
+# Publish French-labelled status badges for the three site workflows.
+# GitHub's live badge prints an English status word ("passing"); this workflow
+# writes shields.io "endpoint" JSON to a dedicated `badges` branch so the French
+# section of the README can show "réussi" / "échoué" and stay live.
+#
+# For each target workflow it reads the latest completed run on main and
+# force-updates a single-commit `badges` branch (an orphan scoreboard, not a
+# history). Writing to that branch triggers no other workflow — all three are
+# push-filtered to main.
+#
+# Author: Miriam Marling <miriam@BonQuery.ca>
+# Date: 2026
+
+name: FR status badges
+
+on:
+  workflow_run:
+    workflows:
+      - "Refresh daily occupancy and publish"
+      - "Refresh site data and publish"
+      - "Check links"
+    types: [completed]
+  schedule:
+    - cron: '31 5 * * *'   # 05:31 UTC daily fallback (off-zero minute per convention)
+  workflow_dispatch:
+
+# Serialise runs so overlapping triggers never race on the branch force-update.
+concurrency:
+  group: fr-status-badges
+  cancel-in-progress: true
+
+permissions:
+  contents: write   # create/force-update the badges branch
+  actions: read     # read the target workflows' run conclusions
+
+jobs:
+  publish-badges:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and publish French status JSON
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+
+            // One shields.io endpoint file per workflow. `label` is the French
+            // left-hand text; `workflow` is the target's file name.
+            const files = [
+              { path: 'occupation.json', workflow: 'refresh-daily-occupancy.yml', label: 'Occupation quotidienne' },
+              { path: 'donnees.json',    workflow: 'refresh-site-data.yml',       label: 'Données du site' },
+              { path: 'liens.json',      workflow: 'check-links.yml',             label: 'Liens' },
+            ];
+
+            // Map a run conclusion to a French message and a shields colour.
+            const status = (conclusion) => {
+              if (conclusion === 'success') return { message: 'réussi', color: 'brightgreen' };
+              if (['failure', 'timed_out', 'startup_failure'].includes(conclusion)) return { message: 'échoué', color: 'red' };
+              if (conclusion === 'cancelled') return { message: 'annulé', color: 'lightgrey' };
+              return { message: 'inconnu', color: 'lightgrey' };
+            };
+
+            const tree = [];
+            for (const f of files) {
+              let conclusion = null;
+              try {
+                const { data } = await github.rest.actions.listWorkflowRuns({
+                  owner, repo, workflow_id: f.workflow, branch: 'main', status: 'completed', per_page: 1,
+                });
+                conclusion = data.workflow_runs?.[0]?.conclusion ?? null;
+              } catch (e) {
+                core.warning(`${f.workflow}: ${e.message}`);
+              }
+              const { message, color } = status(conclusion);
+              const content = JSON.stringify({ schemaVersion: 1, label: f.label, message, color });
+              const blob = await github.rest.git.createBlob({ owner, repo, content, encoding: 'utf-8' });
+              tree.push({ path: f.path, mode: '100644', type: 'blob', sha: blob.data.sha });
+              core.info(`${f.path}: ${message} (${color}) [conclusion=${conclusion}]`);
+            }
+
+            // One parentless commit → single-commit orphan branch, force-updated.
+            const newTree = await github.rest.git.createTree({ owner, repo, tree });
+            const commit = await github.rest.git.createCommit({
+              owner, repo, message: 'chore(badges): update French status badges', tree: newTree.data.sha, parents: [],
+            });
+            const ref = 'heads/badges';
+            try {
+              await github.rest.git.updateRef({ owner, repo, ref, sha: commit.data.sha, force: true });
+            } catch (e) {
+              await github.rest.git.createRef({ owner, repo, ref: `refs/${ref}`, sha: commit.data.sha });
+            }
