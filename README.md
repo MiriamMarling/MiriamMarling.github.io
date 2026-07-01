@@ -15,6 +15,8 @@ Website built with the help of [Claude Code](https://claude.com/product/claude-c
 
 # BonQuery
 
+[![Occupation quotidienne](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/refresh-daily-occupancy.yml?branch=main&label=Occupation%20quotidienne)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-daily-occupancy.yml) [![Données du site](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/refresh-site-data.yml?branch=main&label=Donn%C3%A9es%20du%20site)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-site-data.yml) [![Liens](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/check-links.yml?branch=main&label=Liens)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/check-links.yml)
+
 BonQuery donne vie aux données humanitaires en transformant les chiffres qui dorment sur les portails gouvernementaux de données ouvertes en analyses claires et utiles pour les personnes qui peuvent agir sur les enjeux qu'elles révèlent.
 
 Nous utilisons des données accessibles au public pour analyser des enjeux humanitaires urgents, en commençant par le réseau de refuges de Toronto. Le travail est ouvert, reproductible et conçu pour les journalistes, les chercheurs, les défenseurs, les décideurs politiques et toute personne qui suit la situation de près.
