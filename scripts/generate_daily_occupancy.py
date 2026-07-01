@@ -13,10 +13,13 @@ Date: 2026
 
 import csv
 import gzip
+import http.client
 import io
 import json
 import re
 import ssl
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from collections import defaultdict
@@ -48,18 +51,39 @@ EMERG_TYPES = {"Shelter", "Top Bunk Contingency Space",
 # CKAN helpers
 # ---------------------------------------------------------------------------
 
+def _fetch(url_or_req, *, timeout, attempts=4, base_delay=2):
+    """Fetch a URL and return the raw response bytes, retrying transient network
+    errors (CKAN occasionally times out or returns a 5xx). Standard library only;
+    deterministic 4xx responses are not retried."""
+    last = None
+    for attempt in range(1, attempts + 1):
+        try:
+            with urllib.request.urlopen(url_or_req, context=_SSL_CTX, timeout=timeout) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code < 500:            # 4xx means our request is wrong; do not retry
+                raise
+            last = e
+        except (urllib.error.URLError, http.client.HTTPException, OSError) as e:
+            last = e                    # timeouts, connection resets, DNS, etc.
+        if attempt < attempts:
+            delay = base_delay * (2 ** (attempt - 1))   # 2s, 4s, 8s
+            print(f"  request failed (attempt {attempt}/{attempts}): {last}; "
+                  f"retrying in {delay}s", flush=True)
+            time.sleep(delay)
+    raise last
+
+
 def ckan_get(endpoint, **params):
     qs = "&".join(f"{k}={v}" for k, v in params.items())
     url = f"{CKAN_BASE}/api/3/action/{endpoint}?{qs}"
-    with urllib.request.urlopen(url, context=_SSL_CTX, timeout=30) as r:
-        return json.loads(r.read().decode())["result"]
+    return json.loads(_fetch(url, timeout=30).decode())["result"]
 
 
 def download_csv(url):
     print(f"  Downloading {url.split('/')[-1]} ...", flush=True)
     req = urllib.request.Request(url, headers={"Accept-Encoding": "identity"})
-    with urllib.request.urlopen(req, context=_SSL_CTX, timeout=180) as r:
-        return r.read().decode("utf-8", errors="replace")
+    return _fetch(req, timeout=180).decode("utf-8", errors="replace")
 
 
 def fix_date(s):
