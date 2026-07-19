@@ -1,13 +1,10 @@
 # BonQuery
 
-[![Daily occupancy](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/refresh-daily-occupancy.yml?branch=main&label=Daily%20occupancy)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-daily-occupancy.yml) [![Site data](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/refresh-site-data.yml?branch=main&label=Site%20data)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-site-data.yml) [![Links](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/check-links.yml?branch=main&label=Links)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/check-links.yml)
+[![Daily occupancy](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/refresh-daily-occupancy.yml?branch=main&label=Daily%20occupancy)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-daily-occupancy.yml) [![Site data](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/refresh-site-data.yml?branch=main&label=Site%20data)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-site-data.yml) [![Links](https://img.shields.io/github/actions/workflow/status/MiriamMarling/MiriamMarling.github.io/check-links.yml?branch=main&label=Links)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/check-links.yml) [![Last commit](https://img.shields.io/github/last-commit/MiriamMarling/MiriamMarling.github.io?branch=main&label=Last%20commit)](https://github.com/MiriamMarling/MiriamMarling.github.io/commits/main) [![Website](https://img.shields.io/badge/Website-bonquery.ca-brightgreen)](https://bonquery.ca) [![Made with Quarto](https://img.shields.io/badge/Made%20with-Quarto-4B9CD3?logo=quarto&logoColor=white)](https://quarto.org)
 
 BonQuery breathes life into humanitarian-related data by turning numbers that sit unread on government open-data portals into clear, useful analyses for the people who can do something about the issues behind them.
 
 We use publicly available data to investigate urgent humanitarian issues, starting with Toronto’s shelter system. The work is open, reproducible, and built for journalists, researchers, advocates, policymakers, and anyone paying attention.
-
-
-🌐 **Website :**  https://bonquery.ca  
 
 **Note:** This repository contains only the front-end website files, aggregated chart data, and rendering configurations for BonQuery.ca. The raw data pipelines, backend processing, and primary analysis scripts are currently kept in a separate, private repository
 
@@ -37,13 +34,11 @@ licence, not only a courtesy.
 
 # BonQuery
 
-[![Occupation quotidienne](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MiriamMarling/MiriamMarling.github.io/badges/occupation.json)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-daily-occupancy.yml) [![Données du site](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MiriamMarling/MiriamMarling.github.io/badges/donnees.json)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-site-data.yml) [![Liens](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MiriamMarling/MiriamMarling.github.io/badges/liens.json)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/check-links.yml)
+[![Occupation quotidienne](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MiriamMarling/MiriamMarling.github.io/badges/occupation.json)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-daily-occupancy.yml) [![Données du site](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MiriamMarling/MiriamMarling.github.io/badges/donnees.json)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/refresh-site-data.yml) [![Liens](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MiriamMarling/MiriamMarling.github.io/badges/liens.json)](https://github.com/MiriamMarling/MiriamMarling.github.io/actions/workflows/check-links.yml) [![Dernier commit](https://img.shields.io/github/last-commit/MiriamMarling/MiriamMarling.github.io?branch=main&label=Dernier%20commit)](https://github.com/MiriamMarling/MiriamMarling.github.io/commits/main) [![Site web](https://img.shields.io/badge/Site%20web-bonquery.ca-brightgreen)](https://bonquery.ca) [![Fait avec Quarto](https://img.shields.io/badge/Fait%20avec-Quarto-4B9CD3?logo=quarto&logoColor=white)](https://quarto.org)
 
 BonQuery donne vie aux données humanitaires en transformant les chiffres qui dorment sur les portails gouvernementaux de données ouvertes en analyses claires et utiles pour les personnes qui peuvent agir sur les enjeux qu'elles révèlent.
 
 Nous utilisons des données accessibles au public pour analyser des enjeux humanitaires urgents, en commençant par le réseau de refuges de Toronto. Le travail est ouvert, reproductible et conçu pour les journalistes, les chercheurs, les défenseurs, les décideurs politiques et toute personne qui suit la situation de près.
-
-🌐 **Site web :** https://bonquery.ca
 
 **Note :** Ce dépôt contient uniquement les fichiers du site front-end, les données agrégées utilisées pour les graphiques et les configurations de rendu de BonQuery.ca. Les pipelines de données brutes, le traitement backend et les scripts d'analyse principaux sont actuellement conservés dans un dépôt privé distinct.
 
