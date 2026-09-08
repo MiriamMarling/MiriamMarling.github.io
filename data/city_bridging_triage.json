@@ -333,6 +333,22 @@
     "2026-09-03": {
       "bridging_triage": 1,
       "total_people": 7464
+    },
+    "2026-09-04": {
+      "bridging_triage": 5,
+      "total_people": 7427
+    },
+    "2026-09-05": {
+      "bridging_triage": 5,
+      "total_people": 7389
+    },
+    "2026-09-06": {
+      "bridging_triage": 8,
+      "total_people": 7388
+    },
+    "2026-09-07": {
+      "bridging_triage": 5,
+      "total_people": 7390
     }
   }
 }
